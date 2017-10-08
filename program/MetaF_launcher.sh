@@ -8,8 +8,11 @@
 MetaG_name=MP0313
 output_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/MeTAfisher/output/MP0313
 data_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/MeTAfisher/data/MP0313
+data_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/Malaspina_MetaG/MP0313
 data_name=MP0313.549
 dependency_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/MeTAfisher/dependence
+
+mkdir ${output_pathway}
 
 
 # usage: MeTAfisher [-h] [--Resize] [--Rescue] [--contig_name CONTIG_NAME]
@@ -18,4 +21,4 @@ dependency_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/MeTAfi
 #                   dependency_pathway
 
 
-python main_MetaF.py --Resize --Rescue ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
+python program/main_MetaF.py --Resize --Rescue ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}

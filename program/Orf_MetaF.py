@@ -162,7 +162,7 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
             #     obj.Orf.adj_orf[strand].append(o)
             o.write_faa(fl, index=obj.Orf.adj_orf_index)  # write the file to tmp faa file
     # ==============================================
-        ##REMOVE##
+        # #REMOVE##
         # if o.strand == '+' and o.real_end() > 24000:
         #     print 'OLALALA'
         #     print o, 'frame :', o.frame, 'real end', o.real_end()
@@ -244,24 +244,6 @@ def get_gff_ends(dico_gff, scaffold):
             gff_ends['-'].append(int(line[3]))
     dico_gff["line"] = line
     return gff_ends
-
-
-# def get_fast_fasta(fl, line, scaffold):
-#     # line est la dernière ligne lu dans le fichier et doit correspondre à un entête >
-#     # la liste de scaffold est trié donc normalement y'a pas de problem.. Et les scaffold cherché devrait être dans le bonne ordre
-#     seq = {'description': scaffold, 'data': '', 'rev': False}
-#     # print scaffold + '=' + line[:len(scaffold) + 1]
-#     while line and line[:len(scaffold) + 1] != '>' + scaffold:
-#         line = next(fl)
-#     for line in fl:
-#         if line[0] == '>':
-#             break
-#         seq['data'] += line.rstrip()
-#     if seq['data']:
-#         seq['data'] = seq["data"].upper()
-#         return seq, line
-#     else:
-#         print ("seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence {}".format(scaffold))
 
 
 def findORF(scaffold, seq, rev):
