@@ -1,0 +1,21 @@
+#                                                                                --- full sequence --- -------------- this domain -------------   hmm coord   ali coord   env coord
+# target name        accession   tlen query name               accession   qlen   E-value  score  bias   #  of  c-Evalue  i-Evalue  score  bias  from    to  from    to  from    to  acc description of target
+#------------------- ---------- -----     -------------------- ---------- ----- --------- ------ ----- --- --- --------- --------- ------ ----- ----- ----- ----- ----- ----- ----- ---- ---------------------
+synthetic_sca1|2     -             90 NOG.COG5302.meta_raw -             80   1.6e-27   86.5   1.7   1   1   1.3e-28   1.8e-27   86.3   1.7     3    80    12    89    10    89 0.98 -
+synthetic_sca1|22    -            107 NOG.COG5302.meta_raw -             80   4.2e-23   72.3   0.2   1   2      0.39       5.3   -1.7   0.1    48    48    16    16     3    32 0.59 -
+synthetic_sca1|22    -            107 NOG.COG5302.meta_raw -             80   4.2e-23   72.3   0.2   2   2   3.1e-24   4.2e-23   72.3   0.2     8    80    34   106    27   106 0.96 -
+synthetic_sca1|2     -             90 CcdA                 PF07362.10    71   1.7e-28   89.8   1.0   1   1   1.7e-29   2.3e-28   89.4   1.0     2    71    20    89    19    89 0.99 -
+synthetic_sca1|22    -            107 CcdA                 PF07362.10    71   6.2e-28   88.0   0.2   1   2      0.17       2.3   -0.3   1.7    41    46    12    17     1    31 0.47 -
+synthetic_sca1|22    -            107 CcdA                 PF07362.10    71   6.2e-28   88.0   0.2   2   2   4.6e-29   6.2e-28   88.0   0.2     1    71    36   106    36   106 0.99 -
+synthetic_sca1|3     -            102 CcdB                 PF01845.15   100     7e-36  113.4   0.1   1   1   5.7e-37   7.7e-36  113.3   0.1     1   100     2   100     2   100 0.99 -
+synthetic_sca1|9     -            105 CcdB                 PF01845.15   100     1e-32  103.3   0.0   1   1   8.2e-34   1.1e-32  103.2   0.0     1   100     2   103     2   103 0.98 -
+#
+# Program:         hmmsearch
+# Version:         3.1b2 (February 2015)
+# Pipeline mode:   SEARCH
+# Query file:      /home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/DB_domain/ALL_plus_MET_curatted.hmm
+# Target file:     /home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/ProgamV2/data/synthetic/synthetic_naive_orf.faa
+# Option settings: hmmsearch -o /home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/ProgamV2/data/tableau_domaine_hmmsearh_do_DB_synthetic.txt --domtblout /home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/ProgamV2/data/table_per_domain_hmmsearh_do_DB_synthetic.txt -E 0.5 /home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/DB_domain/ALL_plus_MET_curatted.hmm /home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/ProgamV2/data/synthetic/synthetic_naive_orf.faa 
+# Current dir:     /home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/ProgamV2
+# Date:            Thu Jul 20 13:34:44 2017
+# [ok]

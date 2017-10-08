@@ -1,0 +1,8 @@
+POUR PARSER HMM TABLE
+grep -v '^#' table_hmm_TADBcurated.txt| cut -d' ' -f1 | sort | uniq -c | wc -l
+hmmdb=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/DB_domain/ALL_plus_MET_curatted.hmm
+hmmdbAll=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/DB_domain/tmp_merge_ALL.hmm
+
+
+hmmsearch --domtblout table_hmm_noncurrated.txt ${hmmdbAll} sequence_transformed.faa
+hmmsearch --domtblout table_hmm.txt ${hmmdb} sequence_transformed.fna 

@@ -1,0 +1,5 @@
+## {}: human readable output
+## Rescue lonely gene : True
+## Resize gene : True
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa

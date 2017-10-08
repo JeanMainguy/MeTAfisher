@@ -1,0 +1,16 @@
+## MP0313: synthetic output
+## Rescue lonely gene : True
+## Resize gene : True
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+==========ICM0007MP0313_1000008==========
+1. Genes 77 & 49	strand -	score 20.9345769818
+==========ICM0007MP0313_1000010==========
+1. Genes 19 & 20	strand +	score 16.0147610277
+==========ICM0007MP0313_1000011==========
+1. Genes 6 & 7	strand +	score 11.1370407594
+==========ICM0007MP0313_1000013==========
+1. Genes 31 & 32	strand +	score 14.9093208516
+==========ICM0007MP0313_1000014==========
+1. Genes 25 & 26	strand +	score 13.1001164509
+2. Genes 26 & 27	strand +	score 10.0436768084
