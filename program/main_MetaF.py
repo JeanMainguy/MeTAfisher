@@ -90,25 +90,26 @@ obj.Gene.distanceMax = distanceMax
 
 # Output
 # TODO put some flag here to has the choice of the ouput
-file_out = '{}/{}_result_rescue_{}_resize_{}.txt'.format(output_way, metaG_name, rescue, resize)
+complement = ''
+if rescue:
+    complement += '_rescue'
+if resize:
+    complement += '_rescue'
 header = "## Rescue lonely gene : {}\n".format(rescue)
 header += "## Resize gene : {}\n".format(resize)
 header += "## Distance threshold from {}nt to {}nt\n".format(distanceMin, distanceMax, lenMin, lenMax)
 header += "## Length threshold from {}aa to {}aa\n".format(lenMin, lenMax)
 if output_human:
-    file_out_H = '{}/{}_result_H_rescue_{}_resize_{}.txt'.format(output_way, metaG_name, rescue, resize)
+    file_out_H = '{}/{}_result_H{}.txt'.format(output_way, metaG_name, complement)
     floutH = open(file_out_H, "w")
     floutH.write("## {}: human readable output\n")
     floutH.write(header)
 if output_synthetic:
-    file_out_S = '{}/{}_result_S_rescue_{}_resize_{}.txt'.format(output_way, metaG_name, rescue, resize)
+    file_out_S = '{}/{}_result_S{}.txt'.format(output_way, metaG_name, complement)
     floutS = open(file_out_S, "w")
     floutS.write("## {}: synthetic output\n".format(metaG_name))
     floutS.write(header)
-# Output files of adj ORF :
-# out_faa_file = output_way + metaG_name + '_adjacent.faa'
-# out_fna_file = output_way + metaG_name + '_adjacent.fna'
-# out_gff_file = output_way + metaG_name + '_adjacent.gff'
+
 
 tmp_adj_orf_faa = output_way + '/temporary_adjOrf.faa'
 
