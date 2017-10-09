@@ -52,7 +52,7 @@ rescue = args.rescue
 
 info_contig_stat = True
 output_human = True
-output_synthetic = True
+output_short = True
 
 # Storing information as Gene class attribut to be use when we launch hmmsearch
 obj.Gene.output_way = output_way
@@ -104,10 +104,10 @@ if output_human:
     floutH = open(file_out_H, "w")
     floutH.write("## {}: human readable output\n")
     floutH.write(header)
-if output_synthetic:
+if output_short:
     file_out_S = '{}/{}_result_S{}.txt'.format(output_way, metaG_name, complement)
     floutS = open(file_out_S, "w")
-    floutS.write("## {}: synthetic output\n".format(metaG_name))
+    floutS.write("## {}: short output\n".format(metaG_name))
     floutS.write(header)
 
 
@@ -180,9 +180,9 @@ obj.Gene.length_proba = fct2.transformation(obj.Gene.length_proba, len_mltp)
 scaffold_list = sorted(fct2.get_list_scaffold(table_hmm))
 print 'nb sca', len(scaffold_list)
 # Loop : each scaffold is treated independntly here
-# scaffold_list = [
-#     'ICM0007MP0313_1000008', 'ICM0007MP0313_1000022', 'ICM0007MP0313_1000126',
-#     'ICM0007MP0313_1000131', 'ICM0007MP0313_1000288', 'ICM0007MP0313_1000321']
+scaffold_list = [
+    'ICM0007MP0313_1000008', 'ICM0007MP0313_1000022', 'ICM0007MP0313_1000126',
+    'ICM0007MP0313_1000131', 'ICM0007MP0313_1000288', 'ICM0007MP0313_1000321']
 # scaffold_list = sorted(['ICM0007MP0313_1000103', 'ICM0007MP0313_1000207', 'ICM0007MP0313_1000073', 'ICM0007MP0313_1000346'])
 # scaffold_list = ['ICM0007MP0313_1000346']
 # scaffold_list = ['ICM0007MP0313_1000085', 'ICM0007MP0313_1000086', 'ICM0007MP0313_1000089', 'ICM0007MP0313_1000408']
@@ -232,11 +232,18 @@ for scaffold in scaffold_list:
 
     # output
     if obj.TA_gene.linked:  # If there is some gene linked meaning if tere is TA system
-        if output_human:
-            pass
-        if output_synthetic:
-            floutS.write('==' * 5 + scaffold + '==' * 5 + '\n')
-            fct2.write_result(obj.TA_gene.linked, floutS)
+        contig_header = "\n" + '==' * 2 + scaffold + '==' * 2 + '\n'
+        if output_human and output_short:
+            floutS.write(contig_header)
+            floutH.write(contig_header)
+            fct2.write_result(obj.TA_gene.linked, fl_S=floutS, fl_H=floutH)
+
+        elif output_short:
+            floutS.write(contig_header)
+            fct2.write_result(obj.TA_gene.linked, fl_S=floutS)
+        elif output_human:
+            floutH.write(contig_header)
+            fct2.write_result(obj.TA_gene.linked, fl_H=floutH)
 # Writing of stat information about the contig
 if info_contig_stat:
     fl_stat.write("#Rescue lonely gene : {}\n".format(rescue))
@@ -247,3 +254,4 @@ if info_contig_stat:
 print using()
 
 floutS.close()
+floutH.close()

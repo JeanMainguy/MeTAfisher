@@ -544,28 +544,35 @@ def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue):
     writer_stat.writerow(contig_stat)
 
 
-def write_result(set_linked, flout):
+def write_result(set_linked, fl_S=False, fl_H=False):
     i = 0
     for gene in sorted(set_linked, key=attrgetter('start')):
         for g_post in gene.post:
-            i += 1
-            print 'Gene :\n', gene
-            for d in gene.domain:
-                print d
-            print 'Gene Post :\n', g_post
-            for d in g_post.domain:
-                print d
-            write_human_result(gene, g_post, flout, i)
+            i += 1  # to give a number to each TA pair
+            g_score = gene.dict_score[g_post.gene_number]
+            post_score = g_post.dict_score[gene.gene_number]
+            # print 'Gene :\n', gene
+            # for d in gene.domain:
+            #     print d
+            # print 'Gene Post :\n', g_post
+            # for d in g_post.domain:
+            #     print d
+            if fl_H:
+                write_human_result(gene, g_post, fl_H, i, g_score, post_score)
+            if fl_S:
+                write_short_result(gene, g_post, fl_S, i, g_score, post_score)
 
 
-def write_human_result(g, post, fl, i):
-    g_score = g.dict_score[post.gene_number]
-    post_score = post.dict_score[g.gene_number]
+def write_short_result(g, post, fl, i, g_score, post_score):
+
     fl.write("{}. Genes {} & {}\tstrand {}\tscore {}\n".format(
         i, g.gene_number, post.gene_number, g.strand, g_score[0]['sum'] + post_score[0]['sum']))
-    # fl.write("\nPRE GENE\n" + write_line(g, g_score))
-    # fl.write("DISTANCE {} ({})\t".format(post_score[0]['distance'], post_score[0]['dist_score']))
-    # fl.write("\nPOST GENE\n" + write_line(post, post_score) + '\n')
+
+
+def write_human_result(g, post, fl, i, g_score, post_score):
+    fl.write("\nPRE GENE\n" + write_line(g, g_score))
+    fl.write("DISTANCE {} ({})\t".format(post_score[0]['distance'], post_score[0]['dist_score']))
+    fl.write("\nPOST GENE\n" + write_line(post, post_score) + '\n')
 
 
 def write_line(g, score):
