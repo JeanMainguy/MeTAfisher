@@ -25,7 +25,7 @@ def rescue_lonely_gene(dico_orf, dico_gff, scaffold, tmp_adjorf_faa):
     seq, dico_orf["line"] = fct2.get_fast_fasta(dico_orf['fl'], dico_orf['line'], scaffold)
     obj.Orf.seq = seq
     # retrieve the end position of the predicted gene to then skip the related ORF:
-    gff_ends = get_gff_ends(dico_gff, scaffold)
+    gff_ends, highestGeneNumber = get_gff_ends(dico_gff, scaffold)
 
     # TEST IF THERE ARE LONELY GENE IN STRAND plu
     if obj.TA_gene.lonely['+']:
@@ -51,7 +51,9 @@ def rescue_lonely_gene(dico_orf, dico_gff, scaffold, tmp_adjorf_faa):
         # parsing result and store it in obj.Orf.hmm_orf
         adjOrf_HMM(table_hmm)
         # taking into account the domain in the possible start of the ORF
-        adjust_possible_start_to_domain(obj.Orf.hmm_orf)
+        # give gene number to hmm orf that fit with genes from gff file
+        adjust_orf_attribut(obj.Orf.hmm_orf, highestGeneNumber)
+
         # Adding adjOrf to list of TA gene and finding with who there are adjacent
         hmm_orf_get_adj(obj.Orf.hmm_orf)
 
@@ -61,10 +63,13 @@ def hmm_orf_get_adj(dico_hmmorf):
     # obj.TA_gene.genes.extend(dico_hmmorf['+'] + dico_hmmorf['-'])
     # obj.TA_gene.genes_plus.extend(dico_obj['+'])
     # obj.TA_gene.genes_minus.extend(dico_obj['-'])
+
     for strand in dico_hmmorf:
+        for g in dico_hmmorf[strand]:
+            print g.gene_number
         # Adding adjOrf to the main list of TA gene
-        obj.TA_gene.genes_strand[strand].extend(dico_hmmorf[strand])
-        obj.TA_gene.genes.extend(dico_hmmorf[strand])
+        # obj.TA_gene.genes_strand[strand].extend(dico_hmmorf[strand])
+        # obj.TA_gene.genes.extend(dico_hmmorf[strand])
         for hmmorf in dico_hmmorf[strand]:
             for gene in obj.TA_gene.genes_strand[strand]:
                 if hmmorf.gene_number == gene.gene_number:  # MAGIC METHOD
@@ -72,27 +77,47 @@ def hmm_orf_get_adj(dico_hmmorf):
                     # print gene
                     continue
                 if gene.is_pre_adj_to(hmmorf):
-                    # add to the set linked
-                    obj.TA_gene.linked.add(gene)
-                    obj.TA_gene.linked.add(hmmorf)
-                    if strand == '+':
-                        gene.post.append(hmmorf)
-                        hmmorf.prev.append(gene)
-                    else:
-                        hmmorf.post.append(gene)
-                        gene.prev.append(hmmorf)
+                    add_post_pre_attr(strand, g_post=hmmorf, g_prev=gene)
+                    # obj.TA_gene.linked.add(gene)
+                    # obj.TA_gene.linked.add(hmmorf)
+                    # if strand == '+':
+                    #     gene.post.append(hmmorf)
+                    #     hmmorf.prev.append(gene)
+                    # else:
+                    #     hmmorf.post.append(gene)
+                    #     gene.prev.append(hmmorf)
                 elif hmmorf.is_pre_adj_to(gene):
-                    obj.TA_gene.linked.add(gene)
-                    obj.TA_gene.linked.add(hmmorf)
-                    if strand == '+':
-                        hmmorf.post.append(gene)
-                        gene.prev.append(hmmorf)
-                    else:
-                        gene.post.append(hmmorf)
-                        hmmorf.prev.append(gene)
+                    add_post_pre_attr(strand, g_post=gene, g_prev=hmmorf)
+                    # obj.TA_gene.linked.add(gene)
+                    # obj.TA_gene.linked.add(hmmorf)
+                    # if strand == '+':
+                    #     hmmorf.post.append(gene)
+                    #     gene.prev.append(hmmorf)
+                    # else:
+                    #     gene.post.append(hmmorf)
+                    #     hmmorf.prev.append(gene)
+            obj.TA_gene.genes_strand[strand].append(hmmorf)
+            obj.TA_gene.genes.append(hmmorf)
 
 
-def adjust_possible_start_to_domain(dico_obj):
+def add_post_pre_attr(strand, g_post, g_prev):
+    # add to the set linked
+    obj.TA_gene.linked.add(g_post)
+    obj.TA_gene.linked.add(g_prev)
+    if strand == '+':
+        g_prev.post.append(g_post)
+        g_post.prev.append(g_prev)
+    else:  # in minus strand the post rev are inverted
+        g_post.post.append(g_prev)
+        g_prev.prev.append(g_post)
+
+
+def adjust_orf_attribut(dico_obj, highestGeneNumber):
+    """
+    adjust_possible_start_to_domain
+    give post prev attr
+    give gene number to hmm orf that fit with genes from gff file
+    """
     for strand in dico_obj:
         for o in dico_obj[strand]:
             # print 'CT BORDER', o.domain_Ct_border
@@ -103,6 +128,8 @@ def adjust_possible_start_to_domain(dico_obj):
             o.distanceMin = obj.Gene.distanceMin - abs(o.possible_start[-1] - o.possible_start[0])
             o.post = []
             o.prev = []
+            highestGeneNumber += 1
+            o.gene_number = highestGeneNumber
 
 
 def codon_finder(liste, seq, frame=1, inf=0, sup='Not defined'):
@@ -177,7 +204,7 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
             fl.write("scaffold " + o.scaffold + ' strand :' + strand + '\n' + str(gffEnds[strand]))
             for g in gffEnds[strand]:
                 fl.write(str(g) + '\n')
-        print gffEnds[strand]
+        # print gffEnds[strand]
     if strand == "+":
         with open(obj.Gene.output_way + 'sca_len.txt', 'a') as fl:
             fl.write(o.scaffold + '   ' + str(len(o.seq['data'])) + '\n')
@@ -202,11 +229,10 @@ def adjOrf_HMM(table_hmm):
         for line in fl:
             if line[0] != "#":
                 # print line
-                obj.Gene.highestGeneNumber += 1
-                print line
                 gene_number, domain = fct2.hmmtable_parser(line)
                 hmm_orf = obj.Orf.adj_orf[gene_number]
-                hmm_orf.gene_number = obj.Gene.highestGeneNumber
+                # hmm_orf.gene_number = obj.Gene.highestGeneNumber
+
                 try:
                     hmm_orf.domain.append(domain)
                     hmm_orf.domain_Ct_border = max(hmm_orf.domain_Ct_border, domain.ali_from * 3)
@@ -237,13 +263,14 @@ def get_gff_ends(dico_gff, scaffold):
             line = next(fl)
             continue
         # this number is used when we write the gff into file to have a number that doesn't overlap with other gene in round2
-        obj.Gene.highestGeneNumber = int(line[8].split(";")[0].split('|')[1])
+        highestGeneNumber = int(line[8].split(";")[0].split('|')[1])
+
         if line[6] == '+':
             gff_ends['+'].append(int(line[4]))
         else:
             gff_ends['-'].append(int(line[3]))
     dico_gff["line"] = line
-    return gff_ends
+    return gff_ends, highestGeneNumber
 
 
 def findORF(scaffold, seq, rev):
@@ -285,7 +312,6 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
     First the function determine all the stop codon of the sequence in frame by calling codon_finder().
     Then it will find all the start codon flan by two stop codon by calling codon_finder
     And finally will build the dictionaries with the iformation relative to each orf by calling the remplissage() function
-    This function is written by Theo Falgarone.
 
     Args:
         seq : sequence where the orf will be determine
