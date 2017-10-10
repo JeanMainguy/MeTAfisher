@@ -94,7 +94,7 @@ complement = ''
 if rescue:
     complement += '_rescue'
 if resize:
-    complement += '_rescue'
+    complement += '_resize'
 header = "## Rescue lonely gene : {}\n".format(rescue)
 header += "## Resize gene : {}\n".format(resize)
 header += "## Distance threshold from {}nt to {}nt\n".format(distanceMin, distanceMax, lenMin, lenMax)
@@ -158,7 +158,7 @@ dico_seq["fl"] = open(fna_file, 'r')
 dico_seq["line"] = dico_seq["fl"].readline()
 # PUT info in a dico to not have to retourned it every time !! dico is used in check_size
 dico_seq["codon_start"] = table['start']
-print "start", table['start']
+# print "start", table['start']
 
 
 # SCORE PREPARaTION
@@ -180,13 +180,13 @@ obj.Gene.length_proba = fct2.transformation(obj.Gene.length_proba, len_mltp)
 scaffold_list = sorted(fct2.get_list_scaffold(table_hmm))
 print 'nb sca', len(scaffold_list)
 # Loop : each scaffold is treated independntly here
-scaffold_list = [
-    'ICM0007MP0313_1000008', 'ICM0007MP0313_1000022', 'ICM0007MP0313_1000126',
-    'ICM0007MP0313_1000131', 'ICM0007MP0313_1000288', 'ICM0007MP0313_1000321']
+# scaffold_list = [
+#     'ICM0007MP0313_1000008', 'ICM0007MP0313_1000022', 'ICM0007MP0313_1000126',
+#     'ICM0007MP0313_1000131', 'ICM0007MP0313_1000288', 'ICM0007MP0313_1000321']
 # scaffold_list = sorted(['ICM0007MP0313_1000103', 'ICM0007MP0313_1000207', 'ICM0007MP0313_1000073', 'ICM0007MP0313_1000346'])
 # scaffold_list = ['ICM0007MP0313_1000346']
 # scaffold_list = ['ICM0007MP0313_1000085', 'ICM0007MP0313_1000086', 'ICM0007MP0313_1000089', 'ICM0007MP0313_1000408']
-# scaffold_list = ['ICM0007MP0313_1000073']
+scaffold_list = ['ICM0007MP0313_1000321']
 for scaffold in scaffold_list:
     print '* *' * 25
     print ' * ' * 25
@@ -244,6 +244,12 @@ for scaffold in scaffold_list:
         elif output_human:
             floutH.write(contig_header)
             fct2.write_result(obj.TA_gene.linked, fl_H=floutH)
+
+    # DEBUG
+    for g in obj.TA_gene.linked:
+        print "GENE", g.gene_number
+        print "Pre ", [pre.gene_number for pre in g.prev]
+        print "Post", [po.gene_number for po in g.post]
 # Writing of stat information about the contig
 if info_contig_stat:
     fl_stat.write("#Rescue lonely gene : {}\n".format(rescue))

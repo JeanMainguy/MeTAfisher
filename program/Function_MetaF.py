@@ -175,7 +175,7 @@ def get_start_po(dico):
         # g.possible_starts = start_po # nouvelle attribut tous les position des start possibles
 
         if not start_po:
-            print 'invalide', g
+            # print 'invalide', g
             non_valides.append(g)
             continue
 
@@ -361,7 +361,7 @@ def check_size(gene_strand):
     for strand in gene_strand:
         invalide = []
         for gene in gene_strand[strand]:
-            print gene.gene_number, '.....*'
+            # print gene.gene_number, '.....*'
             if obj.Gene.length_min <= len(gene) <= obj.Gene.length_max:
                 gene.possible_start = [0]
                 # print gene.gene_number, 'is ok'
@@ -432,8 +432,8 @@ def score_TA_list(genes_strand):
     for strand in genes_strand:
         for gene in genes_strand[strand]:
             for post in gene.post:
-                print 'Gene :\n', gene
-                print 'Gene Post :\n', post
+                # print 'Gene :\n', gene
+                # print 'Gene Post :\n', post
                 score_pair(gene, post)  # GIVE THE SCOREEE
                 # fct2.write_human_result(g, g_post, fl_hu_res)
 
@@ -463,8 +463,8 @@ def score_pair(pre, post):  # post is a gene located upstream of pre !
     # print ('possible start of self ! ', pre.possible_start)
     score_post = get_score(post, starts=compatible_starts, distance=initial_dist)
     score = get_score(pre, pre.possible_start)
-    print pre.feature
-    print pre.dict_score
+    # print pre.feature
+    # print pre.dict_score
     pre.dict_score[post.gene_number] = score
     post.dict_score[pre.gene_number] = score_post
     # for s in score:
