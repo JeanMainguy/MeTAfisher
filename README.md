@@ -7,12 +7,11 @@ Program to retrieve toxin antitoxin (TA) systems in metagenomes
 ## Files format requierement
 ### Fasta files
 Metafisher requires 3 files in the fasta files format: 
-1. the genome or metagenome sequences with the extension **.fasta**
-⋅⋅⋅The header of this file need to start with the name of the genome or metagenome follow by a space or line returned
-⋅⋅⋅example: 
-⋅⋅⋅>CP000697.1 Acidiphilium cryptum JF-5, complete genome
-⋅⋅⋅in the above examaple the name of the genome is CP000697.1 and it is followed by a white space
-⋅⋅⋅>ICM0007MP0313_1000001
+#### the genome or metagenome sequences with the extension **.fasta**
+The header of this file need to start with the name of the genome or metagenome follow by a space or line returned
+example: 
+">CP000697.1 Acidiphilium cryptum JF-5, complete genome" in this examaple the name of the genome is CP000697.1 and it is followed by a white space.
+">ICM0007MP0313_1000001" and here the name of the metagenome is ICM0007MP0313_1000001 and follwed by a new line
 
 
 >CP000697.1 Acidiphilium cryptum JF-5, complete genome
