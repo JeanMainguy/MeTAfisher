@@ -544,23 +544,19 @@ def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue):
     writer_stat.writerow(contig_stat)
 
 
-def write_result(set_linked, fl_S=False, fl_H=False):
+def write_result(set_linked, dict_output):
     i = 0
     for gene in sorted(set_linked, key=attrgetter('start')):
         for g_post in gene.post:
             i += 1  # to give a number to each TA pair
             g_score = gene.dict_score[g_post.gene_number]
             post_score = g_post.dict_score[gene.gene_number]
-            # print 'Gene :\n', gene
-            # for d in gene.domain:
-            #     print d
-            # print 'Gene Post :\n', g_post
-            # for d in g_post.domain:
-            #     print d
-            if fl_H:
-                write_human_result(gene, g_post, fl_H, i, g_score, post_score)
-            if fl_S:
-                write_short_result(gene, g_post, fl_S, i, g_score, post_score)
+            if dict_output['result_H']:
+                write_human_result(gene, g_post, dict_output['result_H'], i, g_score, post_score)
+            if dict_output['result_S']:
+                write_short_result(gene, g_post, dict_output['result_S'], i, g_score, post_score)
+            if dict_output['result_T']:
+                pass
 
 
 def write_short_result(g, post, fl, i, g_score, post_score):
@@ -574,6 +570,8 @@ def write_human_result(g, post, fl, i, g_score, post_score):
     fl.write("DISTANCE {} ({})\t".format(post_score[0]['distance'], post_score[0]['dist_score']))
     fl.write("\nPOST GENE\n" + write_line(post, post_score) + '\n')
 
+    visualisation_genes(g, post, post_score[0]['distance'])
+
 
 def write_line(g, score):
     line = "Gene {}\tfrom {} to {}\t{}aa ({})\tstart {}\t{}".format(
@@ -582,3 +580,31 @@ def write_line(g, score):
     domain_va = '/'.join(domain_va)
     line += ("\tdomain: {}\n".format(domain_va))
     return line
+
+
+def visualisation_genes(pre, post, distance):
+    pre_str = visual_str(len(pre))
+    post_str = visual_str(len(post))
+    dist_str = str(distance) + 'nt'
+    print pre_str
+    print post_str
+    print 'disatance ', distance
+    sign = (distance + 1) / abs(distance + 1)
+    visual_dist = int(distance / 30.0 + 0.98 * sign)
+    print visual_dist
+    final_str = pre_str + '\n'
+    position_g2 = (len(pre_str) + visual_dist)
+    final_str += position_g2 * ' ' + post_str + '\n'
+    positions = [position_g2, len(pre_str)]
+    final_str += (min(positions) - 1) * ' ' + '/' + abs(positions[0] - positions[1]) * ' ' + '\\\n'
+    final_str += (-1 + min(positions) + abs(positions[0] - positions[1]) - len(dist_str) / 2) * ' ' + dist_str
+    print final_str
+
+
+def visual_str(size):
+    # min and max size of the gene in characteres on the viual representation
+    # vlen = ((length - gene.length_min)) * ((visual_max - visual_min) / (gene.length_max - gene.length_min)) + visual_min
+    vlen = (size / 50) + 1
+
+    string = vlen * '=' + str(size / 3) + 'aa' + vlen * '=' + '>'
+    return string

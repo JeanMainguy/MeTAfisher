@@ -53,6 +53,7 @@ rescue = args.rescue
 info_contig_stat = True
 output_human = True
 output_short = True
+output_table = True
 
 # Storing information as Gene class attribut to be use when we launch hmmsearch
 obj.Gene.output_way = output_way
@@ -88,28 +89,29 @@ distanceMax = 300
 obj.Gene.distanceMin = distanceMin
 obj.Gene.distanceMax = distanceMax
 
-# Output
-# TODO put some flag here to has the choice of the ouput
+# OUTPUT
+# the fl of each kind of output are stored in a dictionnary:
+# key : name of the output | value : fl or False if not wanted
+dict_output = {'result_H': output_human, "result_S": output_short, 'result_T': output_table, 'is_output': False}
 complement = ''
 if rescue:
     complement += '_rescue'
 if resize:
     complement += '_resize'
+header = '## Name of the sequence analysed: ' + metaG_name
 header = "## Rescue lonely gene : {}\n".format(rescue)
 header += "## Resize gene : {}\n".format(resize)
 header += "## Distance threshold from {}nt to {}nt\n".format(distanceMin, distanceMax, lenMin, lenMax)
 header += "## Length threshold from {}aa to {}aa\n".format(lenMin, lenMax)
-if output_human:
-    file_out_H = '{}/{}_result_H{}.txt'.format(output_way, metaG_name, complement)
-    floutH = open(file_out_H, "w")
-    floutH.write("## {}: human readable output\n")
-    floutH.write(header)
-if output_short:
-    file_out_S = '{}/{}_result_S{}.txt'.format(output_way, metaG_name, complement)
-    floutS = open(file_out_S, "w")
-    floutS.write("## {}: short output\n".format(metaG_name))
-    floutS.write(header)
 
+for out_name in dict_output:
+    if out_name:  # if the flag is not False
+        file_out = '{}/{}_{}{}.txt'.format(output_way, metaG_name, out_name, complement)
+        flout = open(file_out, "w")
+        flout.write("## {}\n".format(out_name))
+        flout.write(header)
+        dict_output[out_name] = flout
+        dict_output['is_output'] = True
 
 tmp_adj_orf_faa = output_way + '/temporary_adjOrf.faa'
 
@@ -186,7 +188,7 @@ print 'nb sca', len(scaffold_list)
 # scaffold_list = sorted(['ICM0007MP0313_1000103', 'ICM0007MP0313_1000207', 'ICM0007MP0313_1000073', 'ICM0007MP0313_1000346'])
 # scaffold_list = ['ICM0007MP0313_1000346']
 # scaffold_list = ['ICM0007MP0313_1000085', 'ICM0007MP0313_1000086', 'ICM0007MP0313_1000089', 'ICM0007MP0313_1000408']
-scaffold_list = ['ICM0007MP0313_1000321']
+# scaffold_list = ['ICM0007MP0313_1000321']
 for scaffold in scaffold_list:
     print '* *' * 25
     print ' * ' * 25
@@ -231,19 +233,17 @@ for scaffold in scaffold_list:
         fct2.contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue)
 
     # output
-    if obj.TA_gene.linked:  # If there is some gene linked meaning if tere is TA system
-        contig_header = "\n" + '==' * 2 + scaffold + '==' * 2 + '\n'
-        if output_human and output_short:
-            floutS.write(contig_header)
-            floutH.write(contig_header)
-            fct2.write_result(obj.TA_gene.linked, fl_S=floutS, fl_H=floutH)
+    if obj.TA_gene.linked and dict_output['is_output']:  # If there is some gene linked meaning if tere is TA system
 
-        elif output_short:
-            floutS.write(contig_header)
-            fct2.write_result(obj.TA_gene.linked, fl_S=floutS)
-        elif output_human:
-            floutH.write(contig_header)
-            fct2.write_result(obj.TA_gene.linked, fl_H=floutH)
+        contig_header = "\n" + '==' * 2 + scaffold + '==' * 2 + '\n'
+        fct2.write_result(obj.TA_gene.linked, dict_output)
+
+        # elif output_short:
+        #     floutS.write(contig_header)
+        #     fct2.write_result(obj.TA_gene.linked, fl_S=floutS)
+        # elif output_human:
+        #     floutH.write(contig_header)
+        #     fct2.write_result(obj.TA_gene.linked, fl_H=floutH)
 
     # DEBUG
     for g in obj.TA_gene.linked:
@@ -259,5 +259,8 @@ if info_contig_stat:
     fl_stat.close()
 print using()
 
-floutS.close()
-floutH.close()
+for kfl in dict_output:
+    try:
+        dict_output[kfl].close()
+    except AttributeError:
+        pass
