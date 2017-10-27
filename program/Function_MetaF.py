@@ -358,20 +358,20 @@ def create_lonely_gene_list():
 #             o.prev = []
 
 def check_size(gene_strand):
+    """
+    Remove genes with a length that does not fit the length thresholds.
+    """
     for strand in gene_strand:
         invalide = []
         for gene in gene_strand[strand]:
             # print gene.gene_number, '.....*'
             if obj.Gene.length_min <= len(gene) <= obj.Gene.length_max:
                 gene.possible_start = [0]
-                # print gene.gene_number, 'is ok'
             else:
-                # print gene.gene_number, 'is toooo long...', len(gene)
                 invalide.append(gene)
         for g in invalide:
             obj.TA_gene.genes.remove(g)
             obj.TA_gene.genes_strand[strand].remove(g)
-            # raw_input()
 
 
 def transformation(dico, multiple):
