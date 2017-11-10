@@ -539,13 +539,18 @@ def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue):
         contig_stat['orf with TA domain'] = len(obj.Orf.hmm_orf)
 
     for k in contig_stat:
-        obj.Gene.metaG_stat[k] = obj.Gene.metaG_stat[k] + contig_stat[k]  # contig is not there yet
+        obj.Gene.metaG_stat[k] += contig_stat[k]  # contig is not there yet
     contig_stat['contig'] = scaffold
     writer_stat.writerow(contig_stat)
 
 
-def write_result(set_linked, dict_output):
+def write_result(set_linked, dict_output, scaffold):
     i = 0
+    contig_header = "\n" + '==' * 2 + scaffold + '==' * 2 + '\n'
+    if dict_output['result_H']:
+        dict_output['result_H'].write(contig_header)
+    if dict_output['result_S']:
+        dict_output['result_S'].write(contig_header)
     for gene in sorted(set_linked, key=attrgetter('start')):
         for g_post in gene.post:
             i += 1  # to give a number to each TA pair
@@ -567,10 +572,9 @@ def write_short_result(g, post, fl, i, g_score, post_score):
 
 def write_human_result(g, post, fl, i, g_score, post_score):
     fl.write("\nPRE GENE\n" + write_line(g, g_score))
-    fl.write("DISTANCE {} ({})\t".format(post_score[0]['distance'], post_score[0]['dist_score']))
     fl.write("\nPOST GENE\n" + write_line(post, post_score) + '\n')
-
-    visualisation_genes(g, post, post_score[0]['distance'])
+    fl.write("DISTANCE {} ({})\n".format(post_score[0]['distance'], post_score[0]['dist_score']))
+    fl.write(visualisation_genes(g, post, post_score[0]['distance']))
 
 
 def write_line(g, score):
@@ -599,6 +603,7 @@ def visualisation_genes(pre, post, distance):
     final_str += (min(positions) - 1) * ' ' + '/' + abs(positions[0] - positions[1]) * ' ' + '\\\n'
     final_str += (-1 + min(positions) + abs(positions[0] - positions[1]) - len(dist_str) / 2) * ' ' + dist_str
     print final_str
+    return final_str
 
 
 def visual_str(size):

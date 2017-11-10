@@ -116,10 +116,13 @@ for out_name in dict_output:
 tmp_adj_orf_faa = output_way + '/temporary_adjOrf.faa'
 
 if info_contig_stat:
+
     header = ['contig', 'gene with TA domain', 'lonely gene', 'linked gene']
     if rescue:
         header += ['adjacent orf', 'rescue flag', 'orf with TA domain', 'lonely gene rescue']
-    fl_stat = open('{}/{}_contig_stat.csv'.format(output_way, metaG_name), 'a')
+    fl_stat = open('{}/{}_contig_stat{}.csv'.format(output_way, metaG_name, complement), 'w')
+    fl_stat.write("#Rescue lonely gene : {}\n".format(rescue))
+    fl_stat.write("#Resize gene : {}\n".format(resize))
     writer_stat = csv.DictWriter(fl_stat, fieldnames=header, delimiter='\t')
     writer_stat.writeheader()
     obj.Gene.metaG_stat = dict.fromkeys(header, 0)
@@ -235,15 +238,7 @@ for scaffold in scaffold_list:
     # output
     if obj.TA_gene.linked and dict_output['is_output']:  # If there is some gene linked meaning if tere is TA system
 
-        contig_header = "\n" + '==' * 2 + scaffold + '==' * 2 + '\n'
-        fct2.write_result(obj.TA_gene.linked, dict_output)
-
-        # elif output_short:
-        #     floutS.write(contig_header)
-        #     fct2.write_result(obj.TA_gene.linked, fl_S=floutS)
-        # elif output_human:
-        #     floutH.write(contig_header)
-        #     fct2.write_result(obj.TA_gene.linked, fl_H=floutH)
+        fct2.write_result(obj.TA_gene.linked, dict_output, scaffold)
 
     # DEBUG
     for g in obj.TA_gene.linked:
@@ -252,8 +247,6 @@ for scaffold in scaffold_list:
         print "Post", [po.gene_number for po in g.post]
 # Writing of stat information about the contig
 if info_contig_stat:
-    fl_stat.write("#Rescue lonely gene : {}\n".format(rescue))
-    fl_stat.write("#Resize gene : {}\n".format(resize))
     writer_stat.writerow(obj.Gene.metaG_stat)
 
     fl_stat.close()
