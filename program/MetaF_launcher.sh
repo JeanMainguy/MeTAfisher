@@ -2,14 +2,21 @@
 
 # HMMSEARCH
 
-
+general_output_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/MeTAfisher/output
 # PYTHON script
 # MP0313
 MetaG_name=MP0313
 output_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/MeTAfisher/output/MP0313
-data_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/MeTAfisher/data/MP0313
 data_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/Malaspina_MetaG/MP0313
 data_name=MP0313.549
+
+
+# Acry Genome
+MetaG_name=Acry
+output_pathway=${general_output_pathway}/${MetaG_name}
+data_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/MeTAfisher/data/Acry_Genome
+data_name=sequence_Fchecked
+
 dependency_pathway=/home/jean/Documents/Master_Bioinfo/S2_Bilbao/StageBAO/MeTAfisher/dependence
 
 mkdir ${output_pathway}
