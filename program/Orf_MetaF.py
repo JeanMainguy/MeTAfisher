@@ -205,10 +205,10 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
             for g in gffEnds[strand]:
                 fl.write(str(g) + '\n')
         # print gffEnds[strand]
-    if strand == "+":
-        with open(obj.Gene.output_way + 'sca_len.txt', 'a') as fl:
-            fl.write(o.scaffold + '   ' + str(len(o.seq['data'])) + '\n')
-            fl.write(o.seq['data'][len(o.seq['data']) - 20:len(o.seq['data'])])
+    # if strand == "+":
+    #     with open(obj.Gene.output_way + 'sca_len.txt', 'a') as fl:
+    #         fl.write(o.scaffold + '   ' + str(len(o.seq['data'])) + '\n')
+    #         fl.write(o.seq['data'][len(o.seq['data']) - 20:len(o.seq['data'])])
 
 
 def adjOrf_HMM(table_hmm):
@@ -259,7 +259,7 @@ def get_gff_ends(dico_gff, scaffold):
     for line in fl:
         if line[0] != scaffold:
             break
-        if line[2] != 'CDS':
+        if line[2] not in ['CDS', 'gene']:
             line = next(fl)
             continue
         # this number is used when we write the gff into file to have a number that doesn't overlap with other gene in round2

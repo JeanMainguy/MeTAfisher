@@ -245,10 +245,10 @@ for scaffold in scaffold_list:
         print "GENE", g.gene_number
         print "Pre ", [pre.gene_number for pre in g.prev]
         print "Post", [po.gene_number for po in g.post]
+
 # Writing of stat information about the contig
 if info_contig_stat:
     writer_stat.writerow(obj.Gene.metaG_stat)
-
     fl_stat.close()
 print using()
 

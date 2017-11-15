@@ -36,6 +36,7 @@ class Gene:
         self.strand = None
         self.feature = None
         self.dict_score = {}
+        self.locus_tag = None
 
     def __str__(self):
         presentation = 'length: {}\tfrom {} to {}\tstrand: {}\tfeature: {}\n'.format(

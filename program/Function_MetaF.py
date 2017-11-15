@@ -96,7 +96,7 @@ def get_gff_info(gff_handler, gff_line, scaffold, gene_number):
         CP000569.1	Genbank	CDS	2019629	2020228	.	-	0	ID=CP000569.1|1797;Parent=gene1855;Dbx.....
         """
 
-        if l[2] not in ['CDS', 'ORF'] or l[0] != scaffold:
+        if l[2] not in ['CDS', 'ORF', 'gene'] or l[0] != scaffold:
             continue
         number = int(l[8].split(";")[0].split('|')[1])
 
@@ -107,6 +107,11 @@ def get_gff_info(gff_handler, gff_line, scaffold, gene_number):
             gene.end = int(l[4])
             gene.strand = l[6]
             gene.gene_number = number
+
+            s = re.search(ur'locus_tag=([^;\n]+)', l[8])
+            if s:
+                gene.locus_tag = s.group(1)
+
             return gene, l, gff_handler
 
 
@@ -565,9 +570,18 @@ def write_result(set_linked, dict_output, scaffold):
 
 
 def write_short_result(g, post, fl, i, g_score, post_score):
+    if g.locus_tag:
+        tag_g = g.locus_tag
+    else:
+        tag_g = '_' + str(g.gene_number)
+
+    if post.locus_tag:
+        tag_p = post.locus_tag
+    else:
+        tag_p = '_' + str(post.gene_number)
 
     fl.write("{}. Genes {} & {}\tstrand {}\tscore {}\n".format(
-        i, g.gene_number, post.gene_number, g.strand, g_score[0]['sum'] + post_score[0]['sum']))
+        i, tag_g, tag_p, g.strand, g_score[0]['sum'] + post_score[0]['sum']))
 
 
 def write_human_result(g, post, fl, i, g_score, post_score):
