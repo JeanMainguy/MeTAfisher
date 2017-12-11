@@ -88,7 +88,7 @@ def get_gff_info(gff_handler, gff_line, scaffold, gene_number):
     """
     for l in gff_handler:
         """
-        it is a bit obscure but l is a list. To get know the number of the gene we need to access to the last (8)
+        it is a bit obscure but l is a list. To know the number of the gene we need to access to the last (8)
         tab delimiter area [8] and then split by ';' then select the first item [0]
         and split by | to finally get the gene number by selecting item 1.
         Example of gff line:
@@ -570,12 +570,12 @@ def write_result(set_linked, dict_output, scaffold):
 
 
 def write_short_result(g, post, fl, i, g_score, post_score):
-    if g.locus_tag:
+    if hasattr(g, 'locus_tag'):
         tag_g = g.locus_tag
     else:
         tag_g = '_' + str(g.gene_number)
 
-    if post.locus_tag:
+    if hasattr(post, 'locus_tag'):
         tag_p = post.locus_tag
     else:
         tag_p = '_' + str(post.gene_number)
@@ -588,7 +588,7 @@ def write_human_result(g, post, fl, i, g_score, post_score):
     fl.write("\nPRE GENE\n" + write_line(g, g_score))
     fl.write("\nPOST GENE\n" + write_line(post, post_score) + '\n')
     fl.write("DISTANCE {} ({})\n".format(post_score[0]['distance'], post_score[0]['dist_score']))
-    fl.write(visualisation_genes(g, post, post_score[0]['distance']))
+    # fl.write(visualisation_genes(g, post, post_score[0]['distance']))
 
 
 def write_line(g, score):
@@ -604,19 +604,19 @@ def visualisation_genes(pre, post, distance):
     pre_str = visual_str(len(pre))
     post_str = visual_str(len(post))
     dist_str = str(distance) + 'nt'
-    print pre_str
-    print post_str
-    print 'disatance ', distance
+    # print pre_str
+    # print post_str
+    # print 'disatance ', distance
     sign = (distance + 1) / abs(distance + 1)
     visual_dist = int(distance / 30.0 + 0.98 * sign)
-    print visual_dist
+    # print visual_dist
     final_str = pre_str + '\n'
     position_g2 = (len(pre_str) + visual_dist)
     final_str += position_g2 * ' ' + post_str + '\n'
     positions = [position_g2, len(pre_str)]
     final_str += (min(positions) - 1) * ' ' + '/' + abs(positions[0] - positions[1]) * ' ' + '\\\n'
     final_str += (-1 + min(positions) + abs(positions[0] - positions[1]) - len(dist_str) / 2) * ' ' + dist_str
-    print final_str
+    # print final_str
     return final_str
 
 

@@ -24,14 +24,14 @@ def write_faa(feat, faa_fl, chrm, seq, nbgene):
     # seqAA = seq.translate(table=trans_table)
     seqAA = Seq(feat.qualifiers['translation'][0])
     # print type(seqAA)
-    attributes = giveQualifiersInfo(feat.qualifiers, ["locus_tag", 'protein_id', 'product'], sep = ' ')
+    attributes = giveQualifiersInfo(feat.qualifiers, ["locus_tag", 'old_locus_tag', 'protein_id', 'product'], sep = ' ')
     record = SeqRecord(seqAA, id="{}|{} ".format(chrm,str(nbgene)), name="", description=attributes)
     SeqIO.write(record, faa_fl, "fasta")
 
 def write_fna(feat, fna_fl, chrm, seq, nbgene):
 
     # print type(seqAA)
-    attributes = giveQualifiersInfo(feat.qualifiers, ["locus_tag", 'protein_id', 'product'], sep = ' ')
+    attributes = giveQualifiersInfo(feat.qualifiers, ["locus_tag", 'protein_id', 'product', 'old_locus_tag'], sep = ' ')
     record = SeqRecord(seq, id="{}|{} ".format(chrm,str(nbgene)), name="", description=attributes)
     SeqIO.write(record, fna_fl, "fasta")
 
@@ -69,7 +69,7 @@ for record in SeqIO.parse(input_handle, "genbank"):
             write_faa(f, faa_fl, record.id, seq, i)
             write_fna(f, fna_fl, record.id, seq, i)
 
-            if 'tox' in f.qualifiers['product'][0]:
-                print f.qualifiers
-                c += 1
-print c
+#             if 'tox' in f.qualifiers['product'][0]:
+#                 print f.qualifiers
+#                 c += 1
+# print c
