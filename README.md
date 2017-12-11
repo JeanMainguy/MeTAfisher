@@ -38,18 +38,15 @@ For the chromosome or scaffold sequences the headers of the sequence need to sta
 
 
 
-For the protein sequences in amino acid and nucleotide (respectively .faa and .fna) there are currently two different possibile format for the header.
+For the protein sequences in amino acid and nucleotide (respectively .faa and .fna) the header of the sequence should have the name of the chrm/scaffold followed by an | and the gene number used by the program to identify the genes.\\
 
 
-One typically found on NCBI:
+<!-- One typically found on NCBI:
 
  `>lcl|CP000697.1_prot_Acry_0001_1 [gene=Acry_0001] [protein.....` with the  ```>lcl|``` followed by the name of the chromosome or scaffold  and the id name of the gene (here ```_prot_Acry_0001_1```), in this id name there is the protein number 0001 wich is used by the program to identify the genes.
-
-
-
-An other one simpler:
-
- `>ICM0007MP0313_1000001|5` with the name of the sequence analysed followed by an | and the protein number used by the program to identify the genes.
+ -->
+Exemple : \\
+ `>ICM0007MP0313_1000001|5`
 
 ### GFF file
 > The GFF (General Feature Format) format consists of one line per feature, each containing 9 columns of data, plus optional track definition lines.
@@ -71,7 +68,7 @@ The program looks only at the line with feature equal to `CDS`.
 
 Example of correct gff line :    ```ICM0007MP0313_1000310	GPF	CDS	13787	14128	.	-	0	ID=ICM0007MP0313_1000310|19;partial=00;sta.....```
 
- CP000569.1	Genbank	gene	13754	15256	.	+	.	ID=gene12;Name=murE;gbkey=Gene;gene=murE;gene_biotype=protein_coding;locus_tag=APL_0013
+ <!-- CP000569.1	Genbank	gene	13754	15256	.	+	.	ID=gene12;Name=murE;gbkey=Gene;gene=murE;gene_biotype=protein_coding;locus_tag=APL_0013 -->
 
 ## Output file
 Diﬀerent possible output ﬁles exist.
