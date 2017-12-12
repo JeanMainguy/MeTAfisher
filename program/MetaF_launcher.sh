@@ -18,17 +18,22 @@ MetaG_name=Magnetococcus_marinus
 data_pathway=./data/Magnetococcus_marinus
 data_name=sequence
 
+#Alkalilimnicola_ehrlichii_MLHE-1
+MetaG_name=Alkalilimnicola_ehrlichii_MLHE-1
+data_pathway=./data/Alkalilimnicola_ehrlichii_MLHE-1
+data_name=sequence
 
 output_pathway=${general_output_pathway}/${MetaG_name}
-mkdir ${output_pathway}  2> /dev/null
 
+mkdir ${general_output_pathway}  2> /dev/null
+mkdir ${output_pathway}  2> /dev/null
 
 #HMMSEARCH parameter below should normally not be changed
 #HMM result table python script expects : table_hmm = output_way + '/' + metaG_name + '_output_tableHMM.txt'
 table_hmm=${output_pathway}/${MetaG_name}_output_tableHMM.txt
 HMM_DB=${dependency_pathway}/ALL_plus_MET_curatted.hmm
 faa_data=${data_pathway}/${data_name}.faa
-#!/bin/bash
+
 if [ -e ${table_hmm} ]
 then
     echo "Hmm table already exist"

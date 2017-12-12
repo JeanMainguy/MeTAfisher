@@ -24,10 +24,8 @@ def write_faa(feat, faa_fl, chrm, seq, attributes, nbgene):
 
 
     if 'translation' in f.qualifiers:
-
         seqAA = Seq(feat.qualifiers['translation'][0])
     else:
-        print 'BOUYAA'
         seqAA = seq.translate(table=trans_table, to_stop=True)
     # print type(seqAA)
     # print attributes

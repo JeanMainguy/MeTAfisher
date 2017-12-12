@@ -17,7 +17,7 @@ def using(point=""):
 
 parser = argparse.ArgumentParser(prog='MeTAfisher', description='Identification of Toxin Antitoxin Systems', epilog="ADDITIONAL INFORMATION:")
 parser.add_argument("metaG_name", help="Name of the Metagenome or Genome")
-# parser.add_argument("table_hmm", help="Table result output of --domtblout of the hmmsearch")
+
 parser.add_argument("output_pathway", help="Pathway of the output folder")
 parser.add_argument("data_pathway", help="Pathway of the data folder where all the data files are stored : fna_file, faa_file, scaffold_file, gff_file")
 parser.add_argument("data_name", help="Common name of all data files, the name without the extension.  fna_file, faa_file, scaffold_file, gff_file are different only by their extansions : .fna, .faa, .fasta, .gff respectively")
@@ -71,11 +71,10 @@ with open(csv_domain, 'r') as csvdo:
     for row in reader:
         obj.Gene.domain_dict[row['hmm_name']] = {k: v for k, v in row.iteritems() if k in ['acc', 'family', 'type']}
 # print obj.Gene.domain_dict
+
 # SETTING THE THRESHOLD :
 # There are the first the thrshold there very large then the proabilty score step is going to define the better conf
 # treshold size of gene
-
-
 lenMin = 10 * 3  # VERY IMPORTANT LENGTH HAVE TO BE GIVEN IN AA and then transform in nt
 lenMax = 500 * 3
 
