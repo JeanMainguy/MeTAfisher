@@ -533,7 +533,7 @@ def delete_files(listeFiles):
             print ("Error: %s - %s." % (e.filename, e.strerror))
 
 
-def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue):
+def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat):
     contig_stat = {}
     contig_stat['gene with TA domain'] = len(obj.TA_gene.genes)
     contig_stat['linked gene'] = len(obj.TA_gene.linked)
@@ -544,8 +544,8 @@ def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue):
         contig_stat['orf with TA domain'] = len(obj.Orf.hmm_orf)
 
     for k in contig_stat: #add the value of the row in obj.Gene.metaG_stat to make the total at the end
-        obj.Gene.metaG_stat[k] += contig_stat[k]  # contig is not there yet because it is not numerical value
-    contig_stat['contig'] = scaffold
+        total_stat[k] += contig_stat[k]  # contig is not there yet because it is not numerical value
+    total_stat['contig'] = scaffold
     writer_stat.writerow(contig_stat)
 
 

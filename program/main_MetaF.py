@@ -2,6 +2,7 @@
 import Object_MetaF as obj
 import Function_MetaF as fct2
 import Orf_MetaF as orf2
+import OutputFct_MetaF as out
 import sys
 import resource
 import csv
@@ -45,6 +46,8 @@ faa_file = data_way + '/' + data_name + '.faa'
 table_hmm = output_way + '/' + metaG_name + '_output_tableHMM.txt'
 hmm_adjorf_launcher = output_way + '/' + data_name + '.gff'
 
+# prot sequence of adj orf will be written there
+tmp_adj_orf_faa = output_way + '/temporary_adjOrf.faa'
 
 # Flag
 resize = args.resize
@@ -54,6 +57,7 @@ info_contig_stat = True
 output_human = True
 output_short = True
 output_table = True
+dict_output = {'result_H': output_human, "result_S": output_human, 'result_T': output_table}
 
 # Storing information as Gene class attribut to be use when we launch hmmsearch
 obj.Gene.output_way = output_way
@@ -88,44 +92,19 @@ distanceMax = 300
 obj.Gene.distanceMin = distanceMin
 obj.Gene.distanceMax = distanceMax
 
+# dictionnary gathering the 4 thresholds
+thresholds = {"lenMin":lenMin, "lenMax":lenMax, "distanceMin":distanceMin , "distanceMax":distanceMax }
+
+"""
 # OUTPUT
-# the fl of each kind of output are stored in a dictionnary:
+#  dict_output is a dictionnary with the file handler of each kind of output
 # key : name of the output | value : fl or False if not wanted
-dict_output = {'result_H': output_human, "result_S": output_short, 'result_T': output_table, 'is_output': False}
-complement = ''
-if rescue:
-    complement += '_rescue'
-if resize:
-    complement += '_resize'
-header = '## Name of the sequence analysed: ' + metaG_name
-header = "## Rescue lonely gene : {}\n".format(rescue)
-header += "## Resize gene : {}\n".format(resize)
-header += "## Distance threshold from {}nt to {}nt\n".format(distanceMin, distanceMax, lenMin, lenMax)
-header += "## Length threshold from {}aa to {}aa\n".format(lenMin, lenMax)
-
-for out_name in dict_output:
-    if out_name:  # if the flag is not False
-        file_out = '{}/{}_{}{}.txt'.format(output_way, metaG_name, out_name, complement)
-        flout = open(file_out, "w")
-        flout.write("## {}\n".format(out_name))
-        flout.write(header)
-        dict_output[out_name] = flout
-        dict_output['is_output'] = True
-
-tmp_adj_orf_faa = output_way + '/temporary_adjOrf.faa'
-
-if info_contig_stat:
-
-    header = ['contig', 'gene with TA domain', 'lonely gene', 'linked gene']
-    if rescue:
-        header += ['adjacent orf', 'rescue flag', 'orf with TA domain', 'lonely gene rescue']
-    fl_stat = open('{}/{}_contig_stat{}.csv'.format(output_way, metaG_name, complement), 'w')
-    fl_stat.write("#Rescue lonely gene : {}\n".format(rescue))
-    fl_stat.write("#Resize gene : {}\n".format(resize))
-    writer_stat = csv.DictWriter(fl_stat, fieldnames=header, delimiter='\t')
-    writer_stat.writeheader()
-    obj.Gene.metaG_stat = dict.fromkeys(header, 0)
-    obj.Gene.metaG_stat['contig'] = metaG_name
+# extra key is "is_output" is True when there is at least one output required
+# dico output is update so no need to return it
+# writer stat is a csv file handler or it is False when the flag info_contig_stat is False as well
+total stat is a dictionnary with the sum of all the colonne. It is written at the end
+"""
+writer_stat, total_stat, fl_stat = out.output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize)
 
 
 # Open step of the scaffold file ! used by fast_fasta function in orf file
@@ -156,7 +135,7 @@ if rescue:
     gff_dico['line'] = next(gff_dico['csv'])
 
 # Open file fna to retrieve sequence of the predicted gene
-# PUT info in a dico to not have to retourned it every time !!
+# variable are stored in a dico to not have to retourned it every time !!
 dico_seq = {}
 dico_seq["fl"] = open(fna_file, 'r')
 dico_seq["line"] = dico_seq["fl"].readline()
@@ -192,8 +171,8 @@ print 'nb sca', len(scaffold_list)
 # scaffold_list = ['ICM0007MP0313_1000085', 'ICM0007MP0313_1000086', 'ICM0007MP0313_1000089', 'ICM0007MP0313_1000408']
 # scaffold_list = ['ICM0007MP0313_1000321']
 for scaffold in scaffold_list:
-    print '* *' * 25
-    print ' * ' * 25
+    # print '* *' * 25
+    # print ' * ' * 25
     print scaffold
     # header = ['contig', 'gene with TA domain', 'lonely gene', 'linked gene', 'adjacent orf', 'rescue flag', 'hmm orf', 'lonely  gene rescue']
     # Reset obj.TA_gene and Orf class attribut
@@ -211,43 +190,35 @@ for scaffold in scaffold_list:
         fct2.get_start_po(dico_seq)  # resize and calculate start position
     else:
         fct2.check_size(obj.TA_gene.genes_strand)  # eliminate te genes that have a length > threshold
-    # for g in obj.TA_gene.genes_strand['-']:
-        # print g
-    # print "==" * 20
+
     # STEP : GENE PAIR ORGANISATION CHECKING
+    print "STEP : GENE PAIR ORGANISATION CHECKING"
     fct2.get_adj()   # set the adj gene for each gene which has
 
     fct2.create_lonely_gene_list()
+
     initial_nb_lonely = len(obj.TA_gene.genes) - len(obj.TA_gene.linked)
 
     if obj.TA_gene.lonely is not None and rescue is True:
-
-        # print 'THE LONELY GENE ARE :', len(obj.TA_gene.lonely['+'] + obj.TA_gene.lonely['-'])
-        # for lone in obj.TA_gene.lonely['+'] + obj.TA_gene.lonely['-']:
-            # print lone
         orf2.rescue_lonely_gene(dico_orf, gff_dico, scaffold, tmp_adj_orf_faa)
 
     # index to give a number of gene in the new gff file
     # Index start where the predicted gene end in order to not have same id for two gene in the round 2orf.
     fct2.score_TA_list(obj.TA_gene.genes_strand)
-    # counter
-    if info_contig_stat:
-        fct2.contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue)
 
-    # output
+    # Write stat
+    if info_contig_stat:
+        fct2.contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat)
+
+    # write output
     if obj.TA_gene.linked and dict_output['is_output']:  # If there is some gene linked meaning if tere is TA system
 
         fct2.write_result(obj.TA_gene.linked, dict_output, scaffold)
 
-    # DEBUG
-    for g in obj.TA_gene.linked:
-        print "GENE", g.gene_number
-        print "Pre ", [pre.gene_number for pre in g.prev]
-        print "Post", [po.gene_number for po in g.post]
 
-# Writing of stat information about the contig
+# Total Stat information about the Metagenome
 if info_contig_stat:
-    writer_stat.writerow(obj.Gene.metaG_stat)
+    writer_stat.writerow(total_stat)
     fl_stat.close()
 print using()
 

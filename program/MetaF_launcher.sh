@@ -23,6 +23,20 @@ MetaG_name=Alkalilimnicola_ehrlichii_MLHE-1
 data_pathway=./data/Alkalilimnicola_ehrlichii_MLHE-1
 data_name=sequence
 
+#Acaryochloris_marina_MBIC11017
+MetaG_name=Acaryochloris_marina_MBIC11017
+data_pathway=./data/Acaryochloris_marina_MBIC11017
+data_name=sequence
+
+#Acaryochloris_marina_MBIC11017 FROM GENBANK directly
+MetaG_name=Acaryochloris_marina_MBIC11017_test
+data_pathway=./data/Acaryochloris_marina_MBIC11017_test
+data_name=sequence
+gb_file=data/Acaryochloris_marina_MBIC11017_test/sequence.gb
+python program/genbank_parser.py ${gb_file}
+
+
+
 output_pathway=${general_output_pathway}/${MetaG_name}
 
 mkdir ${general_output_pathway}  2> /dev/null
@@ -49,5 +63,5 @@ fi
 #                   dependency_pathway
 
 echo "MeTAfisher"
-python program/main_MetaF.py --Rescue ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
+python program/main_MetaF.py  ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
 # python program/main_MetaF.py ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
