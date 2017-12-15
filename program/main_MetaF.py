@@ -149,6 +149,7 @@ dico_seq["codon_start"] = table['start']
 k = 20
 dist_mltp = 7
 len_mltp = 7
+bonus_start = 7 # +7 is given to configuration that start with their initial start and not a start determined by the program 
 
 obj.Gene.length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k, len_mltp)
 obj.Gene.distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k, dist_mltp)
@@ -161,7 +162,7 @@ obj.Gene.distance_proba = score.score_manager(distanceMin, distanceMax, file_dis
 # obj.Gene.distance_proba = fct2.give_proba_dict(distanceMin, distanceMax, dico_dist, k, Ntot_dist)
 # obj.Gene.distance_proba = fct2.transformation(obj.Gene.distance_proba, dist_mltp)
 # obj.Gene.length_proba = fct2.transformation(obj.Gene.length_proba, len_mltp)
-# 
+#
 
 # Take every scaffold present in the HMM output and sort them in order to
 # be able to retrieve their sequence correctly in the input file
@@ -209,7 +210,7 @@ for scaffold in scaffold_list:
 
     # index to give a number of gene in the new gff file
     # Index start where the predicted gene end in order to not have same id for two gene in the round 2orf.
-    fct2.score_TA_list(obj.TA_gene.genes_strand)
+    score.score_TA_list(obj.TA_gene.genes_strand, bonus_start)
 
     # Write stat
     if info_contig_stat:

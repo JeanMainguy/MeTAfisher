@@ -181,10 +181,10 @@ class TA_gene(Gene):
         # print self.gene_number, 'a une sequence de', len(seq['data']), 'sup and inf', sup, inf
 
         start_po = orf2.codon_finder(start_codon, seq["data"][inf:sup + 1])  # give evry start position of the sequence
-        start_po = [x + inf for x in start_po]  # add inf to everystart to fit the initial coordonne of gene !!
 
         if inf == 0 and (len(start_po) == 0 or start_po[0] != 0):
             start_po.insert(0, 0)
+
         return start_po
         # if len(start_po) == 0:
         #     if start_po[0] == 0 or inf != 0:

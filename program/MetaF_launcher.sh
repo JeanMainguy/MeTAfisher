@@ -71,5 +71,5 @@ fi
 #                   dependency_pathway
 
 echo "MeTAfisher"
-python program/main_MetaF.py  ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
+python program/main_MetaF.py --Resize ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
 # python program/main_MetaF.py ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
