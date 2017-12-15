@@ -28,17 +28,25 @@ MetaG_name=Acaryochloris_marina_MBIC11017
 data_pathway=./data/Acaryochloris_marina_MBIC11017
 data_name=sequence
 
-#Acaryochloris_marina_MBIC11017 FROM GENBANK directly
-MetaG_name=Acaryochloris_marina_MBIC11017_test
-data_pathway=./data/Acaryochloris_marina_MBIC11017_test
+# #Acaryochloris_marina_MBIC11017 FROM GENBANK directly
+# MetaG_name=Acaryochloris_marina_MBIC11017_test
+# data_pathway=./data/Acaryochloris_marina_MBIC11017_test
+# data_name=sequence
+# gb_file=data/Acaryochloris_marina_MBIC11017_test/sequence.gb
+# python program/genbank_parser.py ${gb_file}
+
+#data/Nitrobacter_hamburgensis_X14_plsm3
+MetaG_name=Nitrobacter_hamburgensis_X14_plsm3
+data_pathway=./data/Nitrobacter_hamburgensis_X14_plsm3
 data_name=sequence
-gb_file=data/Acaryochloris_marina_MBIC11017_test/sequence.gb
-python program/genbank_parser.py ${gb_file}
 
-
+#data/Bordetella_avium_197N
+MetaG_name=Bordetella_avium_197N
+data_pathway=./data/Bordetella_avium_197N
+data_name=sequence
 
 output_pathway=${general_output_pathway}/${MetaG_name}
-
+echo creation of folder ${output_pathway}
 mkdir ${general_output_pathway}  2> /dev/null
 mkdir ${output_pathway}  2> /dev/null
 
@@ -47,7 +55,7 @@ mkdir ${output_pathway}  2> /dev/null
 table_hmm=${output_pathway}/${MetaG_name}_output_tableHMM.txt
 HMM_DB=${dependency_pathway}/ALL_plus_MET_curatted.hmm
 faa_data=${data_pathway}/${data_name}.faa
-
+echo ${table_hmm}
 if [ -e ${table_hmm} ]
 then
     echo "Hmm table already exist"

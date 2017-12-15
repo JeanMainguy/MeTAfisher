@@ -3,6 +3,7 @@ import Object_MetaF as obj
 import Function_MetaF as fct2
 import Orf_MetaF as orf2
 import OutputFct_MetaF as out
+import Score_MetaF as score
 import sys
 import resource
 import csv
@@ -146,17 +147,21 @@ dico_seq["codon_start"] = table['start']
 
 # SCORE PREPARaTION
 k = 20
-dist_mltp = 5
-len_mltp = 6
-dico_len, Ntot_len = fct2.from_file_to_dict(file_len)
-dico_dist, Ntot_dist = fct2.from_file_to_dict(file_dist)
+dist_mltp = 7
+len_mltp = 7
 
+obj.Gene.length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k, len_mltp)
+obj.Gene.distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k, dist_mltp)
 
-obj.Gene.length_proba = fct2.give_proba_dict(int(lenMin / 3), int(lenMax / 3), dico_len, k, Ntot_len)
-obj.Gene.distance_proba = fct2.give_proba_dict(distanceMin, distanceMax, dico_dist, k, Ntot_dist)
-obj.Gene.distance_proba = fct2.transformation(obj.Gene.distance_proba, dist_mltp)
-obj.Gene.length_proba = fct2.transformation(obj.Gene.length_proba, len_mltp)
-
+# dico_len, Ntot_len = fct2.from_file_to_dict(file_len)
+# dico_dist, Ntot_dist = fct2.from_file_to_dict(file_dist)
+#
+#
+# obj.Gene.length_proba = fct2.give_proba_dict(int(lenMin / 3), int(lenMax / 3), dico_len, k, Ntot_len)
+# obj.Gene.distance_proba = fct2.give_proba_dict(distanceMin, distanceMax, dico_dist, k, Ntot_dist)
+# obj.Gene.distance_proba = fct2.transformation(obj.Gene.distance_proba, dist_mltp)
+# obj.Gene.length_proba = fct2.transformation(obj.Gene.length_proba, len_mltp)
+# 
 
 # Take every scaffold present in the HMM output and sort them in order to
 # be able to retrieve their sequence correctly in the input file

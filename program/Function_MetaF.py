@@ -61,13 +61,15 @@ def get_hmm_genes(scaffold, table_hmm, gff_file):
     fl.close()
 
     gff_fl = csv.reader(open(gff_file, 'r'), delimiter='\t')
-    gff_line = next(gff_fl)
+    gff_line = ""#next(gff_fl)
     for n in sorted(domains_dict):
         """
         Search the gene info of the gene in the gff file
         n is the keys of domains dict and then take the value all the gene number with a hmm hit
         """
+
         gene, gff_line, gff_fl = get_gff_info(gff_fl, gff_line, scaffold, n)
+
 
         gene.domain = domains_dict[n]
 
@@ -307,61 +309,6 @@ def create_lonely_gene_list():
             if gene not in obj.TA_gene.linked:
                 obj.TA_gene.lonely[gene.strand].append(gene)
 
-
-# def rescue_lonely_gene(dico_orf, dico_gff, scaffold, tmp_adjorf_faa):
-#     fl = open(tmp_adjorf_faa, 'w')
-#     # Extraction of the sequence of the contig in order to find the orf inside.
-#     seq, dico_orf["line"] = get_fast_fasta(dico_orf['fl'], dico_orf['line'], scaffold)
-#     obj.Orf.seq = seq
-#     # retrieve the end position of the predicted gene to then skip the related ORF:
-#     gff_ends = orf2.get_gff_ends(dico_gff, scaffold)
-#
-#     # TEST IF THERE ARE LONELY GENE IN STRAND plu
-#     if obj.TA_gene.lonely['+']:
-#         print 'THERE IS LONELY GENE ON STRAND +'
-#         generator = orf2.findORF(scaffold, seq, rev=1)
-#         # read the generator: check if the orf is a predicted gene
-#         # then check if the orf is adjacent with a TA_gene
-#         # If so then the faa fa gff ORF file are written...
-#         orf2.orf_manager(generator, '+', obj.TA_gene.genes_strand['+'], gff_ends, fl)  # orf manager will do everything !!
-#     # else:
-#         # raw_input(scaffold + " THERE IS NO LONELY GENE ON STRAND +")
-#     # TEST IF THERE ARE LONELY GENES IN STRAND minus
-#     if obj.TA_gene.lonely['-']:
-#         print 'THERE IS LONELY GENE ON STRAND -'
-#         generator = orf2.findORF(scaffold, seq, rev=-1)
-#         orf2.orf_manager(generator, '-', obj.TA_gene.genes_strand['-'], gff_ends, fl)
-#     # else:
-#         # raw_input(scaffold + " THERE IS NO LONELY GENE ON STRAND -")
-#     fl.close()
-#     # print obj.Orf.adj_orf
-#     if obj.Orf.adj_orf:
-#         orf2.adjOrf_HMM()
-#         adjust_possible_start_to_domain(obj.Orf.hmm_orf)
-#         hmm_orf_get_adj(obj.Orf.hmm_orf)
-#     # for k in obj.Orf.hmm_orf:
-#     #     for o in obj.Orf.hmm_orf[k]:
-#     #         print o
-#     #         print o.distanceMin
-#     #         print 'gene number', o.gene_number
-#     #         print 'prev', [g.gene_number for g in o.prev]
-#     #         print 'post', [g.gene_number for g in o.post]
-#     #         print 'Domain border', o.domain_Ct_border
-#     #         print o.possible_start
-
-
-# def adjust_possible_start_to_domain(dico_obj):
-#     for strand in dico_obj:
-#         for o in dico_obj[strand]:
-#             # print 'CT BORDER', o.domain_Ct_border
-#             # print 'before', o.possible_start
-#             # starts_zip = zip(o.possible_start, o.possible_start_orf)
-#             o.possible_start = [s for s in o.possible_start if s <= o.domain_Ct_border]
-#             # print 'after', o.possible_start
-#             o.distanceMin = obj.Gene.distanceMin - abs(o.possible_start[-1] - o.possible_start[0])
-#             o.post = []
-#             o.prev = []
-
 def check_size(gene_strand):
     """
     Remove genes with a length that does not fit the length thresholds.
@@ -377,60 +324,6 @@ def check_size(gene_strand):
         for g in invalide:
             obj.TA_gene.genes.remove(g)
             obj.TA_gene.genes_strand[strand].remove(g)
-
-
-def transformation(dico, multiple):
-    maximum = max(dico.itervalues())
-    minimum = min(dico.itervalues())
-    for k in dico:
-        dico[k] = ((dico[k] - minimum) / (maximum - minimum)) * multiple
-    return dico
-
-
-def give_proba_dict(inf, sup, dico, k, N_tot):
-    result = {}
-    for nb in xrange(inf, sup + 1):
-        somme = 0
-        for i in xrange(nb - k, nb + k + 1):
-            # print i
-            somme += dico.get(nb + i, 0)
-        result[nb] = (somme / float(N_tot) / (2 * k + 1))
-
-    return result
-
-
-# def hmm_orf_get_adj(dico_hmmorf):
-#     # Add the hmm orf into the main lists !
-#     # obj.TA_gene.genes.extend(dico_hmmorf['+'] + dico_hmmorf['-'])
-#     # obj.TA_gene.genes_plus.extend(dico_obj['+'])
-#     # obj.TA_gene.genes_minus.extend(dico_obj['-'])
-#     for strand in dico_hmmorf:
-#         obj.TA_gene.genes_strand[strand].extend(dico_hmmorf[strand])
-#         obj.TA_gene.genes.extend(dico_hmmorf[strand])
-#         for hmmorf in dico_hmmorf[strand]:
-#             for gene in obj.TA_gene.genes_strand[strand]:
-#                 if hmmorf.gene_number == gene.gene_number:  # MAGIC METHOD
-#                     # print hmmorf
-#                     # print gene
-#                     continue
-#                 if gene.is_pre_adj_to(hmmorf):
-#                     obj.TA_gene.linked.add(gene)
-#                     obj.TA_gene.linked.add(hmmorf)
-#                     if strand == '+':
-#                         gene.post.append(hmmorf)
-#                         hmmorf.prev.append(gene)
-#                     else:
-#                         hmmorf.post.append(gene)
-#                         gene.prev.append(hmmorf)
-#                 elif hmmorf.is_pre_adj_to(gene):
-#                     obj.TA_gene.linked.add(gene)
-#                     obj.TA_gene.linked.add(hmmorf)
-#                     if strand == '+':
-#                         hmmorf.post.append(gene)
-#                         gene.prev.append(hmmorf)
-#                     else:
-#                         gene.post.append(hmmorf)
-#                         hmmorf.prev.append(gene)
 
 
 def score_TA_list(genes_strand):
@@ -511,17 +404,6 @@ def get_score(gene, starts, distance=None):
         score.append(dico_score)
     score = sorted(score, key=itemgetter('sum'), reverse=True)
     return score
-
-
-def from_file_to_dict(file_name):
-    dico = {}
-    with open(file_name) as csvfile:
-        reader = csv.reader(csvfile)
-        N_tot = 0
-        for rows in reader:
-            dico[int(rows[0])] = int(rows[1])
-            N_tot += int(rows[1])
-    return dico, N_tot
 
 
 def delete_files(listeFiles):
