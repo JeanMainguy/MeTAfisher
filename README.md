@@ -77,6 +77,10 @@ Diﬀerent output ﬁles currently exist.
 
 The program also provide a file gathering quantitative information about the analysis of the contigs/chromosomes analysed.    
 
+## How to use MeTAfisher
+The file format requirement of MeTAfisher are quite heavy and may required a lot of effort if you start with some files that don't follow the required pattern. How ever if the sequence you want to analyse is on genbank, you can use the genbank file of the sequence and processes it through the script genbank_parser.py. This script take as argument the genbank file and create 3 files needed for the TA analysis (.faa, fna and .gff) in the same folder as the genbank file. Genbank_parser.py is only able to process only the full genbank file, then when downloading the file on the genbank web page, you should be certain that the sequence of the genes are displayed to do so you may click in the Customize view left panel on the option Show sequence and then on update view. Then to download the file just click on the upper left Send to button > Complete Record > Choose Destination: File > Format: Genbank > Create File. 
+
+
 
 
 REF
