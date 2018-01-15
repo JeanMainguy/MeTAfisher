@@ -317,8 +317,8 @@ class Domain:
         try:
             dico_do = Gene.domain_dict[self.domain_name]
         except KeyError:
-            return 'Domain not found in the csv domain file.. {} ({}) '.format(self.domain_name, log(self.score))
-        return "name:{} score:{} type:{} family:{}".format(dico_do["acc"], log(self.score), dico_do['type'], dico_do['family'])
+            return 'Domain not found in the csv domain file.. {} ({}) '.format(self.domain_name, round(log(self.score), 3))
+        return "{} (score:{})\t{}\t{}".format(dico_do["acc"], round(log(self.score),3), dico_do['type'], dico_do['family'])
 
     def score_transformed(self):
         # log transformation

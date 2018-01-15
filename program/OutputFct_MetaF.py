@@ -1,9 +1,14 @@
 # coding: utf-8
 import csv
+import Object_MetaF as obj
+from operator import attrgetter
+
+
 
 def output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize):
     headinfo, complement = output_headinfo_creation(metaG_name, thresholds, rescue, resize)
     output_file_creation(output_way, metaG_name, dict_output, headinfo, complement) # dico output is update no need to give it back
+    dict_output["result_T"] = result_table_config(dict_output["result_T"])
     writer_stat, total_stat, fl_stat = stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, complement, rescue)
     return writer_stat, total_stat, fl_stat
 
@@ -20,6 +25,14 @@ def output_headinfo_creation(metaG_name, thresholds, rescue, resize):
     headinfo += "## Length threshold from {}aa to {}aa\n".format(thresholds['lenMin'], thresholds['lenMax'])
     return headinfo, complement
 
+def result_table_config(fl):
+    #Chnage the regular file writer into a csv file writer with header
+    header = ["Contig", "Gene number", "Gene id", "start", "end", "length", "length_score", "strand", "feature", "domain", "Neighbor gene"]
+    writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
+    writer_table.writeheader()
+    return writer_table
+
+
 def output_file_creation(output_way, metaG_name, dict_output, headinfo, complement):
     # the fl of each kind of output are stored in a dictionnary:
     # key : name of the output | value : fl or False if not wanted
@@ -28,13 +41,15 @@ def output_file_creation(output_way, metaG_name, dict_output, headinfo, compleme
     for out_name in dict_output:
 
         if out_name:  # if the flag is not False
-            file_out = '{}/{}_{}{}.txt'.format(output_way, metaG_name, out_name, complement)
+            extension = 'txt' if out_name != 'result_T' else 'csv'
+            file_out = '{}/{}_{}{}.{}'.format(output_way, metaG_name, out_name, complement, extension)
             flout = open(file_out, "w")
             flout.write("## {}\n".format(out_name))
             flout.write(headinfo)
             dict_output[out_name] = flout
             is_output = True
     dict_output['is_output'] = is_output
+
 
 def stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, complement, rescue):
 
@@ -52,7 +67,6 @@ def stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, compl
         total_stat['contig'] = metaG_name
         return writer_stat, total_stat, fl_stat
     return False, False, False
-
 
 
 def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat):
@@ -74,11 +88,15 @@ def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_
 def write_result(set_linked, dict_output, scaffold):
     i = 0
     contig_header = "\n" + '==' * 2 + scaffold + '==' * 2 + '\n'
+    # if dict_output['result_T']:
+    #     dict_output['result_T'].write(contig_header)
     if dict_output['result_H']:
         dict_output['result_H'].write(contig_header)
     if dict_output['result_S']:
         dict_output['result_S'].write(contig_header)
+
     for gene in sorted(set_linked, key=attrgetter('start')):
+
         for g_post in gene.post:
             i += 1  # to give a number to each TA pair
             g_score = gene.dict_score[g_post.gene_number]
@@ -87,21 +105,56 @@ def write_result(set_linked, dict_output, scaffold):
                 write_human_result(gene, g_post, dict_output['result_H'], i, g_score, post_score)
             if dict_output['result_S']:
                 write_short_result(gene, g_post, dict_output['result_S'], i, g_score, post_score)
-            if dict_output['result_T']:
-                pass
+        if dict_output['result_T']:
+            write_table_result(gene, dict_output['result_T'])
 
+
+def write_table_result(gene, csvfl):
+    line = {}
+    line["Contig"] = gene.scaffold
+    line["Gene number"] = gene.gene_number
+    line["Gene id"] = give_tag(gene)
+    line["start"] = gene.start
+    line["end"] = gene.end
+    line["length"] = len(gene)
+    # line["length_score"] = score[0]["length"]
+    line["strand"] = gene.strand #+ gene.frame
+    line["feature"] = gene.feature
+    line["domain"] = writeDomain(gene)
+    line["Neighbor gene"] = write_adj_gene(gene, gene.prev, 'Down:')
+    line["Neighbor gene"] += write_adj_gene(gene, gene.post, 'Up:  ')
+    csvfl.writerow(line)
+
+
+def writeDomain(gene):
+    """
+    return only best domain
+    the attribut domain is a sorted list according the score. Then the first domain is the best domain
+    """
+
+    # print gene.valid_domain(gene.start)
+    return gene.domain[0] #
+
+def write_adj_gene(gene, neighbours, position):
+    npc = 3
+    info = ''
+    for n in neighbours:
+        gene_score = gene.dict_score[n.gene_number]
+        n_score = n.dict_score[gene.gene_number]
+        # print n_score
+        # print gene_score
+        # print gene_score[0]['distance']
+        distance = gene_score[0]["distance"] if 'distance' in gene_score[0] else n_score[0]["distance"]
+        dist_score = gene_score[0]["dist_score"] if 'dist_score' in gene_score[0] else n_score[0]["dist_score"]
+
+        info += '{}\t{}\t distance {} (score {})\tsystem score {}|'.format(position, give_tag(n), distance, round(dist_score, npc), round(n_score[0]['sum'] + gene_score[0]['sum'], npc))
+
+    return info[:-1]
 
 def write_short_result(g, post, fl, i, g_score, post_score):
-    if hasattr(g, 'locus_tag'):
-        tag_g = g.locus_tag
-    else:
-        tag_g = '_' + str(g.gene_number)
 
-    if hasattr(post, 'locus_tag'):
-        tag_p = post.locus_tag
-    else:
-        tag_p = '_' + str(post.gene_number)
-
+    tag_g = give_tag(g)
+    tag_p = give_tag(post)
     fl.write("{}. Genes {} & {}\tstrand {}\tscore {}\n".format(
         i, tag_g, tag_p, g.strand, g_score[0]['sum'] + post_score[0]['sum']))
 
@@ -114,8 +167,9 @@ def write_human_result(g, post, fl, i, g_score, post_score):
 
 
 def write_line(g, score):
+    npc = 3 # number post coma
     line = "Gene {}\tfrom {} to {}\t{}aa ({})\tstart {}\t{}".format(
-        g.gene_number, g.real_start(), g.real_end(), score[0]["length"] / 3, score[0]["len_score"], score[0]["start"], g.feature)
+        g.gene_number, g.real_start(), g.real_end(), round(score[0]["length"] / 3, npc), round(score[0]["len_score"], npc), round(score[0]["start"], npc), g.feature)
     domain_va = map(str, g.valid_domain(score[0]['start']))
     domain_va = '/'.join(domain_va)
     line += ("\tdomain: {}\n".format(domain_va))
@@ -149,3 +203,10 @@ def visual_str(size):
 
     string = vlen * '=' + str(size / 3) + 'aa' + vlen * '=' + '>'
     return string
+
+
+def give_tag(g):
+    if hasattr(g, 'locus_tag'):
+        return g.locus_tag  # + ':' + str(g.gene_number)
+    else:
+        return str(g.gene_number)

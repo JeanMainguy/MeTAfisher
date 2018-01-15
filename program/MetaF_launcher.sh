@@ -28,13 +28,6 @@ MetaG_name=Acaryochloris_marina_MBIC11017
 data_pathway=./data/Acaryochloris_marina_MBIC11017
 data_name=sequence
 
-# #Acaryochloris_marina_MBIC11017 FROM GENBANK directly
-# MetaG_name=Acaryochloris_marina_MBIC11017_test
-# data_pathway=./data/Acaryochloris_marina_MBIC11017_test
-# data_name=sequence
-# gb_file=data/Acaryochloris_marina_MBIC11017_test/sequence.gb
-# python program/genbank_parser.py ${gb_file}
-
 #data/Nitrobacter_hamburgensis_X14_plsm3
 MetaG_name=Nitrobacter_hamburgensis_X14_plsm3
 data_pathway=./data/Nitrobacter_hamburgensis_X14_plsm3
@@ -46,7 +39,7 @@ data_pathway=./data/Bordetella_avium_197N
 data_name=sequence
 
 output_pathway=${general_output_pathway}/${MetaG_name}
-echo creation of folder ${output_pathway}
+echo creation of folder ${output_pathway} if it does not exist
 mkdir ${general_output_pathway}  2> /dev/null
 mkdir ${output_pathway}  2> /dev/null
 

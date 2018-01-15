@@ -139,6 +139,8 @@ if rescue:
 # variable are stored in a dico to not have to retourned it every time !!
 dico_seq = {}
 dico_seq["fl"] = open(fna_file, 'r')
+
+
 dico_seq["line"] = dico_seq["fl"].readline()
 # PUT info in a dico to not have to retourned it every time !! dico is used in check_size
 dico_seq["codon_start"] = table['start']
@@ -149,7 +151,7 @@ dico_seq["codon_start"] = table['start']
 k = 20
 dist_mltp = 7
 len_mltp = 7
-bonus_start = 7 # +7 is given to configuration that start with their initial start and not a start determined by the program 
+bonus_start = 7 # +7 is given to configuration that start with their initial start and not a start determined by the program
 
 obj.Gene.length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k, len_mltp)
 obj.Gene.distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k, dist_mltp)
@@ -176,11 +178,12 @@ print 'nb sca', len(scaffold_list)
 # scaffold_list = ['ICM0007MP0313_1000346']
 # scaffold_list = ['ICM0007MP0313_1000085', 'ICM0007MP0313_1000086', 'ICM0007MP0313_1000089', 'ICM0007MP0313_1000408']
 # scaffold_list = ['ICM0007MP0313_1000321']
+
 for scaffold in scaffold_list:
     # print '* *' * 25
     # print ' * ' * 25
     print scaffold
-    # header = ['contig', 'gene with TA domain', 'lonely gene', 'linked gene', 'adjacent orf', 'rescue flag', 'hmm orf', 'lonely  gene rescue']
+    # header = ['contig', 'gene with TA domain', 'lonely gene', 'linked gene', 'adjacent orf', 'rescue flag', 'hmm orf', 'lonely gene rescue']
     # Reset obj.TA_gene and Orf class attribut
     obj.TA_gene.genes = []
     obj.TA_gene.genes_strand = {'+': [], '-': []}
@@ -198,7 +201,6 @@ for scaffold in scaffold_list:
         fct2.check_size(obj.TA_gene.genes_strand)  # eliminate te genes that have a length > threshold
 
     # STEP : GENE PAIR ORGANISATION CHECKING
-    print "STEP : GENE PAIR ORGANISATION CHECKING"
     fct2.get_adj()   # set the adj gene for each gene which has
 
     fct2.create_lonely_gene_list()
@@ -214,12 +216,11 @@ for scaffold in scaffold_list:
 
     # Write stat
     if info_contig_stat:
-        fct2.contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat)
+        out.contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat)
 
     # write output
     if obj.TA_gene.linked and dict_output['is_output']:  # If there is some gene linked meaning if tere is TA system
-
-        fct2.write_result(obj.TA_gene.linked, dict_output, scaffold)
+        out.write_result(obj.TA_gene.linked, dict_output, scaffold)
 
 
 # Total Stat information about the Metagenome
