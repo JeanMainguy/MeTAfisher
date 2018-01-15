@@ -24,7 +24,7 @@ The dependeces folder has to have:
 * `domaines_METAfisher.csv` : a table with information about the profiles of the data base (i.e TA family, description, source..)
 
 ## Files format requierement
-Metafisher take 4 different files as an input. The files need be in the same folder and to have the same name with only a specif  extension for each.
+Metafisher take 4 different files as an input. The files need be in the same folder and to have the same name with only a specific extension for each.
 ### Fasta files
 Metafisher requires 3 files in the fasta files format:
 1. The chromosome or scaffold sequences with the extension **.fasta**  
@@ -38,7 +38,7 @@ For the chromosome or scaffold sequences the headers of the sequence need to sta
 
 
 
-For the protein sequences in amino acid and nucleotide (respectively .faa and .fna) the header of the sequence should have the name of the chrm/scaffold followed by an | and the gene number used by the program to identify the genes.\\
+For the protein sequences in amino acid and nucleotide (respectively .faa and .fna) the header of the sequence should have the name of the chrm/scaffold followed by an | and the gene number which is used by the program to identify the genes.\\
 
 
 <!-- One typically found on NCBI:
@@ -62,19 +62,18 @@ The columns used by MeTAfisher:
 
 
 The program looks only at the line with feature equal to `CDS`.
- MeTAfisher needs to retrieve the protein number to be able to match the protein hited by hmmsearch with the proper gff line.  To do so the attribute section needs to follow to possible formats:
+ MeTAfisher needs to retrieve the protein number to be able to match the protein hited by hmmsearch with the proper gff line for that the attribute section should follow the following pattern:
 1. One with `ID=< chromosome or scaffold>|<protein number>`.
-2.  One other possible format is with ????
 
 Example of correct gff line :    ```ICM0007MP0313_1000310	GPF	CDS	13787	14128	.	-	0	ID=ICM0007MP0313_1000310|19;partial=00;sta.....```
 
  <!-- CP000569.1	Genbank	gene	13754	15256	.	+	.	ID=gene12;Name=murE;gbkey=Gene;gene=murE;gene_biotype=protein_coding;locus_tag=APL_0013 -->
 
 ## Output file
-Diﬀerent possible output ﬁles exist.
+Diﬀerent output ﬁles currently exist.
 * Short output :
 * Human readable file :
-* ...
+* Table csv like file:
 
 The program also provide a file gathering quantitative information about the analysis of the contigs/chromosomes analysed.    
 
