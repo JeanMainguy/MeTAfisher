@@ -78,7 +78,25 @@ Diﬀerent output ﬁles currently exist.
 The program also provide a file gathering quantitative information about the analysis of the contigs/chromosomes analysed.    
 
 ## How to use MeTAfisher
+
+### File format challenges
 The file format requirement of MeTAfisher are quite heavy and may required a lot of effort if you start with some files that don't follow the required pattern. How ever if the sequence you want to analyse is on genbank, you can use the genbank file of the sequence and processes it through the script genbank_parser.py. This script take as argument the genbank file and create 3 files needed for the TA analysis (.faa, fna and .gff) in the same folder as the genbank file. Genbank_parser.py is only able to process only the full genbank file, then when downloading the file on the genbank web page, you should be certain that the sequence of the genes are displayed to do so you may click in the Customize view left panel on the option Show sequence and then on update view. Then to download the file just click on the upper left Send to button > Complete Record > Choose Destination: File > Format: Genbank > Create File. 
+
+### Launching the program
+Once you have all the files required and correctly shaped you may want to launch MeTAfisher. 
+To launch MeTAfisher you can either launch it directly with the script `main_MetaF.py`and providing correctly all the required argument in the command line or you may also use the MetaF_launcher.sh bash script as a template. 
+You need to provide different information in the script:
+* general_output_pathway: which is the the folder where the result folder of the sequence anlysed will be created. 
+* dependency_pathway; which is the pathway of the dependence folder where the depencies of MeTAfisher are stored. 
+* Sequence_name: 
+* data_pathway:
+* data_name:
+
+Then the script takes care of the rest: it creates a folder named after the Sequence name given in the general output folder provided. Then it launch hmmsearch that searchs TA domains in the amino acid sequence, if the hmmsearch table output already exist  it skip this step to not launch twice the same thing. Anfd finnaly launch the python script main_MetaF.py with the required argument. If you want to activate the Resize and/or the Rescue step you can then add the flag --Resize or --Rescue in the command line. 
+
+
+
+
 
 
 
