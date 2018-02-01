@@ -9,10 +9,38 @@ MeTAfisher is written in Python 2.7. It is made up of four files which need to b
 * `Function_MetaF.py` : All the general functions of the program
 * `Object_MetaF.py` :  Classes and methods.
 * `Orf_MetaF.py` : Functions specific to ORF process, used when the option `--Rescue` is called.
+* ``
 
+`main_MetaF.py` needs the following arguments:
 
-`main_MetaF.py` needs argument to run the program :
-blballablabalb
+`python main_MetaF.py [-h] [--Resize] [--Rescue] [--contig_name CONTIG_NAME] [--HMM_db HMM_DB] metaG_name output_pathway data_pathway data_name dependency_pathway`
+
+positional arguments:
+
+* `metaG_name`            Name of the Metagenome or Genome
+* `output_pathway`        Pathway of the output folder
+* `data_pathway`          Pathway of the data folder where all the data files
+                        are stored : fna_file, faa_file, scaffold_file,
+                        gff_file
+* `data_name`             Common name of all data files, the name without the
+                        extension. fna_file, faa_file, scaffold_file, gff_file
+                        are different only by their extansions : .fna, .faa,
+                        .fasta, .gff respectively
+* `dependency_pathway`    Pathway of the dependency folder where all te
+                        depedencies are stored
+
+optional arguments:
+* `-h`, `--help`            show the help message and exit
+* `--Resize`              Resize the genes if they are too big for the
+                        thresholds and take into account the possible start
+                        along the sequence. To do only if the gene prediction
+                        is not trustable
+* `--Rescue`              To do the rescue step of lonely genes
+*  `--contig_name CONTIG_NAME`
+                        Name of a specific contig to analysed. The program
+                        will analysed only this conitg
+  `--HMM_db HMM_DB `      name of the HMM database
+
 
 
 ## Dependence files
@@ -22,6 +50,8 @@ The dependences folder has to have:
 * `distance.csv` and `length_TA.csv`: used to build the score
 * `ALL_plus_MET_curatted` : the database of TA HMM profile.
 * `domaines_METAfisher.csv` : a table with information about the profiles of the data base (i.e TA family, description, source..)
+
+Additionnaly MeTAfisher need HMMER to be installed as the program retrieve TA systems according hmmsearch output.
 
 ## Files format requierement
 Metafisher takes 4 different files as an input. The files need be in the same folder and they need to have the same name with only a specific extension for each and every one of them.
@@ -52,18 +82,18 @@ Exemple : \\
 > The GFF (General Feature Format) format consists of one line per feature, each containing 9 columns of data, plus optional track definition lines.
 
 The columns used by MeTAfisher:
-1. **seqname** - name of the chromosome or scaffold
-3. **feature** - feature type name, e.g. Gene, Variation, Similarity
-4. **start** - Start position of the feature, with sequence numbering starting at 1.
-5. **end** - End position of the feature, with sequence numbering starting at 1.
-7. **strand** - defined as + (forward) or - (reverse).
-8. **frame** - One of '0', '1' or '2'. '0' indicates that the first base of the feature is the first base of a codon, '1' that the second base is the first base of a codon, and so on..
-9. **attribute** - A semicolon-separated list of tag-value pairs, providing additional information about each feature.   
+* 1. **seqname** - name of the chromosome or scaffold
+* 3. **feature** - feature type name, e.g. Gene, Variation, Similarity
+* 4. **start** - Start position of the feature, with sequence numbering starting at 1.
+* 5. **end** - End position of the feature, with sequence numbering starting at 1.
+* 7. **strand** - defined as + (forward) or - (reverse).
+* 8. **frame** - One of '0', '1' or '2'. '0' indicates that the first base of the feature is the first base of a codon, '1' that the second base is the first base of a codon, and so on..
+* 9. **attribute** - A semicolon-separated list of tag-value pairs, providing additional information about each feature.   
 
 
 The program looks only at the line with feature equal to `CDS`.
- MeTAfisher needs to retrieve the protein number to be able to match the protein hit by hmmsearch with the proper gff line. 
- In order to do that, the attribute section should follow the following pattern:
+ MeTAfisher needs to match the protein hit by hmmsearch with the proper gff line, and to do so the protein number should be identical in the gff file and in the header of the fasta files.
+ In order to do that, the attribute section of the gff file should follow the following pattern:
 1. One with `ID=< chromosome or scaffold>|<protein number>`.
 
 Example of correct gff line :    ```ICM0007MP0313_1000310	GPF	CDS	13787	14128	.	-	0	ID=ICM0007MP0313_1000310|19;partial=00;sta.....```
@@ -80,20 +110,23 @@ The program also provides a file gathering quantitative information about the an
 
 ## How to use MeTAfisher
 
+First of all you should download the gitHub of MeTAfisher.
+
 ### File format challenges
-The file format requirement of MeTAfisher are quite heavy and may require a lot of effort if you start with some files that do not follow the required pattern. However if the sequence you want to analyze is on genbank, you can use the genbank file of the sequence and process it through the script genbank_parser.py. This script takes as argument the genbank file and creates 3 files needed for the TA analysis (.faa, fna and .gff) in the same folder as the genbank file. Genbank_parser.py is only able to process the full genbank file. When downloading the file on the genbank web page, you should be certain that the sequence of the genes are displayed. In order to do so, you may click in the "Customize" view left panel on the option "Show sequence" and then on "Update view". Finally, to download the file, click on the upper left "Send to" button > Complete Record > Choose Destination: File > Format: Genbank > Create File. 
+The file format requirement of MeTAfisher are quite heavy and may require a lot of effort if you start with some files that do not follow the required pattern. However if the sequence you want to analyze is on genbank, you can use the genbank file of the sequence and process it through the script genbank_parser.py. This script takes as argument the genbank file and creates 3 files needed for the TA analysis (.faa, fna and .gff) in the same folder as the genbank file. Genbank_parser.py is only able to process the full genbank file. When downloading the file on the genbank web page, you should be certain that the sequence of the genes are displayed. In order to do so, you may click in the "Customize" view left panel on the option "Show sequence" and then on "Update view". Finally, to download the file, click on the upper left "Send to" button > Complete Record > Choose Destination: File > Format: Genbank > Create File.
+Then be sure to place the genbank file in a known directory and
 
 ### Launching the program
-Once you have all the files required and correctly shaped you may want to launch MeTAfisher. 
-To launch MeTAfisher you can either launch it directly with the script `main_MetaF.py`and provide correctly all the required argument in the command line - or you may also use the MetaF_launcher.sh bash script as a template. 
+Once you have all the files required and correctly shaped you may want to launch MeTAfisher.
+To launch MeTAfisher you can either launch it directly with the script `main_MetaF.py` and provide correctly all the required argument in the command line - or you may also use the MetaF_launcher.sh bash script as a template.
 You need to provide different information in the script:
-* general_output_pathway: the folder where the result folder of the sequence analyzed will be created. 
-* dependency_pathway: the pathway of the dependence folder where the dependences of MeTAfisher are stored. 
-* Sequence_name: 
+* general_output_pathway: the folder where the result folder of the sequence analyzed will be created.
+* dependency_pathway: the pathway of the dependence folder where the dependences of MeTAfisher are stored.
+* Sequence_name: correspond
 * data_pathway:
 * data_name:
 
-Then, the script takes care of the rest: it creates a folder named after the Sequence name given in the general output folder provided. Then, it launches hmmsearch which searches TA domains in the amino acid sequence. If the hmmsearch table output already exists, it skip this step in order not to launch twice the same thing. And finally it launches the python script main_MetaF.py with the required argument. If you want to activate the "Resize" and/or the "Rescue" step, you can then add the flag --Resize or --Rescue in the command line. 
+Then, the script takes care of the rest: it creates a folder named after the Sequence name given in the general output folder provided. Then, it launches hmmsearch which searches TA domains in the amino acid sequence. If the hmmsearch table output already exists, it skips this step in order not to launch twice the same thing. And finally it launches the python script main_MetaF.py with the required argument. If you want to activate the "Resize" and/or the "Rescue" step, you can then add the flag --Resize or --Rescue in the command line.
 
 
 
