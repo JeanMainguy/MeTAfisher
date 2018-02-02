@@ -1,6 +1,7 @@
 # Content
 - [Program overview](#Program-overview)
 - [How to use MeTAfisher](##How-to-use-MeTAfisher)
+- [Output file](#Output-file)
 
 # MeTAfisher
 Program to retrieve toxin antitoxin (TA) systems in metagenomes
@@ -13,7 +14,6 @@ MeTAfisher is written in Python 2.7. It is made up of four files which need to b
 * `Function_MetaF.py` : All the general functions of the program
 * `Object_MetaF.py` :  Classes and methods.
 * `Orf_MetaF.py` : Functions specific to ORF process, used when the option `--Rescue` is called.
-* ``
 
 `main_MetaF.py` needs the following arguments:
 
