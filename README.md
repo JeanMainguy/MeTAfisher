@@ -1,5 +1,6 @@
 # Content
 - [Program overview](#Program-overview)
+- [How to use MeTAfisher](##How-to-use-MeTAfisher)
 
 # MeTAfisher
 Program to retrieve toxin antitoxin (TA) systems in metagenomes
