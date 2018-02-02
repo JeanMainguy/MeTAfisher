@@ -1,0 +1,13 @@
+## result_S
+## Rescue lonely gene : False
+## Resize gene : False
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+
+====CP000527.1====
+1. Genes Dvul_1444 & Dvul_1443	strand -	score 25.4888035597
+2. Genes Dvul_1454 & Dvul_1455	strand +	score 26.5653336634
+3. Genes Dvul_1490 & Dvul_1491	strand +	score 25.9521485948
+4. Genes Dvul_1494 & Dvul_1495	strand +	score 24.5824095554
+5. Genes Dvul_2607 & Dvul_2606	strand -	score 29.9115672012
+6. Genes Dvul_2771 & Dvul_2770	strand -	score 27.0234792804

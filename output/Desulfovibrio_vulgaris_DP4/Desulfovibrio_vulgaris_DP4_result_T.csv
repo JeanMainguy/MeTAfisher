@@ -1,0 +1,18 @@
+## result_T
+## Rescue lonely gene : False
+## Resize gene : False
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+Contig	Gene number	Gene id	start	end	length	length_score	strand	feature	domain	Neighbor gene
+CP000527.1	1437	Dvul_1443	1745392	1745686	295		-	CDS	"COG3636 (score:4.811)	Antitoxin	HTH"	"Down:	Dvul_1444	 distance -17 (score 0.963)	system score 25.489"
+CP000527.1	1438	Dvul_1444	1745669	1745984	316		-	CDS	"COG3657 (score:4.891)	Toxin	relBE"	"Up:  	Dvul_1443	 distance -17 (score 0.963)	system score 25.489"
+CP000527.1	1448	Dvul_1454	1754462	1754807	346		+	CDS	"COG3549 (score:4.434)	Toxin	relBE higBA"	"Up:  	Dvul_1455	 distance 10 (score 2.794)	system score 26.565"
+CP000527.1	1449	Dvul_1455	1754817	1755120	304		+	CDS	"COG3093 (score:4.703)	XXXXXX	PubMed:17678530"	"Down:	Dvul_1454	 distance 10 (score 2.794)	system score 26.565"
+CP000527.1	1484	Dvul_1490	1783597	1783867	271		+	CDS	"COG2929 (score:4.631)		RHH"	"Up:  	Dvul_1491	 distance -14 (score 1.894)	system score 25.952"
+CP000527.1	1485	Dvul_1491	1783853	1784171	319		+	CDS	"COG3514 (score:4.297)	Antitoxin	NA"	"Down:	Dvul_1490	 distance -14 (score 1.894)	system score 25.952"
+CP000527.1	1487	Dvul_1494	1784899	1785172	274		+	CDS	"COG2929 (score:4.569)		RHH"	"Up:  	Dvul_1495	 distance -23 (score 0.289)	system score 24.582"
+CP000527.1	1488	Dvul_1495	1785149	1785392	244		+	CDS	"PF12441.6 (score:3.231)	NA	NA"	"Down:	Dvul_1494	 distance -23 (score 0.289)	system score 24.582"
+CP000527.1	2594	Dvul_2606	3041221	3041509	289		-	CDS	"COG3668 (score:4.278)	Toxin	RelBE"	"Down:	Dvul_2607	 distance -11 (score 4.856)	system score 29.912"
+CP000527.1	2595	Dvul_2607	3041498	3041738	241		-	CDS	"COG3905 (score:4.307)	Antitoxin	relBE"	"Up:  	Dvul_2606	 distance -11 (score 4.856)	system score 29.912"
+CP000527.1	2757	Dvul_2770	3220040	3220478	439		-	CDS	"PF15919 (score:4.542)	Antitoxin	hicBA"	"Down:	Dvul_2771	 distance 96 (score 0.048)	system score 27.023"
+CP000527.1	2758	Dvul_2771	3220574	3220781	208		-	CDS	"COG1724 (score:4.469)	Toxin	hicBA"	"Up:  	Dvul_2770	 distance 96 (score 0.048)	system score 27.023"
