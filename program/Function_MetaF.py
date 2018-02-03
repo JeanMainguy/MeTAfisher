@@ -158,7 +158,8 @@ def hmmtable_parser(line):
     """
 
     result = pattern.match(line)
-
+    if not result:
+        raise Exception('The parser of HMM table has failed... you may check the HMM table output ---> hmmtable line with a problem', line )
     domain = obj.Domain(
         domain_number=result.group("domain_number"), ali_from=result.group("ali_from"), ali_to=result.group("ali_to"), env_from=result.group("env_from"),
         env_to=result.group("env_to"), domain_name=result.group("domain"), domain_acc=result.group("domain_acc"), e_value=result.group("evalue"), score=result.group("score"), line=line)
