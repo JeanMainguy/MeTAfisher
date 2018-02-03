@@ -1,0 +1,13 @@
+## result_S
+## Rescue lonely gene : False
+## Resize gene : False
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+
+====AM167904.1====
+1. Genes BAV0254 & BAV0253	strand -	score 22.3890900039
+2. Genes BAV0944 & BAV0943	strand -	score 32.7983550253
+3. Genes BAV1312A & BAV1312	strand -	score 23.8847225032
+4. Genes BAV1456 & BAV1455	strand -	score 26.6002413793
+5. Genes BAV1487 & BAV1486	strand -	score 29.5151303903
+6. Genes BAV2054 & BAV2055	strand +	score 20.1963034762

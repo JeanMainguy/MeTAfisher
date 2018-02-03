@@ -1,0 +1,18 @@
+## result_T
+## Rescue lonely gene : False
+## Resize gene : False
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+Contig	Gene number	Gene id	start	end	length	length_score	strand	feature	domain	Neighbor gene
+AM167904.1	253	BAV0253	261654	262050	397		-	CDS	"pfam01381 (score:3.94)	Antitoxin	relBE higBA"	"Down:	BAV0254	 distance 146 (score 0.012)	system score 22.389"
+AM167904.1	254	BAV0254	262196	262607	412		-	CDS	"pfam01381 (score:4.015)	Antitoxin	relBE higBA"	"Up:  	BAV0253	 distance 146 (score 0.012)	system score 22.389"
+AM167904.1	941	BAV0943	1014557	1014815	259		-	CDS	"PF14384.5 (score:4.481)	Antitoxin	BernTA"	"Down:	BAV0944	 distance 1 (score 6.83)	system score 32.798"
+AM167904.1	942	BAV0944	1014816	1015050	235		-	CDS	"COG2929 (score:4.057)		RHH"	"Up:  	BAV0943	 distance 1 (score 6.83)	system score 32.798"
+AM167904.1	1305	BAV1312	1390468	1390795	328		-	CDS	"COG1396 (score:3.696)	Antitoxin	hipBA"	"Down:	BAV1312A	 distance -17 (score 0.963)	system score 23.885"
+AM167904.1	1306	BAV1312A	1390778	1391033	256		-	CDS	"COG2026 (score:3.759)	Toxin	relBE relBE"	"Up:  	BAV1312	 distance -17 (score 0.963)	system score 23.885"
+AM167904.1	1455	BAV1455	1515063	1515342	280		-	CDS	"COG3514 (score:4.56)	Antitoxin	NA"	"Down:	BAV1456	 distance -14 (score 1.894)	system score 26.6"
+AM167904.1	1456	BAV1456	1515328	1515595	268		-	CDS	"COG2929 (score:4.616)		RHH"	"Up:  	BAV1455	 distance -14 (score 1.894)	system score 26.6"
+AM167904.1	1486	BAV1486	1538730	1539051	322		-	CDS	"COG2944 (score:4.016)	Antitoxin	HTH"	"Down:	BAV1487	 distance -4 (score 6.853)	system score 29.515"
+AM167904.1	1487	BAV1487	1539047	1539347	301		-	CDS	"COG2026 (score:3.9)	Toxin	relBE relBE"	"Up:  	BAV1486	 distance -4 (score 6.853)	system score 29.515"
+AM167904.1	2050	BAV2054	2196740	2197211	472		+	CDS	"COG0640 (score:2.766)	Antitoxin	ArsR family HTH"	"Up:  	BAV2055	 distance 48 (score 0.205)	system score 20.196"
+AM167904.1	2051	BAV2055	2197259	2197538	280		+	CDS	"PF09957.7 (score:2.477)	NA	NA"	"Down:	BAV2054	 distance 48 (score 0.205)	system score 20.196"
