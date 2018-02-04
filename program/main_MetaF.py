@@ -28,7 +28,7 @@ parser.add_argument('--Resize', dest='resize', action='store_true',
                     help="Resize the genes if they are too big for the thresholds and take into account the possible start along the sequence. To do only if the gene prediction is not trustable")
 parser.add_argument('--Rescue', dest='rescue', action='store_true',
                     help='To do the rescue step of lonely genes, by default it is False')
-parser.add_argument('--contig_name', default=False, help='Name of a specific contig to analysed. The program will analysed only this conitg')
+parser.add_argument('--contig_name', dest='contig_name', default=False, help='Name of a specific contig to analysed. The program will analysed only this conitg')
 parser.add_argument("--HMM_db", default="ALL_plus_MET_curatted.hmm", help="name of the HMM database")
 
 
@@ -39,6 +39,7 @@ data_way = args.data_pathway
 data_name = args.data_name
 dependence_way = args.dependency_pathway
 HMM_db = dependence_way + '/' + args.HMM_db
+contig_name = args.contig_name # Name of a specific contig or False by default if False all contig will be analysed
 
 gff_file = data_way + '/' + data_name + '.gff'
 scaffold_file = data_way + '/' + data_name + '.fasta'
@@ -156,29 +157,20 @@ bonus_start = 7 # +7 is given to configuration that start with their initial sta
 obj.Gene.length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k, len_mltp)
 obj.Gene.distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k, dist_mltp)
 
-# dico_len, Ntot_len = fct2.from_file_to_dict(file_len)
-# dico_dist, Ntot_dist = fct2.from_file_to_dict(file_dist)
-#
-#
-# obj.Gene.length_proba = fct2.give_proba_dict(int(lenMin / 3), int(lenMax / 3), dico_len, k, Ntot_len)
-# obj.Gene.distance_proba = fct2.give_proba_dict(distanceMin, distanceMax, dico_dist, k, Ntot_dist)
-# obj.Gene.distance_proba = fct2.transformation(obj.Gene.distance_proba, dist_mltp)
-# obj.Gene.length_proba = fct2.transformation(obj.Gene.length_proba, len_mltp)
-#
-
 # Take every scaffold present in the HMM output and sort them in order to
 # be able to retrieve their sequence correctly in the input file
-scaffold_list = sorted(fct2.get_list_scaffold(table_hmm))
-print 'nb sca', len(scaffold_list)
-# Loop : each scaffold is treated independntly here
-# scaffold_list = [
-#     'ICM0007MP0313_1000008', 'ICM0007MP0313_1000022', 'ICM0007MP0313_1000126',
-#     'ICM0007MP0313_1000131', 'ICM0007MP0313_1000288', 'ICM0007MP0313_1000321']
-# scaffold_list = sorted(['ICM0007MP0313_1000103', 'ICM0007MP0313_1000207', 'ICM0007MP0313_1000073', 'ICM0007MP0313_1000346'])
-# scaffold_list = ['ICM0007MP0313_1000346']
-# scaffold_list = ['ICM0007MP0313_1000085', 'ICM0007MP0313_1000086', 'ICM0007MP0313_1000089', 'ICM0007MP0313_1000408']
-# scaffold_list = ['ICM0007MP0313_1000321']
+scaffold_list = fct2.get_list_scaffold(table_hmm)
+if not contig_name: # if the contig name option to give only one contig is not provided then contig_name is False and all contig are analysed
+    scaffold_list = sorted(fct2.get_list_scaffold(table_hmm))
+else: # contig name is only is the name of one contig
+    if contig_name not in scaffold_list:
 
+        raise Exception('The contig name is incorrect or no hit have been found by hmmsearch')
+    scaffold_list = [contig_name]
+print 'nb sca', len(scaffold_list)
+
+
+# Loop : each scaffold is treated independntly here
 for scaffold in scaffold_list:
     # print '* *' * 25
     # print ' * ' * 25
