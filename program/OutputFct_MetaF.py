@@ -57,7 +57,7 @@ def stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, compl
         header = ['contig', 'gene with TA domain', 'lonely gene', 'linked gene']
 
         if rescue:
-            header += ['adjacent orf', 'rescue flag', 'orf with TA domain', 'lonely gene rescue']
+            header += ['adjacent orf', 'orf with TA domain', 'lonely gene rescue']
 
         fl_stat = open('{}/{}_contig_stat{}.csv'.format(output_way, metaG_name, complement), 'w')
         fl_stat.write(headinfo)
@@ -71,6 +71,7 @@ def stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, compl
 
 def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat):
     contig_stat = {}
+    contig_stat['contig'] = scaffold
     contig_stat['gene with TA domain'] = len(obj.TA_gene.genes)
     contig_stat['linked gene'] = len(obj.TA_gene.linked)
     contig_stat['lonely gene'] = contig_stat['gene with TA domain'] - contig_stat['linked gene']
@@ -162,8 +163,8 @@ def write_short_result(g, post, fl, i, g_score, post_score):
 def write_human_result(g, post, fl, i, g_score, post_score):
     fl.write("\nPRE GENE\n" + write_line(g, g_score))
     fl.write("\nPOST GENE\n" + write_line(post, post_score) + '\n')
-    fl.write("DISTANCE {} ({})\n".format(post_score[0]['distance'], post_score[0]['dist_score']))
-    # fl.write(visualisation_genes(g, post, post_score[0]['distance']))
+    fl.write("DISTANCE {} ({}) \t SYSTEM score: {}\n".format(post_score[0]['distance'], post_score[0]['dist_score'], g_score[0]['sum'] + post_score[0]['sum']))
+    fl.write(visualisation_genes(g, post, post_score[0]['distance']))
 
 
 def write_line(g, score):
