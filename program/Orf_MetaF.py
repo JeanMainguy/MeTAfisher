@@ -27,7 +27,7 @@ def rescue_lonely_gene(dico_orf, dico_gff, scaffold, tmp_adjorf_faa):
     # retrieve the end position of the predicted gene to then skip the related ORF:
     gff_ends, highestGeneNumber = get_gff_ends(dico_gff, scaffold)
 
-    # TEST IF THERE ARE LONELY GENE IN STRAND plu
+    # TEST IF THERE ARE LONELY GENE IN STRAND plus
     if obj.TA_gene.lonely['+']:
         # print 'THERE IS LONELY GENE ON STRAND +'
         generator = findORF(scaffold, seq, rev=1)
@@ -65,37 +65,22 @@ def hmm_orf_get_adj(dico_hmmorf):
     # obj.TA_gene.genes_minus.extend(dico_obj['-'])
 
     for strand in dico_hmmorf:
-        for g in dico_hmmorf[strand]:
-            print g.gene_number
         # Adding adjOrf to the main list of TA gene
         # obj.TA_gene.genes_strand[strand].extend(dico_hmmorf[strand])
         # obj.TA_gene.genes.extend(dico_hmmorf[strand])
         for hmmorf in dico_hmmorf[strand]:
             for gene in obj.TA_gene.genes_strand[strand]:
-                if hmmorf.gene_number == gene.gene_number:  # MAGIC METHOD
+                if hmmorf.gene_number == gene.gene_number:  # if the orf have been already process and added to the list then we don't check it against itself
                     # print hmmorf
                     # print gene
                     continue
                 if gene.is_pre_adj_to(hmmorf):
                     add_post_pre_attr(strand, g_post=hmmorf, g_prev=gene)
-                    # obj.TA_gene.linked.add(gene)
-                    # obj.TA_gene.linked.add(hmmorf)
-                    # if strand == '+':
-                    #     gene.post.append(hmmorf)
-                    #     hmmorf.prev.append(gene)
-                    # else:
-                    #     hmmorf.post.append(gene)
-                    #     gene.prev.append(hmmorf)
+                    # print gene, 'is adj to', hmmorf
+
                 elif hmmorf.is_pre_adj_to(gene):
                     add_post_pre_attr(strand, g_post=gene, g_prev=hmmorf)
-                    # obj.TA_gene.linked.add(gene)
-                    # obj.TA_gene.linked.add(hmmorf)
-                    # if strand == '+':
-                    #     hmmorf.post.append(gene)
-                    #     gene.prev.append(hmmorf)
-                    # else:
-                    #     gene.post.append(hmmorf)
-                    #     hmmorf.prev.append(gene)
+                    # print gene, 'is adj to', hmmorf
             obj.TA_gene.genes_strand[strand].append(hmmorf)
             obj.TA_gene.genes.append(hmmorf)
 
@@ -126,6 +111,14 @@ def adjust_orf_attribut(dico_obj, highestGeneNumber):
             o.possible_start = [s for s in o.possible_start if s <= o.domain_Ct_border]
             # print 'after', o.possible_start
             o.distanceMin = obj.Gene.distanceMin - abs(o.possible_start[-1] - o.possible_start[0])
+
+
+            #WARNING absolute value of distance min should not be greater than the length of the gene !!
+            # because it would allow overlap of more than the length of the gene
+            # and then could give a post gene before a pre gene so a non sense
+            if abs(o.distanceMin) >= len(o):
+                o.distanceMin = -len(o) +1 # if so distance min is -abs(len -1)
+
             o.post = []
             o.prev = []
             highestGeneNumber += 1
@@ -164,6 +157,7 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
     """
     # print 'STRAND ', strand
     # print 'GFF ENDS\n', gffEnds[strand]
+    # print lonelyGenes[0]
     for o in generator:
         if o.real_end() in gffEnds[strand]:
             # print 'Is a predicted gene..', o
@@ -175,9 +169,17 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
         # EDIT now orfinder size max and min correctly...
         # o.manage_size()  # A enlever quand tu le sens attention au distanceMin ! !
         o.distanceMin = obj.Gene.distanceMin - (o.possible_start[-1] - o.possible_start[0])
-        # .distanceMin = Gene.distanceMin - abs(o.possible_start[-1] - o.possible_start[0])
+        #WARNING absolute value of distance min should not be greater than the length of the gene !!
+        # because it would allow overlap of more than the length of the gene
+        # and then could give a post gene before a pre gene so a non sense
+
+        if abs(o.distanceMin) >= len(o):
+            o.distanceMin = -len(o) +1 # if so distance min is len -1
+
+
         if o.is_adj(lonelyGenes):
-            # print 'IS adj', o
+
+
             obj.Orf.adj_orf_index += 1
             obj.Orf.adj_orf[obj.Orf.adj_orf_index] = o
             # print obj.Gene.distanceMin, '-(', (o.possible_start[-1], '-', o.possible_start[0]), ') = ', o.distanceMin
@@ -253,15 +255,22 @@ def get_gff_ends(dico_gff, scaffold):
     '''
     gff_ends = {'+': [], '-': []}
     line = dico_gff["line"]
+    # print line
     fl = dico_gff["csv"]
     while line and line[0] != scaffold:
         line = next(fl)
-    for line in fl:
+    # for line in fl:
+    while line and line[0] == scaffold:
+        print line
+
         if line[0] != scaffold:
             break
         if line[2] not in ['CDS', 'gene']:
-            line = next(fl)
-            continue
+            try:
+                line = next(fl)
+                continue
+            except StopIteration:
+                break
         # this number is used when we write the gff into file to have a number that doesn't overlap with other gene in round2
         highestGeneNumber = int(line[8].split(";")[0].split('|')[1])
 
@@ -269,6 +278,11 @@ def get_gff_ends(dico_gff, scaffold):
             gff_ends['+'].append(int(line[4]))
         else:
             gff_ends['-'].append(int(line[3]))
+        try:
+            line = next(fl)
+        except StopIteration:
+            break
+
     dico_gff["line"] = line
     return gff_ends, highestGeneNumber
 

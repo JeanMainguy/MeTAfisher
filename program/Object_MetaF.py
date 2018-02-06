@@ -74,10 +74,16 @@ class Gene:
         Check if self is in tandem with gene in parameter.
         end of gene is located a front of end of self.------===self==>--===gene(post)===>------
         however for strand minus the gene post is inversed : ------<===self(post)==--<===gene===------
-        the if statement is there to take care of that
+        The customize distance min is always from the post gene in the TA system.
+        Then it is from self when it's minus strand and from gene when strand is "+" (cf drawing )
+        The customize distanceMin of predicted genes is not changed when the flag --Resize is OFF.
+        When we are dealing with ORF, all orf have a customize distance min even if Resize is OFF.
         """
 
-        if gene.distanceMin < gene.start - self.end < Gene.distanceMax:  # If the distance between the two gene are fitting the thresholds?
+        distance_min = gene.distanceMin if self.strand == '+' else self.distanceMin
+
+        if distance_min < gene.start - self.end < Gene.distanceMax:  # If the distance between the two gene are fitting the thresholds?
+
             return True
         # elif gene.start - self.end > Gene.dist_max:
             # return False  # false le gene start trop loin
@@ -186,19 +192,6 @@ class TA_gene(Gene):
             start_po.insert(0, 0)
 
         return start_po
-        # if len(start_po) == 0:
-        #     if start_po[0] == 0 or inf != 0:
-        #         """
-        #         if it starts already at 0 or if the search has not started  at 0 then,
-        #         no need to add 0. as a potential start
-        #         """
-        #         return start_po
-        #     else:
-        #         """ even if 0 is not a start codon it is still a start position
-        #         (e.i. if the gene is at the border of the contig) """
-        #         return start_po.insert(0, 0)
-        # else:
-        #     return []
 
 
 class Orf(Gene):

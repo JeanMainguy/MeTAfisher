@@ -189,6 +189,13 @@ def get_start_po(dico):
 
         g.distanceMin = obj.Gene.distanceMin - abs(start_po[-1] - start_po[0])
 
+        #WARNING absolute value of distance min should not be greater than the length of the gene !!
+        # because it would allow overlap of more than the length of the gene
+        # and then could give a post gene before a pre gene so a non sense
+
+        if abs(g.distanceMin) >= len(g):
+            g.distanceMin = -len(g) +1 # if so distance min is len -1
+
         # Uncomment this part if instead of having the position of start inside the intial gene,
         # it is desire to have the position inthe contig
 
@@ -320,6 +327,16 @@ def check_size(gene_strand):
             # print gene.gene_number, '.....*'
             if obj.Gene.length_min <= len(gene) <= obj.Gene.length_max:
                 gene.possible_start = [0]
+                #WARNING absolute value of distance min should not be greater than the length of the gene !!
+                # because it would allow overlap of more than the length of the gene
+                # and then could give a post gene before a pre gene so a non sense
+                if abs(gene.distanceMin) >= len(gene):
+                    # print 'OOOOOOh'
+                    # print gene.distanceMin
+                    gene.distanceMin = -len(gene) +1 # if so distance min is len -1
+                    # print gene
+                    # print gene.distanceMin
+                    # raw_input()
             else:
                 invalide.append(gene)
         for g in invalide:

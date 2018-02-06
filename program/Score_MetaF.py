@@ -43,13 +43,22 @@ def from_file_to_dict(file_name):
 
 
 def score_TA_list(genes_strand, bonus_start):
-    for strand in genes_strand:
-        for gene in genes_strand[strand]:
-            for post in gene.post:
-                # print 'Gene :\n', gene
-                # print 'Gene Post :\n', post
-                score_pair(gene, post, bonus_start)  # GIVE THE SCOREEE
-                # fct2.write_human_result(g, g_post, fl_hu_res)
+    # for strand in genes_strand:
+    #     for gene in genes_strand[strand]:
+    #         for post in gene.post:
+    #             # print 'Gene :\n', gene
+    #             # print 'Gene Post :\n', post
+    #             score_pair(gene, post, bonus_start)  # GIVE THE SCOREEE
+    #             # fct2.write_human_result(g, g_post, fl_hu_res)
+    for gene in genes_strand:
+        for post in gene.post:
+            score_pair(gene, post, bonus_start)  # GIVE THE SCOREEE
+
+    # for gene in genes_strand:
+    #     print '=='*20
+    #     print 'GENE', gene
+    #     print gene.dict_score
+    #     print '=='*20
 
 
 def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pre !
@@ -71,11 +80,12 @@ def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pr
     # print "MIN {} --> MAX {}".format(obj.Gene.distanceMin, obj.Gene.distanceMax)
     # print "possible start of g"
     # print ('initial distance and strand ', initial_dist, pre.strand)
-    # print dir(post)
+    # # print dir(post)
     # print ('post g possible start', post.possible_start)
     # print ('compatible start', compatible_starts)
     # print ('possible start of self ! ', pre.possible_start)
     score_post = get_score(post, compatible_starts, bonus_start, distance=initial_dist)
+    # print 'score post de ',post.gene_number,   score_post
     score = get_score(pre, pre.possible_start, bonus_start)
     # print pre.feature
     # print pre.dict_score

@@ -19,7 +19,7 @@ def output_headinfo_creation(metaG_name, thresholds, rescue, resize):
     if resize:
         complement += '_resize'
     headinfo = '## Name of the sequence analysed: ' + metaG_name
-    headinfo = "## Rescue lonely gene : {}\n".format(rescue)
+    headinfo += "## Rescue lonely gene : {}\n".format(rescue)
     headinfo += "## Resize gene : {}\n".format(resize)
     headinfo += "## Distance threshold from {}nt to {}nt\n".format(thresholds['distanceMin'], thresholds['distanceMax'])
     headinfo += "## Length threshold from {}aa to {}aa\n".format(thresholds['lenMin'], thresholds['lenMax'])
@@ -97,7 +97,6 @@ def write_result(set_linked, dict_output, scaffold):
         dict_output['result_S'].write(contig_header)
 
     for gene in sorted(set_linked, key=attrgetter('start')):
-
         for g_post in gene.post:
             i += 1  # to give a number to each TA pair
             g_score = gene.dict_score[g_post.gene_number]
@@ -106,8 +105,10 @@ def write_result(set_linked, dict_output, scaffold):
                 write_human_result(gene, g_post, dict_output['result_H'], i, g_score, post_score)
             if dict_output['result_S']:
                 write_short_result(gene, g_post, dict_output['result_S'], i, g_score, post_score)
-        if dict_output['result_T']:
-            write_table_result(gene, dict_output['result_T'])
+        # if dict_output['result_T']:
+        #     print gene
+        #     print gene.prev[0]
+        #     write_table_result(gene, dict_output['result_T'])
 
 
 def write_table_result(gene, csvfl):
@@ -140,6 +141,7 @@ def write_adj_gene(gene, neighbours, position):
     npc = 3
     info = ''
     for n in neighbours:
+        # print gene.dict_score
         gene_score = gene.dict_score[n.gene_number]
         n_score = n.dict_score[gene.gene_number]
         # print n_score
@@ -170,7 +172,7 @@ def write_human_result(g, post, fl, i, g_score, post_score):
 def write_line(g, score):
     npc = 3 # number post coma
     line = "Gene {}\tfrom {} to {}\t{}aa ({})\tstart {}\t{}".format(
-        g.gene_number, g.real_start(), g.real_end(), round(score[0]["length"] / 3, npc), round(score[0]["len_score"], npc), round(score[0]["start"], npc), g.feature)
+        g.gene_number, g.real_start(), g.real_end(), score[0]["length"] / 3, round(score[0]["len_score"], npc), score[0]["start"], g.feature)
     domain_va = map(str, g.valid_domain(score[0]['start']))
     domain_va = '/'.join(domain_va)
     line += ("\tdomain: {}\n".format(domain_va))

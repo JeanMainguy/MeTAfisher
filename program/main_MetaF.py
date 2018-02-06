@@ -164,7 +164,6 @@ if not contig_name: # if the contig name option to give only one contig is not p
     scaffold_list = sorted(fct2.get_list_scaffold(table_hmm))
 else: # contig name is only is the name of one contig
     if contig_name not in scaffold_list:
-
         raise Exception('The contig name is incorrect or no hit have been found by hmmsearch')
     scaffold_list = [contig_name]
 print 'nb sca', len(scaffold_list)
@@ -175,6 +174,12 @@ for scaffold in scaffold_list:
     # print '* *' * 25
     # print ' * ' * 25
     print scaffold
+    # ###
+    #TODO REMOVE
+    # if scaffold == 'ICM0104MP0310_1000133':
+    #     print 'on skip ICM0104MP0310_1000133'
+    #     continue
+    # ###
     # header = ['contig', 'gene with TA domain', 'lonely gene', 'linked gene', 'adjacent orf', 'rescue flag', 'hmm orf', 'lonely gene rescue']
     # Reset obj.TA_gene and Orf class attribut
     obj.TA_gene.genes = []
@@ -202,9 +207,10 @@ for scaffold in scaffold_list:
     if obj.TA_gene.lonely is not None and rescue is True:
         orf2.rescue_lonely_gene(dico_orf, gff_dico, scaffold, tmp_adj_orf_faa)
 
-    # index to give a number of gene in the new gff file
-    # Index start where the predicted gene end in order to not have same id for two gene in the round 2orf.
-    score.score_TA_list(obj.TA_gene.genes_strand, bonus_start)
+    # score.score_TA_list(obj.TA_gene.genes_strand, bonus_start)
+
+    score.score_TA_list(obj.TA_gene.linked, bonus_start)
+
 
     # Write stat
     if info_contig_stat:
