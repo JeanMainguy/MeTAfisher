@@ -312,6 +312,15 @@ class Domain:
         except KeyError:
             return 'Domain not found in the csv domain file.. {} ({}) '.format(self.domain_name, round(log(self.score), 3))
         return "{} (score:{})\t{}\t{}".format(dico_do["acc"], round(log(self.score),3), dico_do['type'], dico_do['family'])
+    def writeGffLike(self):
+        try:
+            dico_do = Gene.domain_dict[self.domain_name]
+            ta_type = dico_do['type']
+            family = dico_do['family']
+            acc = dico_do['acc']
+        except KeyError:
+            return 'domain={};domain_score={};type={};familly={}'.format(self.domain_name, self.score, "domainNotFoundInDB", "domainNotFoundInDB")
+        return 'domain={};domain_score={};type={};family={}'.format(dico_do['acc'], self.score,dico_do['type'], dico_do['family'])
 
     def score_transformed(self):
         # log transformation

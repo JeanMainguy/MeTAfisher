@@ -59,7 +59,8 @@ info_contig_stat = True
 output_human = True
 output_short = True
 output_table = True
-dict_output = {'result_H': output_human, "result_S": output_human, 'result_T': output_table}
+output_gff = True
+dict_output = {'result_H': output_human, "result_S": output_human, 'result_T': output_table, 'result_GFF': output_gff}
 
 # Storing information as Gene class attribut to be use when we launch hmmsearch
 obj.Gene.output_way = output_way

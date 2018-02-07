@@ -261,7 +261,7 @@ def get_gff_ends(dico_gff, scaffold):
         line = next(fl)
     # for line in fl:
     while line and line[0] == scaffold:
-        print line
+        # print line
 
         if line[0] != scaffold:
             break

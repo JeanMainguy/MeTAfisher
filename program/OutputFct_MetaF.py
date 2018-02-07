@@ -7,8 +7,11 @@ from operator import attrgetter
 
 def output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize):
     headinfo, complement = output_headinfo_creation(metaG_name, thresholds, rescue, resize)
+    ## Output H, T and S initialization
     output_file_creation(output_way, metaG_name, dict_output, headinfo, complement) # dico output is update no need to give it back
+    ## Output T as a csv file initialization
     dict_output["result_T"] = result_table_config(dict_output["result_T"])
+    ## Stat file initialisation
     writer_stat, total_stat, fl_stat = stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, complement, rescue)
     return writer_stat, total_stat, fl_stat
 
@@ -26,6 +29,8 @@ def output_headinfo_creation(metaG_name, thresholds, rescue, resize):
     return headinfo, complement
 
 def result_table_config(fl):
+    if not fl:
+        return False # fl is False
     #Chnage the regular file writer into a csv file writer with header
     header = ["Contig", "Gene number", "Gene id", "start", "end", "length", "length_score", "strand", "feature", "domain", "Neighbor gene"]
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
@@ -39,9 +44,14 @@ def output_file_creation(output_way, metaG_name, dict_output, headinfo, compleme
     is_output = False # by default it is False and then if one of the output is True, it will become True
 
     for out_name in dict_output:
-
         if out_name:  # if the flag is not False
-            extension = 'txt' if out_name != 'result_T' else 'csv'
+            extension = 'txt'
+            if out_name == 'result_T':
+                 extension ='csv'
+            elif out_name == 'result_GFF':
+                 extension ='gff'
+                 # out_name = 'TA_Genes'
+
             file_out = '{}/{}_{}{}.{}'.format(output_way, metaG_name, out_name, complement, extension)
             flout = open(file_out, "w")
             flout.write("## {}\n".format(out_name))
@@ -105,10 +115,19 @@ def write_result(set_linked, dict_output, scaffold):
                 write_human_result(gene, g_post, dict_output['result_H'], i, g_score, post_score)
             if dict_output['result_S']:
                 write_short_result(gene, g_post, dict_output['result_S'], i, g_score, post_score)
-        # if dict_output['result_T']:
-        #     print gene
-        #     print gene.prev[0]
-        #     write_table_result(gene, dict_output['result_T'])
+        if dict_output['result_T']:
+            write_table_result(gene, dict_output['result_T'])
+
+        if dict_output['result_GFF']:
+            write_gff(gene, dict_output['result_GFF'])
+
+def write_gff(gene, fl):
+    neighbors = "possible_partners="+','.join([give_tag(n) for n in gene.prev+gene.post])
+    list_attrib = ["protein_id="+give_tag(gene), 'best_'+gene.domain[0].writeGffLike(), neighbors]
+    attributes = '{}|{};'.format(gene.scaffold, gene.gene_number)
+    attributes += ';'.join(list_attrib)
+    list_gff =[gene.scaffold, 'metaF', gene.feature, str(gene.start), str(gene.end), ".", gene.strand, ".",attributes+'\n']
+    fl.write('\t'.join(list_gff))
 
 
 def write_table_result(gene, csvfl):
@@ -194,7 +213,7 @@ def visualisation_genes(pre, post, distance):
     final_str += position_g2 * ' ' + post_str + '\n'
     positions = [position_g2, len(pre_str)]
     final_str += (min(positions) - 1) * ' ' + '/' + abs(positions[0] - positions[1]) * ' ' + '\\\n'
-    final_str += (-1 + min(positions) + abs(positions[0] - positions[1]) - len(dist_str) / 2) * ' ' + dist_str
+    final_str += (-1 + min(positions) + (abs(positions[0] - positions[1]) - len(dist_str))/2 ) * ' ' + dist_str
     # print final_str
     return final_str
 
@@ -212,4 +231,4 @@ def give_tag(g):
     if hasattr(g, 'locus_tag'):
         return g.locus_tag  # + ':' + str(g.gene_number)
     else:
-        return str(g.gene_number)
+        return g.feature+str(g.gene_number)
