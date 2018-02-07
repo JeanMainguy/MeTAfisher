@@ -1,7 +1,7 @@
 # Content
 - [Program overview](#Program-overview)
 - [How to use MeTAfisher](##How-to-use-MeTAfisher)
-- [Output file](#Output-file)
+- [Output file](#gff_file)
 
 # MeTAfisher
 Program to retrieve toxin antitoxin (TA) systems in metagenomes
@@ -81,7 +81,7 @@ For the protein sequences in amino acid and nucleotide (respectively .faa and .f
  -->
 Exemple : \\
  `>ICM0007MP0313_1000001|5`
-
+<a name="gff_file"/>
 ### GFF file
 MeTAfisher needs a gff file containing the
 > The GFF (General Feature Format) format consists of one line per feature, each containing 9 columns of data, plus optional track definition lines.
