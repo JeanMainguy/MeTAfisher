@@ -16,7 +16,7 @@ def write_gff(feat, fl_gff, chrm, attributes, nbgene):
     attributes = "{}|{};".format(chrm,str(nbgene)) + ';'.join(attributes)
     # attributes += giveQualifiersInfo(feat.qualifiers, ["locus_tag", 'protein_id', 'product'])
 
-    list_gff =[chrm, 'Genbank', feat.type, str(feat.location.start.real), str(feat.location.end.real), ".", strand, ".",attributes+'\n']
+    list_gff =[chrm, 'Genbank', feat.type, str(feat.location.start.real +1 ), str(feat.location.end.real), ".", strand, ".",attributes+'\n']
     fl_gff.write('\t'.join(list_gff))
 
 def write_faa(feat, faa_fl, chrm, seq, attributes, nbgene):
@@ -77,7 +77,12 @@ def see_objet(obj):
 
 
 if __name__ == '__main__':
-    gk_file = sys.argv[1] # 'data/Acaryochloris_marina_MBIC11017/sequence.gb'
+    try:
+        gk_file = sys.argv[1] # 'data/Acaryochloris_marina_MBIC11017/sequence.gb'
+    except IndexError:
+        raise IndexError("Please provide the genbank file when you launch the script: `python genbank_parser.py genbankFile.gb`")
+    if gk_file[-3:] != ".gb":
+        raise ValueError ('The provided file does not have the correct extension .gb')
     data_way = gk_file.split(".gb")[0] #'data/Acaryochloris_marina_MBIC11017/'
     print data_way
     #file_name = "sequence"
@@ -107,3 +112,4 @@ if __name__ == '__main__':
     #                 print f.qualifiers
     #                 c += 1
     # print c
+        print i, 'CDS'
