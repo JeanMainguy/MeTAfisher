@@ -12,6 +12,7 @@ Program to retrieve toxin antitoxin (TA) systems in metagenomes
 <!-- [comment]: <> (General intro to the program) -->
 
 <a name="Program_overview"/>
+
 ## Program overview
 MeTAfisher is written in Python 2.7. It is made up of four files which need to be in the same folder.
 * `main_MetaF.py` : It initializes the variable and launches the different functions of the program inside a loop iterating the different contigs. This file takes argument to be able to correctly initialyze the variable.
@@ -51,6 +52,7 @@ MeTAfisher is written in Python 2.7. It is made up of four files which need to b
 
 
 <a name="Dependence_files"/>
+
 ## Dependence files
 MeTAfisher requires specific files to work. These files need to be placed in the same folder and the path to this folder is given as an argument to the program.
 The dependences folder has to have:
@@ -86,7 +88,9 @@ For the protein sequences in amino acid and nucleotide (respectively .faa and .f
  -->
 Exemple : \\
  `>ICM0007MP0313_1000001|5`
+ 
 <a name="gff_file"/>
+
 ### GFF file
 MeTAfisher needs a gff file containing the
 > The GFF (General Feature Format) format consists of one line per feature, each containing 9 columns of data, plus optional track definition lines.
@@ -109,6 +113,7 @@ The program looks only at the line with feature equal to `CDS`.
 Example of correct gff line :    ```ICM0007MP0313_1000310	GPF	CDS	13787	14128	.	-	0	ID=ICM0007MP0313_1000310|19;partial=00;sta.....```
 
 <a name="Output_file"/>
+
 ## Output file
 Three result ﬁles currently exist, they all provide results of the analysis but in a different way.
 
@@ -150,6 +155,7 @@ Each TA gene is displayed on a line. Information are displayed within 9 columns:
 The program also provides a file gathering quantitative information about the analysis of the contigs/chromosomes analyzed.
 
 <a name="How_to_use_MeTAfisher"/>
+
 ## How to use MeTAfisher
 
 First of all you should download MeTAfisher files and folders from gitHub.
