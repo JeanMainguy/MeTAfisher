@@ -1,4 +1,4 @@
- 1. # Table of contents
+ # Table of contents
 - [Program overview](#Program_overview)
 - [Dependence files](#Dependence_files)
 - [Files format requirement](#Files_format_requirement)
