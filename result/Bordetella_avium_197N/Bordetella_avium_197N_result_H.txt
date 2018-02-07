@@ -1,5 +1,5 @@
 ## result_H
-## Rescue lonely gene : False
+## Name of the sequence analysed: Bordetella_avium_197N## Rescue lonely gene : False
 ## Resize gene : False
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 30aa to 1500aa
@@ -7,49 +7,68 @@
 ====AM167904.1====
 
 PRE GENE
-Gene 254	from 262607 to 262196	137.0aa (0.221)	start 0.0	CDS	domain: pfam01381 (score:4.015)	Antitoxin	relBE higBA/COG1396 (score:3.993)	Antitoxin	hipBA/cd00093 (score:3.961)	Antitoxin	relBE higBA/COG2856 (score:3.619)	Toxin	RelBE/COG3093 (score:2.815)	XXXXXX	PubMed:17678530/COG2944 (score:2.66)	Antitoxin	HTH
+Gene 254	from 262607 to 262196	137aa (0.221)	start 0	CDS	domain: pfam01381 (score:4.015)	Antitoxin	relBE higBA/COG1396 (score:3.993)	Antitoxin	hipBA/cd00093 (score:3.961)	Antitoxin	relBE higBA/COG2856 (score:3.619)	Toxin	RelBE/COG3093 (score:2.815)	NA	PubMed:17678530/COG2944 (score:2.66)	Antitoxin	HTH
 
 POST GENE
-Gene 253	from 262050 to 261654	132.0aa (0.202)	start 0.0	CDS	domain: pfam01381 (score:3.94)	Antitoxin	relBE higBA/cd00093 (score:3.886)	Antitoxin	relBE higBA/COG1396 (score:3.85)	Antitoxin	hipBA/COG2856 (score:3.586)	Toxin	RelBE/COG2944 (score:3.049)	Antitoxin	HTH/COG3620 (score:2.588)	Toxin	Xre
+Gene 253	from 262050 to 261654	132aa (0.202)	start 0	CDS	domain: pfam01381 (score:3.94)	Antitoxin	relBE higBA/cd00093 (score:3.886)	Antitoxin	relBE higBA/COG1396 (score:3.85)	Antitoxin	hipBA/COG2856 (score:3.586)	Toxin	RelBE/COG2944 (score:3.049)	Antitoxin	HTH/COG3620 (score:2.588)	Toxin	Xre
 
-DISTANCE 146 (0.0115511551155)
-
+DISTANCE 146 (0.0115511551155) 	 SYSTEM score: 22.3890900039
+=========137aa=========>
+                             ========132aa========>
+                       /     \
+                       146nt
 PRE GENE
-Gene 942	from 1015050 to 1014816	78.0aa (2.349)	start 0.0	CDS	domain: COG2929 (score:4.057)		RHH/PF04365.12 (score:3.854)	Toxin	BernTA
+Gene 942	from 1015050 to 1014816	78aa (2.349)	start 0	CDS	domain: COG2929 (score:4.057)	NA	RHH/PF04365.12 (score:3.854)	Toxin	BernTA
 
 POST GENE
-Gene 941	from 1014815 to 1014557	86.0aa (1.082)	start 0.0	CDS	domain: PF14384.5 (score:4.481)	Antitoxin	BernTA/COG3514 (score:4.337)	Antitoxin	NA
+Gene 941	from 1014815 to 1014557	86aa (1.082)	start 0	CDS	domain: PF14384.5 (score:4.481)	Antitoxin	BernTA/COG3514 (score:4.337)	Antitoxin	NA
 
-DISTANCE 1 (6.82962046205)
-
+DISTANCE 1 (6.82962046205) 	 SYSTEM score: 32.7983550253
+=====78aa=====>
+                ======86aa======>
+              / \
+             1nt
 PRE GENE
-Gene 1306	from 1391033 to 1390778	85.0aa (1.165)	start 0.0	CDS	domain: COG2026 (score:3.759)	Toxin	relBE relBE/pfam05016 (score:3.466)	Toxin	relBE relBE/PF05973.13 (score:2.653)	Toxin	HigB/COG4679 (score:2.61)	Toxin	relBE
+Gene 1306	from 1391033 to 1390778	85aa (1.165)	start 0	CDS	domain: COG2026 (score:3.759)	Toxin	relBE relBE/pfam05016 (score:3.466)	Toxin	relBE relBE/PF05973.13 (score:2.653)	Toxin	HigB/COG4679 (score:2.61)	Toxin	relBE
 
 POST GENE
-Gene 1305	from 1390795 to 1390468	109.0aa (0.302)	start 0.0	CDS	domain: COG1396 (score:3.696)	Antitoxin	hipBA/pfam01381 (score:3.616)	Antitoxin	relBE higBA/cd00093 (score:3.547)	Antitoxin	relBE higBA/COG2944 (score:3.006)	Antitoxin	HTH/COG2856 (score:2.851)	Toxin	RelBE/COG5642 (score:2.773)	Antitoxin	NA/COG3620 (score:2.565)	Toxin	Xre
+Gene 1305	from 1390795 to 1390468	109aa (0.302)	start 0	CDS	domain: COG1396 (score:3.696)	Antitoxin	hipBA/pfam01381 (score:3.616)	Antitoxin	relBE higBA/cd00093 (score:3.547)	Antitoxin	relBE higBA/COG2944 (score:3.006)	Antitoxin	HTH/COG2856 (score:2.851)	Toxin	RelBE/COG5642 (score:2.773)	Antitoxin	NA/COG3620 (score:2.565)	Toxin	Xre
 
-DISTANCE -17 (0.963077557756)
-
+DISTANCE -17 (0.963077557756) 	 SYSTEM score: 23.8847225032
+======85aa======>
+                =======109aa=======>
+               / \
+             -17nt
 PRE GENE
-Gene 1456	from 1515595 to 1515328	89.0aa (0.854)	start 0.0	CDS	domain: COG2929 (score:4.616)		RHH/PF04365.12 (score:4.491)	Toxin	BernTA
+Gene 1456	from 1515595 to 1515328	89aa (0.854)	start 0	CDS	domain: COG2929 (score:4.616)	NA	RHH/PF04365.12 (score:4.491)	Toxin	BernTA
 
 POST GENE
-Gene 1455	from 1515342 to 1515063	93.0aa (0.676)	start 0.0	CDS	domain: COG3514 (score:4.56)	Antitoxin	NA/PF14384.5 (score:4.286)	Antitoxin	BernTA/PF12441.6 (score:2.595)	NA	NA
+Gene 1455	from 1515342 to 1515063	93aa (0.676)	start 0	CDS	domain: COG3514 (score:4.56)	Antitoxin	NA/PF14384.5 (score:4.286)	Antitoxin	BernTA/PF12441.6 (score:2.595)	NA	NA
 
-DISTANCE -14 (1.89438943894)
-
+DISTANCE -14 (1.89438943894) 	 SYSTEM score: 26.6002413793
+======89aa======>
+                ======93aa======>
+               / \
+             -14nt
 PRE GENE
-Gene 1487	from 1539347 to 1539047	100.0aa (0.421)	start 0.0	CDS	domain: COG2026 (score:3.9)	Toxin	relBE relBE
+Gene 1487	from 1539347 to 1539047	100aa (0.421)	start 0	CDS	domain: COG2026 (score:3.9)	Toxin	relBE relBE
 
 POST GENE
-Gene 1486	from 1539051 to 1538730	107.0aa (0.325)	start 0.0	CDS	domain: COG2944 (score:4.016)	Antitoxin	HTH/cd00093 (score:3.523)	Antitoxin	relBE higBA/pfam01381 (score:3.178)	Antitoxin	relBE higBA/pfam01381 (score:3.178)	Antitoxin	relBE higBA/COG1396 (score:2.779)	Antitoxin	hipBA/ENOG410ZNN6 (score:2.542)	Antitoxin	Xre/COG3093 (score:2.526)	XXXXXX	PubMed:17678530
+Gene 1486	from 1539051 to 1538730	107aa (0.325)	start 0	CDS	domain: COG2944 (score:4.016)	Antitoxin	HTH/cd00093 (score:3.523)	Antitoxin	relBE higBA/pfam01381 (score:3.178)	Antitoxin	relBE higBA/pfam01381 (score:3.178)	Antitoxin	relBE higBA/COG1396 (score:2.779)	Antitoxin	hipBA/ENOG410ZNN6 (score:2.542)	Antitoxin	Xre/COG3093 (score:2.526)	NA	PubMed:17678530
 
-DISTANCE -4 (6.85272277228)
-
+DISTANCE -4 (6.85272277228) 	 SYSTEM score: 29.5151303903
+=======100aa=======>
+                   =======107aa=======>
+                  / \
+                -4nt
 PRE GENE
-Gene 2050	from 2196740 to 2197211	157.0aa (0.073)	start 0.0	CDS	domain: COG0640 (score:2.766)	Antitoxin	ArsR family HTH/COG1396 (score:2.407)	Antitoxin	hipBA
+Gene 2050	from 2196740 to 2197211	157aa (0.073)	start 0	CDS	domain: COG0640 (score:2.766)	Antitoxin	ArsR family HTH/COG1396 (score:2.407)	Antitoxin	hipBA
 
 POST GENE
-Gene 2051	from 2197259 to 2197538	93.0aa (0.676)	start 0.0	CDS	domain: PF09957.7 (score:2.477)	NA	NA/PF09957.7 (score:2.477)	NA	NA
+Gene 2051	from 2197259 to 2197538	93aa (0.676)	start 0	CDS	domain: PF09957.7 (score:2.477)	NA	NA/PF09957.7 (score:2.477)	NA	NA
 
-DISTANCE 48 (0.2050330033)
+DISTANCE 48 (0.2050330033) 	 SYSTEM score: 20.1963034762
+==========157aa==========>
+                            ======93aa======>
+                         /  \
+                        48nt

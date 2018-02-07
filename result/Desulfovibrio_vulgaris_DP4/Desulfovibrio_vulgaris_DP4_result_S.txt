@@ -1,5 +1,5 @@
 ## result_S
-## Rescue lonely gene : False
+## Name of the sequence analysed: Desulfovibrio_vulgaris_DP4## Rescue lonely gene : False
 ## Resize gene : False
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 30aa to 1500aa
