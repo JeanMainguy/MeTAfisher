@@ -65,10 +65,13 @@ The dependences folder has to have:
 Additionally MeTAfisher needs HMMER to be installed as the program retrieve TA systems according hmmsearch output. And obviously it requires python 2.7.
 
 <a name="Files_format_requirement"/>
+
 ## Files format requirement
 Metafisher takes 4 different files as an input. The files need be in the same folder and they need to have the same name with only a specific extension for each and every one of them.
+
 ### Fasta files
 Metafisher requires 3 files in the fasta files format:
+
 1. The chromosome or scaffold sequences with the extension **.fasta**  
 2. The protein sequences in amino acide with the extension **.faa**
 3. The protein sequences in nucleotide with the extension **.fna**
