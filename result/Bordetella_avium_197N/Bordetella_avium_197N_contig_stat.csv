@@ -1,7 +1,7 @@
-## Rescue lonely gene : False
+## Name of the sequence analysed: Bordetella_avium_197N## Rescue lonely gene : False
 ## Resize gene : False
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 30aa to 1500aa
 contig	gene with TA domain	lonely gene	linked gene
-	103	91	12
+AM167904.1	103	91	12
 AM167904.1	103	91	12

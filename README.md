@@ -1,12 +1,18 @@
-# Content
-- [Program overview](#Program-overview)
-- [How to use MeTAfisher](##How-to-use-MeTAfisher)
-- [Output file](#Output-file)
+ # Table of contents
+- [Program overview](#Program_overview)
+- [Dependence files](#Dependence_files)
+- [Files format requirement](#Files_format_requirement)
+- [Output file](#Output_file)
+- [How to use MeTAfisher](#How_to_use_MeTAfisher)
+<!--- [GFF file](#gff_file) -->
 
 # MeTAfisher
 Program to retrieve toxin antitoxin (TA) systems in metagenomes
 
+
 <!-- [comment]: <> (General intro to the program) -->
+
+<a name="Program_overview"/>
 
 ## Program overview
 MeTAfisher is written in Python 2.7. It is made up of four files which need to be in the same folder.
@@ -46,6 +52,7 @@ MeTAfisher is written in Python 2.7. It is made up of four files which need to b
   `--HMM_db HMM_DB `      name of the HMM database
 
 
+<a name="Dependence_files"/>
 
 ## Dependence files
 MeTAfisher requires specific files to work. These files need to be placed in the same folder and the path to this folder is given as an argument to the program.
@@ -57,10 +64,14 @@ The dependences folder has to have:
 
 Additionally MeTAfisher needs HMMER to be installed as the program retrieve TA systems according hmmsearch output. And obviously it requires python 2.7.
 
+<a name="Files_format_requirement"/>
+
 ## Files format requirement
 Metafisher takes 4 different files as an input. The files need be in the same folder and they need to have the same name with only a specific extension for each and every one of them.
+
 ### Fasta files
 Metafisher requires 3 files in the fasta files format:
+
 1. The chromosome or scaffold sequences with the extension **.fasta**  
 2. The protein sequences in amino acide with the extension **.faa**
 3. The protein sequences in nucleotide with the extension **.fna**
@@ -81,9 +92,11 @@ For the protein sequences in amino acid and nucleotide (respectively .faa and .f
  -->
 Exemple : \\
  `>ICM0007MP0313_1000001|5`
+ 
+<a name="gff_file"/>
 
 ### GFF file
-MeTAfisher needs a gff file containing the
+MeTAfisher needs a gff file containing information of the genes under analysed. 
 > The GFF (General Feature Format) format consists of one line per feature, each containing 9 columns of data, plus optional track definition lines.
 
 The columns used by MeTAfisher:
@@ -103,23 +116,46 @@ The program looks only at the line with feature equal to `CDS`.
 
 Example of correct gff line :    ```ICM0007MP0313_1000310	GPF	CDS	13787	14128	.	-	0	ID=ICM0007MP0313_1000310|19;partial=00;sta.....```
 
+<a name="Output_file"/>
 
 ## Output file
-Three result ﬁles currently exist, they all provide results of the analysis but in a different way.
 
-* Short result
-* Human readable result
-* Table csv-like result
+MeTAfisher provides different output file: 4 result files showing TA systems found and a csv file gathering statistique information of the analysis is also provided.
+All the output files start with 5 lines starting with `##`.
 
-The all start with 5 lines starting with `##`.
-
-```## result_S
+```
+## result_S
 ## Rescue lonely gene : False
 ## Resize gene : True
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 30aa to 1500aa
 ```
-The first line tell us the kind of result S for Short, H for Human readable and T for Table csv-like. Then the two following lines tell if the Rescue and Resize have been used and finnally the last two lines tell which distance and length threshold have been used.
+
+The first line tell us the kind of output file it is. Then the two following lines tell if the Rescue and Resize have been used and finnally the last two lines tell which distance and length threshold have been used during the analysis.
+
+The name of the output file follow a regular pattern, they all start with the name of the metagenome or genome provided when launching the program follow by the name of the output file and the appropriate extension.
+
+For genome Desulfovibrio vulgaris DP4 we have:
+
+The result files:
+
+* Desulfovibrio_vulgaris_DP4_result_H.txt
+* Desulfovibrio_vulgaris_DP4_result_S.txt
+* Desulfovibrio_vulgaris_DP4_result_T.csv
+* Desulfovibrio_vulgaris_DP4_result_GFF.gff
+
+The stat file:
+
+* Desulfovibrio_vulgaris_DP4_contig_stat.csv
+
+
+### Result files
+Four result ﬁles currently exist, they provide the result of the analysis in a different way.
+
+* Short result: 
+* Human readable result
+* Table csv-like result
+
 
 ### Short result
 One line for each systems found.
@@ -129,6 +165,7 @@ This output is just there to give an overview of the result and to get the gene 
 ### Table csv-like result:
 This result file may be open on a spreadsheet.
 Each TA gene is displayed on a line. Information are displayed within 9 columns:
+
 1. Contig: contig or chromosome names.
 2. Gene number: number used by the program to identify gene. The same one found in the input gff and faa/fna files.
 3. Gene id: The genes id used by genbank when the input files are made from a genbank file
@@ -144,6 +181,7 @@ Each TA gene is displayed on a line. Information are displayed within 9 columns:
 
 The program also provides a file gathering quantitative information about the analysis of the contigs/chromosomes analyzed.
 
+<a name="How_to_use_MeTAfisher"/>
 
 ## How to use MeTAfisher
 
@@ -171,10 +209,12 @@ You need to provide different information in the script:
 
 Then, the script takes care of the rest: it creates a folder named after the Sequence name given in the general output folder provided. Then, it launches hmmsearch which searches TA domains in the amino acid sequence. If the hmmsearch table output already exists, it skips this step in order not to launch twice the same thing. And finally it launches the python script `main_MetaF.py` with the required arguments. If you want to activate the "Resize" and/or the "Rescue" step, you can then add the flag --Resize or --Rescue in the command line.
 
+In the output folder that you gave to the program you will find the hmmsearch table result and the different output files. 
 
 
 
-##Score
+
+## Score 
 
 
 

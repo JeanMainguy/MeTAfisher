@@ -1,0 +1,17 @@
+## result_GFF
+## Name of the sequence analysed: Bordetella_avium_197N## Rescue lonely gene : False
+## Resize gene : False
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+AM167904.1	metaF	CDS	261654	262050	.	-	.	AM167904.1|253;protein_id=BAV0253;best_domain=pfam01381;domain_score=51.4;type=Antitoxin;family=relBE higBA;possible_partners=BAV0254
+AM167904.1	metaF	CDS	262196	262607	.	-	.	AM167904.1|254;protein_id=BAV0254;best_domain=pfam01381;domain_score=55.4;type=Antitoxin;family=relBE higBA;possible_partners=BAV0253
+AM167904.1	metaF	CDS	1014557	1014815	.	-	.	AM167904.1|941;protein_id=BAV0943;best_domain=PF14384.5;domain_score=88.3;type=Antitoxin;family=BernTA;possible_partners=BAV0944
+AM167904.1	metaF	CDS	1014816	1015050	.	-	.	AM167904.1|942;protein_id=BAV0944;best_domain=COG2929;domain_score=57.8;type=NA;family=RHH;possible_partners=BAV0943
+AM167904.1	metaF	CDS	1390468	1390795	.	-	.	AM167904.1|1305;protein_id=BAV1312;best_domain=COG1396;domain_score=40.3;type=Antitoxin;family=hipBA;possible_partners=BAV1312A
+AM167904.1	metaF	CDS	1390778	1391033	.	-	.	AM167904.1|1306;protein_id=BAV1312A;best_domain=COG2026;domain_score=42.9;type=Toxin;family=relBE relBE;possible_partners=BAV1312
+AM167904.1	metaF	CDS	1515063	1515342	.	-	.	AM167904.1|1455;protein_id=BAV1455;best_domain=COG3514;domain_score=95.6;type=Antitoxin;family=NA;possible_partners=BAV1456
+AM167904.1	metaF	CDS	1515328	1515595	.	-	.	AM167904.1|1456;protein_id=BAV1456;best_domain=COG2929;domain_score=101.1;type=NA;family=RHH;possible_partners=BAV1455
+AM167904.1	metaF	CDS	1538730	1539051	.	-	.	AM167904.1|1486;protein_id=BAV1486;best_domain=COG2944;domain_score=55.5;type=Antitoxin;family=HTH;possible_partners=BAV1487
+AM167904.1	metaF	CDS	1539047	1539347	.	-	.	AM167904.1|1487;protein_id=BAV1487;best_domain=COG2026;domain_score=49.4;type=Toxin;family=relBE relBE;possible_partners=BAV1486
+AM167904.1	metaF	CDS	2196740	2197211	.	+	.	AM167904.1|2050;protein_id=BAV2054;best_domain=COG0640;domain_score=15.9;type=Antitoxin;family=ArsR family HTH;possible_partners=BAV2055
+AM167904.1	metaF	CDS	2197259	2197538	.	+	.	AM167904.1|2051;protein_id=BAV2055;best_domain=PF09957.7;domain_score=11.9;type=NA;family=NA;possible_partners=BAV2054
