@@ -3,6 +3,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
+from os import path
 
 
 def giveQualifiersInfo(qualifiers, keys):
@@ -56,12 +57,12 @@ def see_objet(obj):
             print attr, " ", getattr(obj, attr)
 
 
-def from_gb_to_required_format(data_way, gk_file):
+def from_gb_to_required_format(data_way, gb_file):
     gff_fl = open(data_way + '.gff', 'w')
     faa_fl = open(data_way + '.faa', 'w')
     fna_fl = open(data_way + '.fna', 'w')
 
-    input_handle = open(gk_file, "rU")
+    input_handle = open(gb_file, "rU")
     for record in SeqIO.parse(input_handle, "genbank"):
         # see_objet(record)
         SeqIO.write(record, data_way+".fasta", "fasta")
@@ -85,13 +86,12 @@ def from_gb_to_required_format(data_way, gk_file):
 
 if __name__ == '__main__':
     try:
-        gk_file = sys.argv[1]  # 'data/Acaryochloris_marina_MBIC11017/sequence.gb'
+        gb_file = sys.argv[1]  # 'data/Acaryochloris_marina_MBIC11017/sequence.gb'
     except IndexError:
         raise IndexError(
             "Please provide the genbank file when you launch the script: `python genbank_parser.py <genbankFile.gb>`")
-    if gk_file[-3:] != ".gb":
+    if path.isfile(gb_file) and gb_file[-3:] != ".gb":
         raise ValueError('The provided file does not have the correct extension .gb')
-    data_way = gk_file.split(".gb")[0]  # 'data/Acaryochloris_marina_MBIC11017/'
-    print data_way
+    data_way = gb_file.split(".gb")[0]  # 'data/Acaryochloris_marina_MBIC11017/'
 
-    from_gb_to_required_format(data_way, gk_file)
+    from_gb_to_required_format(data_way, gb_file)
