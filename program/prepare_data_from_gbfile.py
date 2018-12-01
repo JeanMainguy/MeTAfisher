@@ -4,6 +4,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
 from os import path
+import argparse
 
 
 def giveQualifiersInfo(qualifiers, keys):
@@ -57,15 +58,15 @@ def see_objet(obj):
             print attr, " ", getattr(obj, attr)
 
 
-def from_gb_to_required_format(data_way, gb_file):
-    gff_fl = open(data_way + '.gff', 'w')
-    faa_fl = open(data_way + '.faa', 'w')
-    fna_fl = open(data_way + '.fna', 'w')
+def from_gb_to_required_format(data_path_base, gb_file):
+    gff_fl = open(data_path_base + '.gff', 'w')
+    faa_fl = open(data_path_base + '.faa', 'w')
+    fna_fl = open(data_path_base + '.fna', 'w')
 
     input_handle = open(gb_file, "rU")
     for record in SeqIO.parse(input_handle, "genbank"):
         # see_objet(record)
-        SeqIO.write(record, data_way+".fasta", "fasta")
+        SeqIO.write(record, data_path_base+".fasta", "fasta")
         i = 0
         CDS_not_translated = 0
         for f in record.features:
@@ -85,13 +86,21 @@ def from_gb_to_required_format(data_way, gb_file):
 
 
 if __name__ == '__main__':
-    try:
-        gb_file = sys.argv[1]  # 'data/Acaryochloris_marina_MBIC11017/sequence.gb'
-    except IndexError:
-        raise IndexError(
-            "Please provide the genbank file when you launch the script: `python genbank_parser.py <genbankFile.gb>`")
-    if path.isfile(gb_file) and gb_file[-3:] != ".gb":
-        raise ValueError('The provided file does not have the correct extension .gb')
-    data_way = gb_file.split(".gb")[0]  # 'data/Acaryochloris_marina_MBIC11017/'
 
-    from_gb_to_required_format(data_way, gb_file)
+    parser = argparse.ArgumentParser(
+        prog='Prepare_Data_from_gbfile', description='Prepare data to be analysed by MeTAfisher starting with the genbank file of the sequence')
+
+    parser.add_argument("gb_file")
+
+    args = parser.parse_args()
+    gb_file = args.gb_file
+    if path.isfile(path.join('~', gb_file)):
+        raise ValueError('The provided file ({}) does not exist'.format(gb_file))
+    if gb_file[-3:] != ".gb":
+        raise ValueError(
+            'The provided file ({}) does not have the correct extension .gb'.format(gb_file))
+
+    # directory where formated data are stored is the one of the gbfile...
+    data_path_base = path.abspath(gb_file).split(".gb")[0]
+
+    from_gb_to_required_format(data_path_base, gb_file)
