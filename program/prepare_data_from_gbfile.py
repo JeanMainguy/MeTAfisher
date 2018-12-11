@@ -51,11 +51,11 @@ def write_fna(feat, fna_fl, chrm, seq, attributes, nbgene):
 
 
 def see_objet(obj):
-    print 'SEE OBJET ', type(obj)
+    print('SEE OBJET ', type(obj))
 
     for attr in dir(obj):
         if attr[0] != '_':
-            print attr, " ", getattr(obj, attr)
+            print(attr, " ", getattr(obj, attr))
 
 
 def from_gb_to_required_format(data_path_base, gb_file):
