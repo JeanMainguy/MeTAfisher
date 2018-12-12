@@ -11,7 +11,8 @@ def HMM_launcher(faa_file, add_to_name=''):
     hmm_db = obj.Gene.hmmdb
     table_hmm = obj.Gene.output_way + '/output_HMM_table_' + add_to_name + '.txt'
 
-    bash_commande = "hmmsearch -E 0.5 --domtblout {} {} {} > /dev/null".format(table_hmm, hmm_db, faa_file)
+    bash_commande = "hmmsearch -E 0.5 --domtblout {} {} {} > /dev/null".format(
+        table_hmm, hmm_db, faa_file)
 
     call(bash_commande, shell=True)
 
@@ -33,7 +34,7 @@ def get_fast_fasta(fl, line, scaffold):
         seq['data'] = seq["data"].upper()
         return seq, line
     else:
-        print ("seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence {}".format(scaffold))
+        print("seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence {}".format(scaffold))
 
 
 def get_hmm_genes(scaffold, table_hmm, gff_file):
@@ -48,7 +49,8 @@ def get_hmm_genes(scaffold, table_hmm, gff_file):
     Info of the gff line are parsed and info about domain form hmm are also parsed.
     """
 
-    obj.Gene.scaffold = scaffold  # attribut of the classe gene like every objet (orf and TA_gene) will have this attribut, then no need to give it that each time
+    # attribut of the classe gene like every objet (orf and TA_gene) will have this attribut, then no need to give it that each time
+    obj.Gene.scaffold = scaffold
     domains_dict = {}  # keys : gene numbers, value: liste of the domain objet !!
     fl = open(table_hmm, 'r')
     for l in fl:
@@ -61,7 +63,7 @@ def get_hmm_genes(scaffold, table_hmm, gff_file):
     fl.close()
 
     gff_fl = csv.reader(open(gff_file, 'r'), delimiter='\t')
-    gff_line = ""#next(gff_fl)
+    gff_line = ""  # next(gff_fl)
     for n in sorted(domains_dict):
         """
         Search the gene info of the gene in the gff file
@@ -69,7 +71,6 @@ def get_hmm_genes(scaffold, table_hmm, gff_file):
         """
 
         gene, gff_line, gff_fl = get_gff_info(gff_fl, gff_line, scaffold, n)
-
 
         gene.domain = domains_dict[n]
 
@@ -110,9 +111,9 @@ def get_gff_info(gff_handler, gff_line, scaffold, gene_number):
             gene.strand = l[6]
             gene.gene_number = number
 
-            s = re.search(ur'locus_tag=([^;\n]+)', l[8])
+            s = re.search(ur'protein_id=([^;\n]+)', l[8])
             if s:
-                gene.locus_tag = s.group(1)
+                gene.protein_id = s.group(1)
 
             return gene, l, gff_handler
 
@@ -159,7 +160,8 @@ def hmmtable_parser(line):
 
     result = pattern.match(line)
     if not result:
-        raise Exception('The parser of HMM table has failed... you may check the HMM table output ---> hmmtable line with a problem', line )
+        raise Exception(
+            'The parser of HMM table has failed... you may check the HMM table output ---> hmmtable line with a problem', line)
     domain = obj.Domain(
         domain_number=result.group("domain_number"), ali_from=result.group("ali_from"), ali_to=result.group("ali_to"), env_from=result.group("env_from"),
         env_to=result.group("env_to"), domain_name=result.group("domain"), domain_acc=result.group("domain_acc"), e_value=result.group("evalue"), score=result.group("score"), line=line)
@@ -189,12 +191,12 @@ def get_start_po(dico):
 
         g.distanceMin = obj.Gene.distanceMin - abs(start_po[-1] - start_po[0])
 
-        #WARNING absolute value of distance min should not be greater than the length of the gene !!
+        # WARNING absolute value of distance min should not be greater than the length of the gene !!
         # because it would allow overlap of more than the length of the gene
         # and then could give a post gene before a pre gene so a non sense
 
         if abs(g.distanceMin) >= len(g):
-            g.distanceMin = -len(g) +1 # if so distance min is len -1
+            g.distanceMin = -len(g) + 1  # if so distance min is len -1
 
         # Uncomment this part if instead of having the position of start inside the intial gene,
         # it is desire to have the position inthe contig
@@ -284,8 +286,10 @@ def adj_by_strand(liste):
                 else:
                     gpost.post.append(gene)
                     gene.prev.append(gpost)
-                obj.TA_gene.linked.add(gene)  # add the gene because it has a link in the set linked of class TA_gene
-                obj.TA_gene.linked.add(gpost)  # add the gene because it has a link in the set linked of class TA_gene
+                # add the gene because it has a link in the set linked of class TA_gene
+                obj.TA_gene.linked.add(gene)
+                # add the gene because it has a link in the set linked of class TA_gene
+                obj.TA_gene.linked.add(gpost)
 
 
 def only_lonely_gene():
@@ -317,6 +321,7 @@ def create_lonely_gene_list():
             if gene not in obj.TA_gene.linked:
                 obj.TA_gene.lonely[gene.strand].append(gene)
 
+
 def check_size(gene_strand):
     """
     Remove genes with a length that does not fit the length thresholds.
@@ -327,13 +332,13 @@ def check_size(gene_strand):
             # print gene.gene_number, '.....*'
             if obj.Gene.length_min <= len(gene) <= obj.Gene.length_max:
                 gene.possible_start = [0]
-                #WARNING absolute value of distance min should not be greater than the length of the gene !!
+                # WARNING absolute value of distance min should not be greater than the length of the gene !!
                 # because it would allow overlap of more than the length of the gene
                 # and then could give a post gene before a pre gene so a non sense
                 if abs(gene.distanceMin) >= len(gene):
                     # print 'OOOOOOh'
                     # print gene.distanceMin
-                    gene.distanceMin = -len(gene) +1 # if so distance min is len -1
+                    gene.distanceMin = -len(gene) + 1  # if so distance min is len -1
                     # print gene
                     # print gene.distanceMin
                     # raw_input()
@@ -350,7 +355,7 @@ def delete_files(listeFiles):
         try:
             remove(outfile)
         except OSError, e:  # if failed, report it back to the user ##
-            print ("Error: %s - %s." % (e.filename, e.strerror))
+            print("Error: %s - %s." % (e.filename, e.strerror))
 
 
 # def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat):
@@ -390,13 +395,13 @@ def delete_files(listeFiles):
 #
 #
 # def write_short_result(g, post, fl, i, g_score, post_score):
-#     if hasattr(g, 'locus_tag'):
-#         tag_g = g.locus_tag
+#     if hasattr(g, 'protein_id'):
+#         tag_g = g.protein_id
 #     else:
 #         tag_g = '_' + str(g.gene_number)
 #
-#     if hasattr(post, 'locus_tag'):
-#         tag_p = post.locus_tag
+#     if hasattr(post, 'protein_id'):
+#         tag_p = post.protein_id
 #     else:
 #         tag_p = '_' + str(post.gene_number)
 #

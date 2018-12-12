@@ -36,7 +36,7 @@ class Gene:
         self.strand = None
         self.feature = None
         self.dict_score = {}
-        self.locus_tag = None
+        self.protein_id = None
 
     def __str__(self):
         presentation = 'length: {}\tfrom {} to {}\tstrand: {}\tfeature: {}\n'.format(
@@ -82,7 +82,8 @@ class Gene:
 
         distance_min = gene.distanceMin if self.strand == '+' else self.distanceMin
 
-        if distance_min < gene.start - self.end < Gene.distanceMax:  # If the distance between the two gene are fitting the thresholds?
+        # If the distance between the two gene are fitting the thresholds?
+        if distance_min < gene.start - self.end < Gene.distanceMax:
 
             return True
         # elif gene.start - self.end > Gene.dist_max:
@@ -159,8 +160,10 @@ class TA_gene(Gene):
             line_name = 'line'
         start_codon = dico["codon_start"]
 
-        scaffold_gnb = self.scaffold + '|' + str(self.gene_number)  # we have to build this because of fast_fasta function
-        seq, dico[line_name] = fct2.get_fast_fasta(dico[fl_name], dico[line_name], scaffold_gnb)  # use of get fast fasta as before.
+        # we have to build this because of fast_fasta function
+        scaffold_gnb = self.scaffold + '|' + str(self.gene_number)
+        # use of get fast fasta as before.
+        seq, dico[line_name] = fct2.get_fast_fasta(dico[fl_name], dico[line_name], scaffold_gnb)
         # print seq['description']
         # print seq["data"]
         """Setting min and max parameter : where to start and end the start dectection
@@ -186,7 +189,8 @@ class TA_gene(Gene):
             sup = len(seq['data'])
         # print self.gene_number, 'a une sequence de', len(seq['data']), 'sup and inf', sup, inf
 
-        start_po = orf2.codon_finder(start_codon, seq["data"][inf:sup + 1])  # give evry start position of the sequence
+        # give evry start position of the sequence
+        start_po = orf2.codon_finder(start_codon, seq["data"][inf:sup + 1])
 
         if inf == 0 and (len(start_po) == 0 or start_po[0] != 0):
             start_po.insert(0, 0)
@@ -311,7 +315,8 @@ class Domain:
             dico_do = Gene.domain_dict[self.domain_name]
         except KeyError:
             return 'Domain not found in the csv domain file.. {} ({}) '.format(self.domain_name, round(log(self.score), 3))
-        return "{} (score:{})\t{}\t{}".format(dico_do["acc"], round(log(self.score),3), dico_do['type'], dico_do['family'])
+        return "{} (score:{})\t{}\t{}".format(dico_do["acc"], round(log(self.score), 3), dico_do['type'], dico_do['family'])
+
     def writeGffLike(self):
         try:
             dico_do = Gene.domain_dict[self.domain_name]
@@ -320,7 +325,7 @@ class Domain:
             acc = dico_do['acc']
         except KeyError:
             return 'domain={};domain_score={};type={};familly={}'.format(self.domain_name, self.score, "domainNotFoundInDB", "domainNotFoundInDB")
-        return 'domain={};domain_score={};type={};family={}'.format(dico_do['acc'], self.score,dico_do['type'], dico_do['family'])
+        return 'domain={};domain_score={};type={};family={}'.format(dico_do['acc'], self.score, dico_do['type'], dico_do['family'])
 
     def score_transformed(self):
         # log transformation
