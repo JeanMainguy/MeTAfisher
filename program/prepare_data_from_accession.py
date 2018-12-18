@@ -11,21 +11,39 @@ except ImportError:
     from urllib2 import HTTPError  # for Python 2
 
 
-def download_many_gb_files(acc_list, output, db='Protein', rettype='gb'):
+def download_many_gb_files(acc_list, output, db='Protein', rettype='gb', create_folder=True, batch_size=15):
+    # Based on Biopython Cookbook
+    print("{} accessions to download in {} db".format(len(acc_list), db))
+    print("{} accessions to download in {} db".format(len(set(acc_list)), db))
     files = {f.replace(".gb", '') for f in listdir(output)}  # remove ext
     acc_list_to_download = set(acc_list) - {f for f in files if f in acc_list}
-    print(files)
-    print(acc_list)
-    print(acc_list_to_download)
+
     if not acc_list_to_download:
         print("Nothing to download")
         return
-    search_results = Entrez.read(Entrez.epost(db=db, id=",".join(acc_list_to_download)))
+    else:
+        print('{} gb_files to download'.format(len(acc_list_to_download)))
+
+    try:
+        search_results = Entrez.read(Entrez.epost(db=db, id=",".join(acc_list_to_download)))
+    except HTTPError as err:
+        if 500 <= err.code <= 599:
+            print("Received error from server %s" % err)
+            print("Gonna try with less accession")
+            time.sleep(15)
+            half_acc = int(len(acc_list)/2)
+            download_many_gb_files(acc_list[:half_acc], output, db,
+                                   rettype, create_folder, batch_size)
+            download_many_gb_files(acc_list[:half_acc], output, db,
+                                   rettype, create_folder, batch_size)
+            return
+        else:
+            raise
     count = len(acc_list_to_download)
     downloaded_acc = []
     webenv = search_results["WebEnv"]
     query_key = search_results["QueryKey"]
-    batch_size = 3
+
     for start in range(0, count, batch_size):
         end = min(count, start+batch_size)
         print("Going to download record %i to %i" % (start+1, end))
@@ -52,22 +70,25 @@ def download_many_gb_files(acc_list, output, db='Protein', rettype='gb'):
 
             print(acc)
             downloaded_acc.append(acc)
-            filename = path.join(output, acc, "{}.gb".format(acc))
-            makedirs(path.dirname(filename))
+            if create_folder:
+                filename = path.join(output, acc, "{}.gb".format(acc))
+                makedirs(path.dirname(filename))
+            else:
+                filename = path.join(output, "{}.gb".format(acc))
 
             SeqIO.write(record, filename, "gb")
 
         # with open(filename, "w") as fl:
         #     fl.write(data)
         #     fetch_handle.close()
-        print('downloaded_acc', downloaded_acc)
-        print('acc_list_to_download', acc_list_to_download)
-        if downloaded_acc == list(acc_list_to_download):
-            print('Every acc have been downloaded')
-        else:
-            missed_acc = acc_list_to_download - set(downloaded_acc)
-            logging.warning('{} accessions have not been downloaded: {}'.format(
-                len(missed_acc), missed_acc))
+        # print('downloaded_acc', downloaded_acc)
+        # print('acc_list_to_download', acc_list_to_download)
+    if downloaded_acc == list(acc_list_to_download):
+        print('Every acc have been downloaded')
+    else:
+        missed_acc = acc_list_to_download - set(downloaded_acc)
+        logging.warning('{} accessions have not been downloaded: {}'.format(
+            len(missed_acc), missed_acc))
 
 
 def isAccValid(acc, db):
