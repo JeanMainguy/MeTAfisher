@@ -3,33 +3,36 @@ import csv
 import Object_MetaF as obj
 from operator import attrgetter, itemgetter
 
+
 def score_manager(mini, maxi, csv_file, k, mltp):
 
     dico, Ntot = from_file_to_dict(csv_file)
-
     proba = give_proba_dict(mini, maxi, dico, k, Ntot)
-    proba_tranformed = transformation(proba, mltp)
+    # proba_tranformed = transformation(proba, mltp)
 
-    return proba_tranformed
-
-def transformation(dico, multiple):
-    maximum = max(dico.itervalues())
-    minimum = min(dico.itervalues())
-    for k in dico:
-        dico[k] = ((dico[k] - minimum) / (maximum - minimum)) * multiple
-    return dico
+    return proba  # proba_tranformed
 
 
 def give_proba_dict(inf, sup, dico, k, N_tot):
+
+    total = 0
     result = {}
-    for nb in xrange(inf, sup + 1):
+    for nb in range(inf, sup + 1):
         somme = 0
-        for i in xrange(nb - k, nb + k + 1):
-            # print i
-            somme += dico.get(nb + i, 0)
+        # print('XWWWWWWWWX')
+        # print(nb)
+        for i in range(nb, nb + 1):
+            # print '   ', i
+            somme += dico.get(i, 0)
+        # print 'somme ', somme
+        # print "result ", (somme / float(N_tot) / (2 * k + 1))
         result[nb] = (somme / float(N_tot) / (2 * k + 1))
 
+    # print(result.values())
+    # print(sum(result.values()))
+
     return result
+
 
 def from_file_to_dict(file_name):
     dico = {}
@@ -59,6 +62,14 @@ def score_TA_list(genes_strand, bonus_start):
     #     print 'GENE', gene
     #     print gene.dict_score
     #     print '=='*20
+
+
+def conflaction_proba(proba1, proba2):
+    print(proba1, proba2)
+    proba_final = (proba1 * proba2) / (proba1 * proba2 + (1-proba1)*(1-proba2))
+    print(proba_final)
+
+    return proba_final
 
 
 def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pre !
@@ -123,12 +134,14 @@ def get_score(gene, starts, bonus_start, distance=None):
 
         # print 'proba len ', proba_len
 
-        dico_score = {"start": start, "domain": d.score_transformed(), "len_score": proba_len, 'length': length, "sum": d.score_transformed() + proba_len}  # Ajout de distance:None? ? ?
+        dico_score = {"start": start, "domain": d.score, "len_score": proba_len,
+                      'length': length, "sum": d.score_transformed() + proba_len}  # Ajout de distance:None? ? ?
         if distance is not None:
             # print('distance', distance + start)
             dico_score['dist_score'] = obj.Gene.distance_proba[distance + start]
             dico_score['distance'] = distance + start
             dico_score['sum'] += dico_score['dist_score']
+
         # Give a bonus to the initial start !!
         dico_score['bonus_init_start'] = bonus_start if start == 0 else 0
         dico_score['sum'] += dico_score["bonus_init_start"]
