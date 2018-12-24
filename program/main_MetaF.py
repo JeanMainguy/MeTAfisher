@@ -17,19 +17,24 @@ def using(point=""):
                   (usage[2] * resource.getpagesize()) / 1000000.0)
 
 
-parser = argparse.ArgumentParser(prog='MeTAfisher', description='Identification of Toxin Antitoxin Systems', epilog="ADDITIONAL INFORMATION:")
+parser = argparse.ArgumentParser(
+    prog='MeTAfisher', description='Identification of Toxin Antitoxin Systems', epilog="ADDITIONAL INFORMATION:")
 parser.add_argument("metaG_name", help="Name of the Metagenome or Genome")
 
 parser.add_argument("output_pathway", help="Pathway of the output folder")
-parser.add_argument("data_pathway", help="Pathway of the data folder where all the data files are stored : fna_file, faa_file, scaffold_file, gff_file")
+parser.add_argument(
+    "data_pathway", help="Pathway of the data folder where all the data files are stored : fna_file, faa_file, scaffold_file, gff_file")
 parser.add_argument("data_name", help="Common name of all data files, the name without the extension.  fna_file, faa_file, scaffold_file, gff_file are different only by their extansions : .fna, .faa, .fasta, .gff respectively")
-parser.add_argument("dependency_pathway", help="Pathway of the dependency folder where all te depedencies are stored")
+parser.add_argument("dependency_pathway",
+                    help="Pathway of the dependency folder where all te depedencies are stored")
 parser.add_argument('--Resize', dest='resize', action='store_true',
                     help="Resize the genes if they are too big for the thresholds and take into account the possible start along the sequence. To do only if the gene prediction is not trustable")
 parser.add_argument('--Rescue', dest='rescue', action='store_true',
                     help='To do the rescue step of lonely genes, by default it is False')
-parser.add_argument('--contig_name', dest='contig_name', default=False, help='Name of a specific contig to analysed. The program will analysed only this conitg')
-parser.add_argument("--HMM_db", default="ALL_plus_MET_curatted.hmm", help="name of the HMM database")
+parser.add_argument('--contig_name', dest='contig_name', default=False,
+                    help='Name of a specific contig to analysed. The program will analysed only this conitg')
+parser.add_argument("--HMM_db", default="ALL_plus_MET_curatted.hmm",
+                    help="name of the HMM database")
 
 
 args = parser.parse_args()
@@ -39,7 +44,8 @@ data_way = args.data_pathway
 data_name = args.data_name
 dependence_way = args.dependency_pathway
 HMM_db = dependence_way + '/' + args.HMM_db
-contig_name = args.contig_name # Name of a specific contig or False by default if False all contig will be analysed
+# Name of a specific contig or False by default if False all contig will be analysed
+contig_name = args.contig_name
 
 gff_file = data_way + '/' + data_name + '.gff'
 scaffold_file = data_way + '/' + data_name + '.fasta'
@@ -60,7 +66,8 @@ output_human = True
 output_short = True
 output_table = True
 output_gff = True
-dict_output = {'result_H': output_human, "result_S": output_human, 'result_T': output_table, 'result_GFF': output_gff}
+dict_output = {'result_H': output_human, "result_S": output_human,
+               'result_T': output_table, 'result_GFF': output_gff}
 
 # Storing information as Gene class attribut to be use when we launch hmmsearch
 obj.Gene.output_way = output_way
@@ -76,7 +83,8 @@ csv_domain = dependence_way + '/domaines_METAfisher.csv'
 with open(csv_domain, 'r') as csvdo:
     reader = csv.DictReader(csvdo)
     for row in reader:
-        obj.Gene.domain_dict[row['hmm_name']] = {k: v for k, v in row.iteritems() if k in ['acc', 'family', 'type']}
+        obj.Gene.domain_dict[row['hmm_name']] = {
+            k: v for k, v in row.iteritems() if k in ['acc', 'family', 'type']}
 # print obj.Gene.domain_dict
 
 # SETTING THE THRESHOLD :
@@ -96,7 +104,8 @@ obj.Gene.distanceMin = distanceMin
 obj.Gene.distanceMax = distanceMax
 
 # dictionnary gathering the 4 thresholds
-thresholds = {"lenMin":lenMin, "lenMax":lenMax, "distanceMin":distanceMin , "distanceMax":distanceMax }
+thresholds = {"lenMin": lenMin, "lenMax": lenMax,
+              "distanceMin": distanceMin, "distanceMax": distanceMax}
 
 """
 # OUTPUT
@@ -107,7 +116,8 @@ thresholds = {"lenMin":lenMin, "lenMax":lenMax, "distanceMin":distanceMin , "dis
 # writer stat is a csv file handler or it is False when the flag info_contig_stat is False as well
 total stat is a dictionnary with the sum of all the colonne. It is written at the end
 """
-writer_stat, total_stat, fl_stat = out.output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize)
+writer_stat, total_stat, fl_stat = out.output_manager(
+    output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize)
 
 
 # Open step of the scaffold file ! used by fast_fasta function in orf file
@@ -151,19 +161,19 @@ dico_seq["codon_start"] = table['start']
 
 # SCORE PREPARaTION
 k = 20
-dist_mltp = 7
-len_mltp = 7
-bonus_start = 7 # +7 is given to configuration that start with their initial start and not a start determined by the program
+# dist_mltp = 7
+# len_mltp = 7
+bonus_start = 7  # +7 is given to configuration that start with their initial start and not a start determined by the program
 
-obj.Gene.length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k, len_mltp)
-obj.Gene.distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k, dist_mltp)
+obj.Gene.length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k)
+obj.Gene.distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k)
 
 # Take every scaffold present in the HMM output and sort them in order to
 # be able to retrieve their sequence correctly in the input file
 scaffold_list = fct2.get_list_scaffold(table_hmm)
-if not contig_name: # if the contig name option to give only one contig is not provided then contig_name is False and all contig are analysed
+if not contig_name:  # if the contig name option to give only one contig is not provided then contig_name is False and all contig are analysed
     scaffold_list = sorted(fct2.get_list_scaffold(table_hmm))
-else: # contig name is only is the name of one contig
+else:  # contig name is only is the name of one contig
     if contig_name not in scaffold_list:
         raise Exception('The contig name is incorrect or no hit have been found by hmmsearch')
     scaffold_list = [contig_name]
@@ -176,7 +186,7 @@ for scaffold in scaffold_list:
     # print ' * ' * 25
     print scaffold
     # ###
-    #TODO REMOVE
+    # TODO REMOVE
     # if scaffold == 'ICM0104MP0310_1000133':
     #     print 'on skip ICM0104MP0310_1000133'
     #     continue
@@ -196,7 +206,8 @@ for scaffold in scaffold_list:
     if resize:
         fct2.get_start_po(dico_seq)  # resize and calculate start position
     else:
-        fct2.check_size(obj.TA_gene.genes_strand)  # eliminate te genes that have a length > threshold
+        # eliminate te genes that have a length > threshold
+        fct2.check_size(obj.TA_gene.genes_strand)
 
     # STEP : GENE PAIR ORGANISATION CHECKING
     fct2.get_adj()   # set the adj gene for each gene which has
@@ -212,13 +223,13 @@ for scaffold in scaffold_list:
 
     score.score_TA_list(obj.TA_gene.linked, bonus_start)
 
-
     # Write stat
     if info_contig_stat:
         out.contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat)
 
     # write output
-    if obj.TA_gene.linked and dict_output['is_output']:  # If there is some gene linked meaning if tere is TA system
+    # If there is some gene linked meaning if tere is TA system
+    if obj.TA_gene.linked and dict_output['is_output']:
         out.write_result(obj.TA_gene.linked, dict_output, scaffold)
 
 

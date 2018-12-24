@@ -4,45 +4,41 @@ import Object_MetaF as obj
 from operator import attrgetter, itemgetter
 
 
-def score_manager(mini, maxi, csv_file, k, mltp):
-
-    dico, Ntot = from_file_to_dict(csv_file)
-    proba = give_proba_dict(mini, maxi, dico, k, Ntot)
-    # proba_tranformed = transformation(proba, mltp)
-
+def score_manager(inf, sup, csv_file, k):
+    dico = from_file_to_dict(csv_file, inf, sup)
+    Ntot = sum(dico.values())
+    assert k >= 0
+    proba = give_proba_dict(dico, k, Ntot)
+    assert 1.01 > sum(proba.values()) > 0.99
     return proba  # proba_tranformed
 
 
-def give_proba_dict(inf, sup, dico, k, N_tot):
-
+def give_proba_dict(dico, k, N_tot):
+    # k = 1
     total = 0
     result = {}
-    for nb in range(inf, sup + 1):
+    for nb in range(min(dico)-k, max(dico)+k + 1):
         somme = 0
-        # print('XWWWWWWWWX')
-        # print(nb)
-        for i in range(nb, nb + 1):
-            # print '   ', i
-            somme += dico.get(i, 0)
-        # print 'somme ', somme
-        # print "result ", (somme / float(N_tot) / (2 * k + 1))
-        result[nb] = (somme / float(N_tot) / (2 * k + 1))
-
-    # print(result.values())
-    # print(sum(result.values()))
-
+        list_to_sum = [dico.get(i, 0) for i in range(nb - k, nb + k + 1)]
+        mean_value = sum(list_to_sum) / float(len(list_to_sum))
+        result[nb] = (mean_value / float(N_tot))
     return result
 
 
-def from_file_to_dict(file_name):
+def from_file_to_dict(file_name, inf=None, sup=None):
+    # anything will always be greater than None and lower than False
+    # Not limit by default
     dico = {}
+
     with open(file_name) as csvfile:
         reader = csv.reader(csvfile)
-        N_tot = 0
-        for rows in reader:
-            dico[int(rows[0])] = int(rows[1])
-            N_tot += int(rows[1])
-    return dico, N_tot
+        dico = {int(rows[0]): int(rows[1]) for rows in reader}
+        if inf is None:
+            inf = min(dico)
+        if sup is None:
+            sup = max(dico)
+        dico = {k: v for k, v in dico.items() if inf <= k <= sup}
+    return dico
 
 
 def score_TA_list(genes_strand, bonus_start):
