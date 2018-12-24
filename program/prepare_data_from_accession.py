@@ -11,14 +11,24 @@ except ImportError:
     from urllib2 import HTTPError  # for Python 2
 
 
-def download_many_gb_files(acc_list, output, db='Protein', rettype='gb', create_folder=True, batch_size=15):
+def download_many_gb_files(acc_list, output, db='Protein', rettype='gb', create_folder=True, batch_size=15, tracker=0):
+    print(tracker)
+    print(acc_list)
+    if tracker > 5:
+        logging.warning(
+            'The download_many_gb_files fucntion is continuously failing with the accessions:{}'.format(acc_list))
+        return
+
+    tracker += 1
     # Based on Biopython Cookbook
-    print("{} accessions to download in {} db".format(len(acc_list), db))
-    print("{} accessions to download in {} db".format(len(set(acc_list)), db))
+    print("{} accessions needed in {} db".format(len(set(acc_list)), db))
     files = {f.replace(".gb", '') for f in listdir(output)}  # remove ext
-    acc_list_to_download = set(acc_list) - {f for f in files if f in acc_list}
+    already_downloaded = {f for f in files if f in acc_list}
+    print('{} accession have been already downloaded'.format(len(already_downloaded)))
+    acc_list_to_download = list(set(acc_list) - already_downloaded)
 
     if not acc_list_to_download:
+
         print("Nothing to download")
         return
     else:
@@ -31,14 +41,23 @@ def download_many_gb_files(acc_list, output, db='Protein', rettype='gb', create_
             print("Received error from server %s" % err)
             print("Gonna try with less accession")
             time.sleep(15)
-            half_acc = int(len(acc_list)/2)
-            download_many_gb_files(acc_list[:half_acc], output, db,
-                                   rettype, create_folder, batch_size)
-            download_many_gb_files(acc_list[:half_acc], output, db,
-                                   rettype, create_folder, batch_size)
+            half_acc = int(len(acc_list_to_download)/2)
+            download_many_gb_files(acc_list_to_download[:half_acc], output, db,
+                                   rettype, create_folder, batch_size, tracker)
+            download_many_gb_files(acc_list[half_acc:], output, db,
+                                   rettype, create_folder, batch_size, tracker)
             return
         else:
             raise
+    except RuntimeError as err:
+        logging.warning(err)
+        half_acc = int(len(acc_list_to_download)/2)
+        download_many_gb_files(acc_list_to_download[:half_acc], output, db,
+                               rettype, create_folder, batch_size, tracker)
+        download_many_gb_files(acc_list_to_download[half_acc:], output, db,
+                               rettype, create_folder, batch_size, tracker)
+        return
+
     count = len(acc_list_to_download)
     downloaded_acc = []
     webenv = search_results["WebEnv"]
