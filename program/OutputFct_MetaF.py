@@ -2,6 +2,7 @@
 import csv
 import Object_MetaF as obj
 from operator import attrgetter
+import Score_MetaF as score
 
 
 def output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize):
@@ -180,7 +181,7 @@ def write_adj_gene(gene, neighbours, position):
         dist_score = gene_score[0]["dist_score"] if 'dist_score' in gene_score[0] else n_score[0]["dist_score"]
 
         info += '{}\t{}\t distance {} (score {})\tsystem score {}|'.format(position, give_id(
-            n), distance, round(dist_score, npc), round(n_score[0]['sum'] + gene_score[0]['sum'], npc))
+            n), distance, round(dist_score, npc), round(score.conflaction_proba(n_score[0]['score'], gene_score[0]['score']), npc))
 
     return info[:-1]
 
@@ -190,14 +191,14 @@ def write_short_result(g, post, fl, i, g_score, post_score):
     tag_g = give_id(g)
     tag_p = give_id(post)
     fl.write("{}. Genes {} & {}\tstrand {}\tscore {}\n".format(
-        i, tag_g, tag_p, g.strand, g_score[0]['sum'] + post_score[0]['sum']))
+        i, tag_g, tag_p, g.strand, score.conflaction_proba(g_score[0]['score'], post_score[0]['score'])))
 
 
 def write_human_result(g, post, fl, i, g_score, post_score):
     fl.write("\nPRE GENE\n" + write_line(g, g_score))
     fl.write("\nPOST GENE\n" + write_line(post, post_score) + '\n')
     fl.write("DISTANCE {} ({}) \t SYSTEM score: {}\n".format(
-        post_score[0]['distance'], post_score[0]['dist_score'], g_score[0]['sum'] + post_score[0]['sum']))
+        post_score[0]['distance'], post_score[0]['dist_score'], score.conflaction_proba(g_score[0]['score'], post_score[0]['score'])))
     fl.write(visualisation_genes(g, post, post_score[0]['distance']))
 
 

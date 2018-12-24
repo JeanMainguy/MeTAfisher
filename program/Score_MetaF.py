@@ -9,18 +9,18 @@ def score_manager(inf, sup, csv_file, k):
     Ntot = sum(dico.values())
     assert k >= 0
     proba = give_proba_dict(dico, k, Ntot)
-    assert 1.01 > sum(proba.values()) > 0.99
+    # assert 1.01 > sum(proba.values()) > 0.99
     return proba  # proba_tranformed
 
 
 def give_proba_dict(dico, k, N_tot):
-    # k = 1
+    k = 30
     total = 0
     result = {}
     for nb in range(min(dico)-k, max(dico)+k + 1):
         somme = 0
         list_to_sum = [dico.get(i, 0) for i in range(nb - k, nb + k + 1)]
-        mean_value = sum(list_to_sum) / float(len(list_to_sum))
+        mean_value = sum(list_to_sum)  # / float(len(list_to_sum))
         result[nb] = (mean_value / float(N_tot))
     return result
 
@@ -131,17 +131,16 @@ def get_score(gene, starts, bonus_start, distance=None):
         # print 'proba len ', proba_len
 
         dico_score = {"start": start, "domain": d.score, "len_score": proba_len,
-                      'length': length, "sum": d.score_transformed() + proba_len}  # Ajout de distance:None? ? ?
+                      'length': length, "score": proba_len}  # Ajout de distance:None? ? ?
         if distance is not None:
             # print('distance', distance + start)
             dico_score['dist_score'] = obj.Gene.distance_proba[distance + start]
             dico_score['distance'] = distance + start
-            dico_score['sum'] += dico_score['dist_score']
+            dico_score['score'] = conflaction_proba(dico_score['dist_score'], proba_len)
 
         # Give a bonus to the initial start !!
         dico_score['bonus_init_start'] = bonus_start if start == 0 else 0
-        dico_score['sum'] += dico_score["bonus_init_start"]
 
         score.append(dico_score)
-    score = sorted(score, key=itemgetter('sum'), reverse=True)
+    score = sorted(score, key=itemgetter('score'), reverse=True)
     return score
