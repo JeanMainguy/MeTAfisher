@@ -53,19 +53,24 @@ def score_TA_list(genes_strand, bonus_start):
         for post in gene.post:
             score_pair(gene, post, bonus_start)  # GIVE THE SCOREEE
 
-    # for gene in genes_strand:
-    #     print '=='*20
-    #     print 'GENE', gene
-    #     print gene.dict_score
-    #     print '=='*20
-
 
 def conflaction_proba(proba1, proba2):
-    print(proba1, proba2)
+
     proba_final = (proba1 * proba2) / (proba1 * proba2 + (1-proba1)*(1-proba2))
-    print(proba_final)
 
     return proba_final
+
+
+def confl(*proba):
+    p_m = 1
+    p_inv = 1
+    for p in proba:
+        assert 0 <= p <= 1, 'probability value is not between 0 and 1'
+        p_m *= p
+        p_inv *= (1 - p)
+
+    conflation = p_m / (p_m + p_inv)
+    return conflation
 
 
 def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pre !
@@ -84,15 +89,7 @@ def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pr
     compatible_starts = [s for s in post.possible_start if
                          obj.Gene.distanceMin < initial_dist + s < obj.Gene.distanceMax]
 
-    # print "MIN {} --> MAX {}".format(obj.Gene.distanceMin, obj.Gene.distanceMax)
-    # print "possible start of g"
-    # print ('initial distance and strand ', initial_dist, pre.strand)
-    # # print dir(post)
-    # print ('post g possible start', post.possible_start)
-    # print ('compatible start', compatible_starts)
-    # print ('possible start of self ! ', pre.possible_start)
     score_post = get_score(post, compatible_starts, bonus_start, distance=initial_dist)
-    # print 'score post de ',post.gene_number,   score_post
     score = get_score(pre, pre.possible_start, bonus_start)
     # print pre.feature
     # print pre.dict_score
