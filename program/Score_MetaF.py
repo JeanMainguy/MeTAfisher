@@ -2,6 +2,12 @@
 import csv
 import Object_MetaF as obj
 from operator import attrgetter, itemgetter
+import json
+
+
+def decoder(filename):
+    with open(filename, 'r') as file:
+        return json.load(file)
 
 
 def score_manager(inf, sup, csv_file, k):
@@ -73,6 +79,36 @@ def confl(*proba):
     return conflation
 
 
+def domain_association_perct(do1, do2, association, domain_types):
+    try:
+        number_of_association = float(association[do1][do2])
+    except KeyError:
+        number_of_association = 0.0
+    nb_do1_found = domain_types[do1]['AT'] + domain_types[do1]['T']
+    nb_do2_found = domain_types[do2]['AT'] + domain_types[do2]['T']
+
+    if nb_do1_found < nb_do2_found:
+        perct_association = number_of_association / nb_do1_found
+    else:
+        perct_association = number_of_association / nb_do2_found
+
+    return perct_association
+
+
+def score_do_association(post, pre, dict_domain_association, dict_domain_gene_type):
+
+    # print dict_domain_association
+    # print dict_domain_gene_type
+    asso = []
+    for pre_do in pre.domain:
+
+        for post_do in post.domain:
+            perct_asso = domain_association_perct(
+                pre_do.domain_name, post_do.domain_name, dict_domain_association, dict_domain_gene_type)
+            asso.append(perct_asso)
+    return max(asso)
+
+
 def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pre !
     """
     Give the score of the pair
@@ -91,12 +127,16 @@ def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pr
 
     score_post = get_score(post, compatible_starts, bonus_start, distance=initial_dist)
     score = get_score(pre, pre.possible_start, bonus_start)
-    # print pre.feature
-    # print pre.dict_score
+
+    score_do_asso = score_do_association(post, pre, obj.Gene.dict_domain_association,
+                                         obj.Gene.dict_domain_gene_type)
+
+    for s in score_post:  # don't manage alternative start.. !!
+        s['domain_association_score'] = score_do_asso
+
+    # print(score_post)
     pre.dict_score[post.gene_number] = score
     post.dict_score[pre.gene_number] = score_post
-    # for s in score:
-    #     print s
 
 
 def get_score(gene, starts, bonus_start, distance=None):
@@ -106,12 +146,14 @@ def get_score(gene, starts, bonus_start, distance=None):
     """
     score = []
     gene.domain = sorted(gene.domain, key=attrgetter('score'), reverse=True)
+    # print([d.score for d in gene.domain])
     domains = iter(gene.domain)
     d = domains.next()
-    # print 'starts process by get_score()', starts
 
     for start in starts:
-        while d.ali_from * 3 < start:
+        # valid_domains = [d for d in gene.domain if d.ali_from*3 >= start]
+        # print([d.ali_from for d in gene.domain])
+        while d.ali_from * 3 < start:  # to not take into account domain that would be before of the current start investiagted
             try:
                 d = domains.next()
             except StopIteration:

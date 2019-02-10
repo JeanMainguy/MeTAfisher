@@ -25,7 +25,7 @@ def output_headinfo_creation(metaG_name, thresholds, rescue, resize):
     if resize:
         complement += '_resize'
     headinfo = '## Name of the sequence analysed: ' + metaG_name
-    headinfo += "## Rescue lonely gene : {}\n".format(rescue)
+    headinfo += "\n## Rescue lonely gene : {}\n".format(rescue)
     headinfo += "## Resize gene : {}\n".format(resize)
     headinfo += "## Distance threshold from {}nt to {}nt\n".format(
         thresholds['distanceMin'], thresholds['distanceMax'])
@@ -117,12 +117,10 @@ def write_result(set_linked, dict_output, scaffold):
     for gene in sorted(set_linked, key=attrgetter('start')):
         for g_post in gene.post:
             i += 1  # to give a number to each TA pair
-            g_score = gene.dict_score[g_post.gene_number]
-            post_score = g_post.dict_score[gene.gene_number]
             if dict_output['result_H']:
-                write_human_result(gene, g_post, dict_output['result_H'], i, g_score, post_score)
+                write_human_result(gene, g_post, dict_output['result_H'], i)
             if dict_output['result_S']:
-                write_short_result(gene, g_post, dict_output['result_S'], i, g_score, post_score)
+                write_short_result(gene, g_post, dict_output['result_S'], i)
         if dict_output['result_T']:
             write_table_result(gene, dict_output['result_T'])
 
@@ -181,24 +179,35 @@ def write_adj_gene(gene, neighbours, position):
         dist_score = gene_score[0]["dist_score"] if 'dist_score' in gene_score[0] else n_score[0]["dist_score"]
 
         info += '{}\t{}\t distance {} (score {})\tsystem score {}|'.format(position, give_id(
-            n), distance, round(dist_score, npc), round(score.conflaction_proba(n_score[0]['score'], gene_score[0]['score']), npc))
+            n), distance, round(dist_score, npc), round(score.confl(n_score[0]['score'], gene_score[0]['score']), npc))
 
     return info[:-1]
 
 
-def write_short_result(g, post, fl, i, g_score, post_score):
+def write_short_result(g, post, fl, i):
+    g_score = g.dict_score[post.gene_number]
+    post_score = post.dict_score[g.gene_number]
+    domain_asso = post_score[0]['domain_association_score']
+    system_score = score.confl(g_score[0]['score'], post_score[0]['score'], domain_asso)
 
     tag_g = give_id(g)
     tag_p = give_id(post)
     fl.write("{}. Genes {} & {}\tstrand {}\tscore {}\n".format(
-        i, tag_g, tag_p, g.strand, score.conflaction_proba(g_score[0]['score'], post_score[0]['score'])))
+        i, tag_g, tag_p, g.strand, score.confl(g_score[0]['score'], post_score[0]['score'])))
 
 
-def write_human_result(g, post, fl, i, g_score, post_score):
-    fl.write("\nPRE GENE\n" + write_line(g, g_score))
+def write_human_result(g, post, fl, i):
+    npc = 3
+    g_score = g.dict_score[post.gene_number]
+    post_score = post.dict_score[g.gene_number]
+    domain_asso = round(post_score[0]['domain_association_score'], npc)
+    system_score = score.confl(g_score[0]['score'], post_score[0]['score'], domain_asso)
+    dist_score = round(post_score[0]['dist_score'], npc)
+
+    fl.write("\n\nPRE GENE\n" + write_line(g, g_score))
     fl.write("\nPOST GENE\n" + write_line(post, post_score) + '\n')
-    fl.write("DISTANCE {} ({}) \t SYSTEM score: {}\n".format(
-        post_score[0]['distance'], post_score[0]['dist_score'], score.conflaction_proba(g_score[0]['score'], post_score[0]['score'])))
+    fl.write("DISTANCE {} ({})\tDomain-Domain ASSOCIATION: {}\tSYSTEM score: {}\n".format(
+        post_score[0]['distance'], dist_score, domain_asso, round(system_score, npc)))
     fl.write(visualisation_genes(g, post, post_score[0]['distance']))
 
 
@@ -206,10 +215,36 @@ def write_line(g, score):
     npc = 3  # number post coma
     line = "Gene {}\tfrom {} to {}\t{}aa ({})\tstart {}\t{}".format(
         g.gene_number, g.real_start(), g.real_end(), score[0]["length"] / 3, round(score[0]["len_score"], npc), score[0]["start"], g.feature)
-    domain_va = map(str, g.valid_domain(score[0]['start']))
-    domain_va = '/'.join(domain_va)
-    line += ("\tdomain: {}\n".format(domain_va))
+
+    domain_va = g.valid_domain(score[0]['start'])
+    domain_va = write_domain_lines(domain_va)
+    line += "\nDOMAIN:\n{}".format(domain_va)
     return line
+
+
+def write_domain_lines(domains):
+    domain_str_list = []
+    do_str = ''
+    npc = 1
+    for d in domains:
+        type_tot = sum([n for n in d.dict_info['type_prct'].values()])
+        type_prct_type_list = ['{}:{}%'.format(t, int(round(float(n)*100/type_tot)))
+                               for t, n in d.dict_info['type_prct'].items()]
+        type_prct_type = ' | '.join(sorted(type_prct_type_list))
+        # print type_prct_type
+        domain_str_list.append([d.dict_info["acc"],
+                                d.dict_info['family'],  type_prct_type])
+
+    len_max_col0 = max([len(l[0]) for l in domain_str_list])
+    len_max_col1 = max([len(l[1]) for l in domain_str_list])
+
+    for l in domain_str_list:
+
+        l[0] += ' '*(len_max_col0 - len(l[0]))
+        l[1] += ' '*(len_max_col1 - len(l[1]))
+        do_str += '\t'.join(l) + '\n'
+
+    return do_str
 
 
 def visualisation_genes(pre, post, distance):

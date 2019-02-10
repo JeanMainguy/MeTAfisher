@@ -5,16 +5,8 @@ import Orf_MetaF as orf2
 import OutputFct_MetaF as out
 import Score_MetaF as score
 import sys
-import resource
 import csv
 import argparse
-
-
-def using(point=""):
-    usage = resource.getrusage(resource.RUSAGE_SELF)
-    return '''%s: usertime=%s systime=%s mem=%s mb
-           ''' % (point, usage[0], usage[1],
-                  (usage[2] * resource.getpagesize()) / 1000000.0)
 
 
 parser = argparse.ArgumentParser(
@@ -77,6 +69,12 @@ obj.Gene.hmmdb = HMM_db
 # Dist and length of TA from TADB to mmake a proba
 file_len = dependence_way + "/length_TA.csv"
 file_dist = dependence_way + "/distance.csv"
+
+# domain vs domain : occurence of domain association in TADB inA pair
+file_domain_association = dependence_way + "/domain_domain_association.json"
+# domain type how often the domain is found in a toxin and in antitoxin
+file_domain_gene_type = dependence_way + "/domain_gene_type.json"
+
 
 # CSV FILE DOMAINS
 csv_domain = dependence_way + '/domaines_METAfisher.csv'
@@ -167,6 +165,8 @@ bonus_start = 7  # +7 is given to configuration that start with their initial st
 
 obj.Gene.length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k)
 obj.Gene.distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k)
+obj.Gene.dict_domain_association = score.decoder(file_domain_association)
+obj.Gene.dict_domain_gene_type = score.decoder(file_domain_gene_type)
 
 # Take every scaffold present in the HMM output and sort them in order to
 # be able to retrieve their sequence correctly in the input file
@@ -237,7 +237,6 @@ for scaffold in scaffold_list:
 if info_contig_stat:
     writer_stat.writerow(total_stat)
     fl_stat.close()
-print using()
 
 for kfl in dict_output:
     try:

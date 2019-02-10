@@ -309,13 +309,19 @@ class Domain:
         self.score = float(score)
         self.line = line
 
+        try:
+            self.dict_info = Gene.domain_dict[self.domain_name]
+        except KeyError:
+            self.dict_info = {"acc": 'NA', 'type': 'NA', 'family': 'NA'}
+
+        try:
+            self.dict_info['type_prct'] = Gene.dict_domain_gene_type[self.domain_name]
+        except KeyError:
+            self.dict_info['type_prct'] = "NA"
+
     def __str__(self):
         # return self.name + '\nfrom %d to %d \n' % (self.ali_from * 3, self.ali_to * 3)
-        try:
-            dico_do = Gene.domain_dict[self.domain_name]
-        except KeyError:
-            return 'Domain not found in the csv domain file.. {} ({}) '.format(self.domain_name, round(log(self.score), 3))
-        return "{} (score:{})\t{}\t{}".format(dico_do["acc"], round(log(self.score), 3), dico_do['type'], dico_do['family'])
+        return "{}\t{}\t{}".format(self.dict_info["acc"], self.dict_info['type'], self.dict_info['family'])
 
     def writeGffLike(self):
         try:
