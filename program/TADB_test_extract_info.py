@@ -74,6 +74,13 @@ def extract_protein_acc(file):
     return prot_accessions
 
 
+def check_consistency(info_dict, gb_genome_dir):
+    genomes_acc = [version.split('.')[0] for version in info_dict]
+    redundant_genomes = {genome for genome in genomes_acc if genomes_acc.count(genome) > 1}
+
+    print(redundant_genomes)
+
+
 def encode_TAT_info(info_dict, output_file):
     with open(output_file, 'w') as file:
         json.dump(info_dict, file, indent=4, sort_keys=True)
@@ -125,9 +132,8 @@ if __name__ == '__main__':
     build_genome_TA_info_dict(ATs, gb_prot_dir, info_dict)
     build_genome_TA_info_dict(Ts, gb_prot_dir, info_dict)
 
-    encode_TAT_info(info_dict, output_file)
-
     print("genomes:", len(info_dict))
+
     gb_download.download_many_gb_files(
         list(info_dict.keys()), gb_genome_dir, db="nucleotide", rettype="gbwithparts")
 
@@ -135,12 +141,13 @@ if __name__ == '__main__':
         if gb_dir in info_dict:
             data_path_base = path.join(gb_genome_dir, gb_dir, gb_dir)
             filename = data_path_base + '.gb'
-            # print(data_path_base)
-            # print(filename)
-            # print("len(listdir(path.join(gb_genome_dir, gb_dir)))",
-            #       len(listdir(path.join(gb_genome_dir, gb_dir))))
+
             if len(listdir(path.join(gb_genome_dir, gb_dir))) < 2:
                 gb_parser.from_gb_to_required_format(data_path_base, filename)
             else:
                 # print('formated files seems to exist already')
                 logging.info('formated files seems to exist already')
+
+    check_consistency(info_dict, gb_genome_dir)
+
+    encode_TAT_info(info_dict, output_file)
