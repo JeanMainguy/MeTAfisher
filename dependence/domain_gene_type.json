@@ -1,0 +1,518 @@
+{
+    "BrnA_antitoxin": {
+        "AT": 150, 
+        "T": 0
+    }, 
+    "Toxin_prlF-yhaV0.5": {
+        "T": 43, 
+        "AT": 0
+    }, 
+    "NOG.COG1669.meta_raw": {
+        "T": 542, 
+        "AT": 134
+    }, 
+    "RAMPs": {
+        "T": 3, 
+        "AT": 1
+    }, 
+    "NOG.COG2361.meta_raw": {
+        "T": 11, 
+        "AT": 305
+    }, 
+    "NOG.ENOG411267P.meta_raw": {
+        "T": 295, 
+        "AT": 1
+    }, 
+    "NOG.COG2026.meta_raw": {
+        "T": 763, 
+        "AT": 42
+    }, 
+    "Toxin1_ygiT-mqsR0.5": {
+        "T": 39, 
+        "AT": 0
+    }, 
+    "PIN": {
+        "T": 1257, 
+        "AT": 3
+    }, 
+    "Toxin_o-e-z0.4": {
+        "T": 8, 
+        "AT": 2
+    }, 
+    "NOG.COG1724.meta_raw": {
+        "T": 229, 
+        "AT": 90
+    }, 
+    "NOG.COG0758.clustalo_raw": {
+        "AT": 45, 
+        "T": 0
+    }, 
+    "antitoxin_yefM-yoeB0.6": {
+        "T": 3, 
+        "AT": 313
+    }, 
+    "NOG.COG3620.meta_raw": {
+        "T": 3, 
+        "AT": 370
+    }, 
+    "ParE_toxin": {
+        "T": 913, 
+        "AT": 3
+    }, 
+    "Toxin1__parD(pem)_0.4": {
+        "T": 250, 
+        "AT": 2
+    }, 
+    "NOG.COG1396.clustalo_raw": {
+        "T": 9, 
+        "AT": 1406
+    }, 
+    "NOG.COG1895.meta_raw": {
+        "T": 97, 
+        "AT": 105
+    }, 
+    "AbiEii": {
+        "T": 22, 
+        "AT": 0
+    }, 
+    "Antitoxin_paaR-paaA-parE0.4": {
+        "AT": 52, 
+        "T": 0
+    }, 
+    "NOG.COG3832.meta_raw": {
+        "T": 252, 
+        "AT": 8
+    }, 
+    "NOG.COG1598.clustalo_raw": {
+        "T": 4, 
+        "AT": 234
+    }, 
+    "HicB-like_2": {
+        "AT": 17, 
+        "T": 0
+    }, 
+    "HigB-like_toxin": {
+        "T": 258, 
+        "AT": 0
+    }, 
+    "NOG.COG1487.meta_raw": {
+        "T": 884, 
+        "AT": 3
+    }, 
+    "Fic": {
+        "T": 148, 
+        "AT": 1
+    }, 
+    "Arc": {
+        "AT": 115, 
+        "T": 0
+    }, 
+    "ParD_antitoxin": {
+        "T": 1, 
+        "AT": 126
+    }, 
+    "Antitoxin_omega-epsilon-zeta0.4": {
+        "T": 3, 
+        "AT": 8
+    }, 
+    "NOG.COG1753.meta_raw": {
+        "T": 11, 
+        "AT": 63
+    }, 
+    "NOG.COG2161.meta_raw": {
+        "T": 15, 
+        "AT": 409
+    }, 
+    "ParG": {
+        "AT": 12, 
+        "T": 0
+    }, 
+    "NOG.COG3609.meta_raw": {
+        "AT": 268, 
+        "T": 0
+    }, 
+    "ParD": {
+        "AT": 9, 
+        "T": 0
+    }, 
+    "NOG.COG5642.clustalo_raw": {
+        "T": 2, 
+        "AT": 256
+    }, 
+    "DUF2540": {
+        "T": 1, 
+        "AT": 23
+    }, 
+    "PemK_toxin": {
+        "T": 318, 
+        "AT": 2
+    }, 
+    "NOG.COG2445.meta_raw": {
+        "T": 216, 
+        "AT": 359
+    }, 
+    "NOG.COG2253.meta_raw": {
+        "T": 20, 
+        "AT": 0
+    }, 
+    "NOG.COG3742.meta_raw": {
+        "T": 303, 
+        "AT": 3
+    }, 
+    "NOG.COG3077.meta_raw": {
+        "T": 1, 
+        "AT": 251
+    }, 
+    "NOG.COG3668.meta_raw": {
+        "T": 463, 
+        "AT": 4
+    }, 
+    "NOG.COG0640.clustalo_raw": {
+        "T": 22, 
+        "AT": 255
+    }, 
+    "NOG.COG3550.meta_raw": {
+        "T": 253, 
+        "AT": 0
+    }, 
+    "NOG.COG5302.meta_raw": {
+        "AT": 96, 
+        "T": 0
+    }, 
+    "NOG.COG3657.meta_raw": {
+        "T": 189, 
+        "AT": 73
+    }, 
+    "NOG.COG2442.meta_raw": {
+        "AT": 102, 
+        "T": 0
+    }, 
+    "ParE-like_toxin": {
+        "T": 203, 
+        "AT": 2
+    }, 
+    "NOG.COG2337.meta_raw": {
+        "T": 293, 
+        "AT": 2
+    }, 
+    "RelB": {
+        "T": 1, 
+        "AT": 187
+    }, 
+    "RelE": {
+        "T": 133, 
+        "AT": 8
+    }, 
+    "NOG.COG1848.meta_raw": {
+        "T": 1170, 
+        "AT": 3
+    }, 
+    "NOG.COG5304.meta_raw": {
+        "AT": 132, 
+        "T": 0
+    }, 
+    "NOG.COG3549.meta_raw": {
+        "T": 235, 
+        "AT": 0
+    }, 
+    "Antitoxin2__parD(pem)_0.5": {
+        "T": 2, 
+        "AT": 303
+    }, 
+    "NOG.COG2250.meta_raw": {
+        "T": 2, 
+        "AT": 186
+    }, 
+    "HicA_toxin": {
+        "T": 255, 
+        "AT": 3
+    }, 
+    "NOG.COG4113.meta_raw": {
+        "T": 677, 
+        "AT": 0
+    }, 
+    "YoeB_toxin": {
+        "T": 273, 
+        "AT": 1
+    }, 
+    "NOG.COG4456.meta_raw": {
+        "T": 3, 
+        "AT": 190
+    }, 
+    "MqsR_toxin": {
+        "T": 46, 
+        "AT": 0
+    }, 
+    "RHH_6": {
+        "AT": 4, 
+        "T": 0
+    }, 
+    "RHH_7": {
+        "AT": 5, 
+        "T": 0
+    }, 
+    "RHH_4": {
+        "T": 2, 
+        "AT": 88
+    }, 
+    "NOG.COG4691.meta_raw": {
+        "AT": 127, 
+        "T": 0
+    }, 
+    "RHH_3": {
+        "AT": 124, 
+        "T": 0
+    }, 
+    "RHH_1": {
+        "AT": 681, 
+        "T": 0
+    }, 
+    "NOG.COG5499.meta_raw": {
+        "AT": 212, 
+        "T": 0
+    }, 
+    "DUF1902": {
+        "T": 2, 
+        "AT": 44
+    }, 
+    "Omega_Repress": {
+        "AT": 1, 
+        "T": 0
+    }, 
+    "NOG.COG5340.meta_raw": {
+        "AT": 18, 
+        "T": 0
+    }, 
+    "NOG.COG0514.clustalo_raw": {
+        "T": 3, 
+        "AT": 1
+    }, 
+    "PHD_like": {
+        "T": 2, 
+        "AT": 163
+    }, 
+    "HicB": {
+        "T": 4, 
+        "AT": 119
+    }, 
+    "AbiEi_3": {
+        "AT": 5, 
+        "T": 0
+    }, 
+    "AntitoxinprlF-yhaV": {
+        "AT": 153, 
+        "T": 0
+    }, 
+    "NOG.COG3514.meta_raw": {
+        "AT": 123, 
+        "T": 0
+    }, 
+    "NOG.COG4423.meta_raw": {
+        "AT": 112, 
+        "T": 0
+    }, 
+    "NOG.COG3093.meta_raw": {
+        "T": 20, 
+        "AT": 883
+    }, 
+    "VapB_antitoxin": {
+        "AT": 168, 
+        "T": 0
+    }, 
+    "Toxin2__parD(pem)_0.5": {
+        "T": 246, 
+        "AT": 2
+    }, 
+    "NOG.COG4680.meta_raw": {
+        "T": 83, 
+        "AT": 0
+    }, 
+    "NOG.COG2880.meta_raw": {
+        "AT": 37, 
+        "T": 0
+    }, 
+    "NOG.COG5654.meta_raw": {
+        "T": 134, 
+        "AT": 1
+    }, 
+    "DUF2559": {
+        "AT": 25, 
+        "T": 0
+    }, 
+    "cd00093_HTH_XRE": {
+        "T": 18, 
+        "AT": 1486
+    }, 
+    "CcdB": {
+        "T": 83, 
+        "AT": 0
+    }, 
+    "CcdA": {
+        "AT": 120, 
+        "T": 0
+    }, 
+    "PSK_trans_fac": {
+        "AT": 210, 
+        "T": 0
+    }, 
+    "Regulator_omega-epsilon-zeta0.5": {
+        "AT": 1, 
+        "T": 0
+    }, 
+    "NOG.COG2002.meta_raw": {
+        "T": 2, 
+        "AT": 290
+    }, 
+    "NOG.ENOG410ZNN6.meta_raw": {
+        "T": 3, 
+        "AT": 465
+    }, 
+    "NOG.COG5606.meta_raw": {
+        "T": 2, 
+        "AT": 402
+    }, 
+    "Antitoxin1__parD(pem)_0.4": {
+        "T": 1, 
+        "AT": 287
+    }, 
+    "NOG.COG2886.meta_raw": {
+        "T": 1, 
+        "AT": 61
+    }, 
+    "NOG.COG3905.meta_raw": {
+        "T": 1, 
+        "AT": 324
+    }, 
+    "NOG.COG3654.meta_raw": {
+        "T": 111, 
+        "AT": 1
+    }, 
+    "NOG.COG3636.meta_raw": {
+        "T": 44, 
+        "AT": 207
+    }, 
+    "SeqA_N": {
+        "AT": 15, 
+        "T": 0
+    }, 
+    "NOG.COG5450.meta_raw": {
+        "AT": 69, 
+        "T": 0
+    }, 
+    "NOG.ENOG410ZIMN.meta_raw": {
+        "T": 508, 
+        "AT": 3
+    }, 
+    "NOG.COG4118.meta_raw": {
+        "T": 2, 
+        "AT": 413
+    }, 
+    "RHH_5": {
+        "AT": 179, 
+        "T": 0
+    }, 
+    "PhdYeFM_antitox": {
+        "T": 4, 
+        "AT": 643
+    }, 
+    "NOG.COG1708.meta_raw": {
+        "T": 548, 
+        "AT": 13
+    }, 
+    "Toxin_yeeUV0.5": {
+        "AT": 1, 
+        "T": 0
+    }, 
+    "NOG.COG2929.meta_raw": {
+        "T": 175, 
+        "AT": 0
+    }, 
+    "Antitoxin_ygiT-mqsR0.5": {
+        "T": 1, 
+        "AT": 73
+    }, 
+    "NOG.COG2336.meta_raw": {
+        "T": 4, 
+        "AT": 423
+    }, 
+    "YafQ_toxin": {
+        "T": 180, 
+        "AT": 1
+    }, 
+    "NOG.COG3041.meta_raw": {
+        "T": 329, 
+        "AT": 1
+    }, 
+    "DUF1778": {
+        "AT": 168, 
+        "T": 0
+    }, 
+    "BrnT_toxin": {
+        "T": 178, 
+        "AT": 0
+    }, 
+    "ParD_like": {
+        "AT": 27, 
+        "T": 0
+    }, 
+    "NOG.COG4226.meta_raw": {
+        "T": 4, 
+        "AT": 216
+    }, 
+    "Antitoxin_yeeUV0.5": {
+        "T": 2, 
+        "AT": 0
+    }, 
+    "MazE_antitoxin": {
+        "T": 3, 
+        "AT": 523
+    }, 
+    "NOG.COG2856.meta_raw": {
+        "T": 190, 
+        "AT": 901
+    }, 
+    "RepB-RCR_reg": {
+        "AT": 7, 
+        "T": 0
+    }, 
+    "NOG.COG4710.meta_raw": {
+        "T": 1, 
+        "AT": 229
+    }, 
+    "NOG.COG4679.meta_raw": {
+        "T": 311, 
+        "AT": 94
+    }, 
+    "HicB_lk_antitox": {
+        "T": 7, 
+        "AT": 293
+    }, 
+    "toxin_yefM-yoeB0.5": {
+        "T": 267, 
+        "AT": 1
+    }, 
+    "NOG.COG2944.meta_raw": {
+        "T": 8, 
+        "AT": 759
+    }, 
+    "CopG_antitoxin": {
+        "AT": 156, 
+        "T": 0
+    }, 
+    "HTH_3": {
+        "T": 15, 
+        "AT": 1484
+    }, 
+    "Gp49": {
+        "T": 367, 
+        "AT": 2
+    }, 
+    "Toxin_paaR-paaA-parE0.5": {
+        "T": 407, 
+        "AT": 0
+    }, 
+    "TraY": {
+        "AT": 44, 
+        "T": 0
+    }
+}
