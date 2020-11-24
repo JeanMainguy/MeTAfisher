@@ -4,13 +4,12 @@
 
 ##### You may change the following lines ###
 
+  general_output_pathway=./output # the location of the result folder specific to the sequence analysed will be created
+  meTAfisher_pathway=.  # the path to the folder of MeTAfisher containing dependence and program folders (it is the current directory if you launch this script from there)
 
-general_output_pathway=./output # the location of the result folder specific to the sequence analysed will be created
-meTAfisher_pathway=.  # the path to the folder of MeTAfisher containing dependence and program folders (it is the current directory if you launch this script from there)
-
-MetaG_name=Desulfovibrio_vulgaris_DP4_test # Name of the chromosome or Metagenome. Result files will be named after it
-data_pathway=./data/Desulfovibrio_vulgaris_DP4 # path to the data where the data files are stored
-data_name=sequence #common name of the data files (here we have sequence.faa sequence.fna sequence.gff sequence.fasta in the data folder)
+  MetaG_name=Desulfovibrio_vulgaris_DP4_test # Name of the chromosome or Metagenome. Result files will be named after it
+  data_pathway=./data/Desulfovibrio_vulgaris_DP4 # path to the data where the data files are stored
+  data_name=sequence #common name of the data files (here we have sequence.faa sequence.fna sequence.gff sequence.fasta in the data folder)
 
 
 #### The next lines don't need to be be changed  ####
@@ -45,5 +44,12 @@ fi
 #                   dependency_pathway
 
 echo "MeTAfisher"
-python2 ${meTAfisher_pathway}/program/main_MetaF.py  ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
+python2 ${meTAfisher_pathway}/program/main_MetaF.py  \
+                                ${MetaG_name} \
+                                ${output_pathway} \
+                                ${data_pathway} \
+                                ${data_name} \
+                                ${dependency_pathway} 
+
+echo results $output_pathway
 # python program/main_MetaF.py ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
