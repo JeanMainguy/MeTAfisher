@@ -1,24 +1,31 @@
+#!/usr/bin/env python2
 # coding: utf-8
 import Object_MetaF as obj
-import Function_MetaF as fct2
-import Orf_MetaF as orf2
+import Function_MetaF as fct
+import Orf_MetaF as orf
 import OutputFct_MetaF as out
 import Score_MetaF as score
 import sys
 import csv
 import argparse
+import os
+import logging
 
 
+project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+print(project_dir)
 parser = argparse.ArgumentParser(
     prog='MeTAfisher', description='Identification of Toxin Antitoxin Systems', epilog="ADDITIONAL INFORMATION:")
-parser.add_argument("metaG_name", help="Name of the Metagenome or Genome")
+parser.add_argument("--name", help="Name of the Metagenome or Genome", default='metafisher')
 
-parser.add_argument("output_pathway", help="Pathway of the output folder")
+parser.add_argument("-o", '--outdir', help="Pathway of the output folder",
+                    default='metafisher_results')
 parser.add_argument(
-    "data_pathway", help="Pathway of the data folder where all the data files are stored : fna_file, faa_file, scaffold_file, gff_file")
-parser.add_argument("data_name", help="Common name of all data files, the name without the extension.  fna_file, faa_file, scaffold_file, gff_file are different only by their extansions : .fna, .faa, .fasta, .gff respectively")
-parser.add_argument("dependency_pathway",
-                    help="Pathway of the dependency folder where all te depedencies are stored")
+    "--data_dir", help="Pathway of the data folder where all the data files are stored : fna_file, faa_file, scaffold_file, gff_file", required=True)
+parser.add_argument("--data_name", help="Common name of all data files, the name without the extension.  fna_file, faa_file, scaffold_file, gff_file are different only by their extansions : .fna, .faa, .fasta, .gff respectively")
+parser.add_argument("--dependency_pathway",
+                    help="Pathway of the dependency folder where all the depedencies are stored. default is in the dependence dir of the tool", default=os.path.join(project_dir, "dependence"))
 parser.add_argument('--Resize', dest='resize', action='store_true',
                     help="Resize the genes if they are too big for the thresholds and take into account the possible start along the sequence. To do only if the gene prediction is not trustable")
 parser.add_argument('--Rescue', dest='rescue', action='store_true',
@@ -30,24 +37,31 @@ parser.add_argument("--HMM_db", default="ALL_plus_MET_curatted.hmm",
 
 
 args = parser.parse_args()
-metaG_name = args.metaG_name
-output_way = args.output_pathway
-data_way = args.data_pathway
+metaG_name = args.name
+output_way = args.outdir
+data_way = args.data_dir
 data_name = args.data_name
 dependence_way = args.dependency_pathway
+if not dependence_way:
+    dependence_way = os.path.realpath(__file__)
 HMM_db = dependence_way + '/' + args.HMM_db
 # Name of a specific contig or False by default if False all contig will be analysed
 contig_name = args.contig_name
+
+if not os.path.isdir(output_way):
+    os.mkdir(output_way)
+
 
 gff_file = data_way + '/' + data_name + '.gff'
 scaffold_file = data_way + '/' + data_name + '.fasta'
 fna_file = data_way + '/' + data_name + '.fna'
 faa_file = data_way + '/' + data_name + '.faa'
-table_hmm = output_way + '/' + metaG_name + '_output_tableHMM.txt'
+table_hmm = output_way + '/output_HMM_table_' + metaG_name + '.txt'
 hmm_adjorf_launcher = output_way + '/' + data_name + '.gff'
 
 # prot sequence of adj orf will be written there
 tmp_adj_orf_faa = output_way + '/temporary_adjOrf.faa'
+
 
 # Flag
 resize = args.resize
@@ -64,6 +78,12 @@ dict_output = {'result_H': output_human, "result_S": output_human,
 # Storing information as Gene class attribut to be use when we launch hmmsearch
 obj.Gene.output_way = output_way
 obj.Gene.hmmdb = HMM_db
+
+if not os.path.isfile(table_hmm):
+    logging.warning('HMM launcher')
+    print(table_hmm)
+    table_hmm = fct.HMM_launcher(faa_file, metaG_name)
+    print(table_hmm)
 
 # DISTANCE AND LENGTH DICO :
 # Dist and length of TA from TADB to mmake a proba
@@ -131,7 +151,7 @@ dico_orf['line'] = next(dico_orf['fl'])
 # Parameter for the orfinder
 
 id_genetCode = 11
-table = orf2.getGeneticCode(id_genetCode)
+table = orf.getGeneticCode(id_genetCode)
 obj.Gene.codon_starts = table['start']
 obj.Gene.codon_stops = table['stop']
 
@@ -170,9 +190,9 @@ obj.Gene.dict_domain_gene_type = score.decoder(file_domain_gene_type)
 
 # Take every scaffold present in the HMM output and sort them in order to
 # be able to retrieve their sequence correctly in the input file
-scaffold_list = fct2.get_list_scaffold(table_hmm)
+scaffold_list = fct.get_list_scaffold(table_hmm)
 if not contig_name:  # if the contig name option to give only one contig is not provided then contig_name is False and all contig are analysed
-    scaffold_list = sorted(fct2.get_list_scaffold(table_hmm))
+    scaffold_list = sorted(fct.get_list_scaffold(table_hmm))
 else:  # contig name is only is the name of one contig
     if contig_name not in scaffold_list:
         raise Exception('The contig name is incorrect or no hit have been found by hmmsearch')
@@ -201,23 +221,23 @@ for scaffold in scaffold_list:
     obj.Orf.adj_orf_index = 0
     obj.Orf.hmm_orf = {}
 
-    fct2.get_hmm_genes(scaffold, table_hmm, gff_file)
+    fct.get_hmm_genes(scaffold, table_hmm, gff_file)
 
     if resize:
-        fct2.get_start_po(dico_seq)  # resize and calculate start position
+        fct.get_start_po(dico_seq)  # resize and calculate start position
     else:
         # eliminate te genes that have a length > threshold
-        fct2.check_size(obj.TA_gene.genes_strand)
+        fct.check_size(obj.TA_gene.genes_strand)
 
     # STEP : GENE PAIR ORGANISATION CHECKING
-    fct2.get_adj()   # set the adj gene for each gene which has
+    fct.get_adj()   # set the adj gene for each gene which has
 
-    fct2.create_lonely_gene_list()
+    fct.create_lonely_gene_list()
 
     initial_nb_lonely = len(obj.TA_gene.genes) - len(obj.TA_gene.linked)
 
     if obj.TA_gene.lonely is not None and rescue is True:
-        orf2.rescue_lonely_gene(dico_orf, gff_dico, scaffold, tmp_adj_orf_faa)
+        orf.rescue_lonely_gene(dico_orf, gff_dico, scaffold, tmp_adj_orf_faa)
 
     # score.score_TA_list(obj.TA_gene.genes_strand, bonus_start)
 

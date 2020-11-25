@@ -44,12 +44,12 @@ fi
 #                   dependency_pathway
 
 echo "MeTAfisher"
-python2 ${meTAfisher_pathway}/program/main_MetaF.py  \
+echo python2 ${meTAfisher_pathway}/program/main_MetaF.py  \
                                 ${MetaG_name} \
                                 ${output_pathway} \
                                 ${data_pathway} \
                                 ${data_name} \
-                                ${dependency_pathway} 
+                                ${dependency_pathway}
 
 echo results $output_pathway
 # python program/main_MetaF.py ${MetaG_name} ${output_pathway} ${data_pathway} ${data_name} ${dependency_pathway}
