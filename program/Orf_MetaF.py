@@ -1,7 +1,6 @@
 # coding: utf-8
 from itertools import chain
 import Object_MetaF as obj
-from subprocess import call
 import Function_MetaF as fct2
 # import re
 # import csv
@@ -34,7 +33,8 @@ def rescue_lonely_gene(dico_orf, dico_gff, scaffold, tmp_adjorf_faa):
         # read the generator: check if the orf is a predicted gene
         # then check if the orf is adjacent with a TA_gene
         # If so then the faa ORF file is written...
-        orf_manager(generator, '+', obj.TA_gene.genes_strand['+'], gff_ends, fl)  # orf manager will do everything !!
+        # orf manager will do everything !!
+        orf_manager(generator, '+', obj.TA_gene.genes_strand['+'], gff_ends, fl)
     # TEST IF THERE ARE LONELY GENES IN STRAND minus
     if obj.TA_gene.lonely['-']:
         # print 'THERE IS LONELY GENE ON STRAND -'
@@ -70,7 +70,8 @@ def hmm_orf_get_adj(dico_hmmorf):
         # obj.TA_gene.genes.extend(dico_hmmorf[strand])
         for hmmorf in dico_hmmorf[strand]:
             for gene in obj.TA_gene.genes_strand[strand]:
-                if hmmorf.gene_number == gene.gene_number:  # if the orf have been already process and added to the list then we don't check it against itself
+                # if the orf have been already process and added to the list then we don't check it against itself
+                if hmmorf.gene_number == gene.gene_number:
                     # print hmmorf
                     # print gene
                     continue
@@ -112,12 +113,11 @@ def adjust_orf_attribut(dico_obj, highestGeneNumber):
             # print 'after', o.possible_start
             o.distanceMin = obj.Gene.distanceMin - abs(o.possible_start[-1] - o.possible_start[0])
 
-
-            #WARNING absolute value of distance min should not be greater than the length of the gene !!
+            # WARNING absolute value of distance min should not be greater than the length of the gene !!
             # because it would allow overlap of more than the length of the gene
             # and then could give a post gene before a pre gene so a non sense
             if abs(o.distanceMin) >= len(o):
-                o.distanceMin = -len(o) +1 # if so distance min is -abs(len -1)
+                o.distanceMin = -len(o) + 1  # if so distance min is -abs(len -1)
 
             o.post = []
             o.prev = []
@@ -144,7 +144,7 @@ def codon_finder(liste, seq, frame=1, inf=0, sup='Not defined'):
     position = []
     if sup == 'Not defined':
         sup = len(seq) - 2
-    for i in xrange(inf + frame - 1, sup, 3):  # -1 to get frame from 0 to 2 and not from 1 to 3
+    for i in range(inf + frame - 1, sup, 3):  # -1 to get frame from 0 to 2 and not from 1 to 3
         if seq[i:i + 3] in liste:
             position.append(i)
     return position
@@ -169,16 +169,14 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
         # EDIT now orfinder size max and min correctly...
         # o.manage_size()  # A enlever quand tu le sens attention au distanceMin ! !
         o.distanceMin = obj.Gene.distanceMin - (o.possible_start[-1] - o.possible_start[0])
-        #WARNING absolute value of distance min should not be greater than the length of the gene !!
+        # WARNING absolute value of distance min should not be greater than the length of the gene !!
         # because it would allow overlap of more than the length of the gene
         # and then could give a post gene before a pre gene so a non sense
 
         if abs(o.distanceMin) >= len(o):
-            o.distanceMin = -len(o) +1 # if so distance min is len -1
-
+            o.distanceMin = -len(o) + 1  # if so distance min is len -1
 
         if o.is_adj(lonelyGenes):
-
 
             obj.Orf.adj_orf_index += 1
             obj.Orf.adj_orf[obj.Orf.adj_orf_index] = o
@@ -197,10 +195,10 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
         #     print o, 'frame :', o.frame, 'real end', o.real_end()
         ####
     if gffEnds[strand]:
-        print o.scaffold
-        print strand
-        print 'len du saffold', len(o.seq['data'])
-        print "THERE ARE SOME PEDICTED GENE THAt DIDNT FOUND THEIR ORF :-("
+        print(o.scaffold)
+        print(strand)
+        print('len du saffold', len(o.seq['data']))
+        print("THERE ARE SOME PEDICTED GENE THAt DIDNT FOUND THEIR ORF :-(")
         # TODO LOG CHANGE THAT
         with open(obj.Gene.output_way + '/Predicted_not_found.err', 'a') as fl:
             fl.write("scaffold " + o.scaffold + ' strand :' + strand + '\n' + str(gffEnds[strand]))
@@ -343,23 +341,27 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
     pos_stop = codon_finder(stops, seq['data'], frame=frame)
     if not pos_stop:  # Check the case if there is no stop codon in te sequence
         # TODO LOG
-        print "NO STOP IN THE SEQUENCE"
+        print("NO STOP IN THE SEQUENCE")
         if length_seq > threshold:
             twoStopLen = length_seq
             twoStopLen = twoStopLen - twoStopLen % 3
             add_to_inf = to_fit_len_max(twoStopLen)
 
             pos_start = []
-            add_to_inf = to_fit_len_max(twoStopLen=length_seq)  # to have a len that is a multiple of 3
-            pos_start = codon_finder(starts, seq['data'], inf=add_to_inf, frame=frame)  # research of starts in the whole sequence !
+            # to have a len that is a multiple of 3
+            add_to_inf = to_fit_len_max(twoStopLen=length_seq)
+            # research of starts in the whole sequence !
+            pos_start = codon_finder(starts, seq['data'], inf=add_to_inf, frame=frame)
             # ATTENTION ajout du debut de la sequence aux start... start imaginaire donc, mais necessaire pour coller au gene predit ! :-(
             if add_to_inf == 0:
                 pos_start = [frame - 1] + pos_start
 
             if pos_start:
                 # Search the correct stop position
-                distance = length_seq - pos_start[-1]  # distance between the start and the end of the MetaG
-                stop = length_seq - 3 - (distance % 3)  # -3 is -1 to get index of the last nt because here we start counting at 0 and -2 because we need the first nt of the last codon
+                # distance between the start and the end of the MetaG
+                distance = length_seq - pos_start[-1]
+                # -3 is -1 to get index of the last nt because here we start counting at 0 and -2 because we need the first nt of the last codon
+                stop = length_seq - 3 - (distance % 3)
                 yield obj.Orf(frame=frame * rev, possible_start_orf=pos_start, end_orf=stop + 2, complet=False, border=True)
         return
 
@@ -369,7 +371,8 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
         twoStopLen = pos_stop[0] + 3
         twoStopLen = twoStopLen - twoStopLen % 3
         add_to_inf = to_fit_len_max(twoStopLen)  # +3 is to get the len between 0 to the first stop
-        pos_start = codon_finder(starts, seq['data'], frame=frame, inf=add_to_inf, sup=(pos_stop[0] + 3 - threshold))  # research of starts from 0 to (first stop - thresold)
+        pos_start = codon_finder(starts, seq['data'], frame=frame, inf=add_to_inf, sup=(
+            pos_stop[0] + 3 - threshold))  # research of starts from 0 to (first stop - thresold)
         # ATTENTION ajout du debut de la sequence aux start... start imaginaire donc, mais necessaire pour coller au gene predit ! :-(
         if add_to_inf == 0:
             pos_start = [frame - 1] + pos_start
@@ -378,13 +381,15 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
 
     for i in range(len(pos_stop) - 1):  # recherche entre le stop i et i+1 donc on s'arrete a un stop avant la fin
 
-        if (pos_stop[i + 1] + 3 - (pos_stop[i] + 3)) < threshold:  # premier +3 pour inclure le codon stop dans la longueur final comme dans ncbi orf finder...
+        # premier +3 pour inclure le codon stop dans la longueur final comme dans ncbi orf finder...
+        if (pos_stop[i + 1] + 3 - (pos_stop[i] + 3)) < threshold:
             continue
 
         else:
             pos_start = []
             add_to_inf = to_fit_len_max(twoStopLen=pos_stop[i + 1] - pos_stop[i])
-            pos_start = codon_finder(starts, seq['data'], inf=pos_stop[i] + 3 + add_to_inf, sup=(pos_stop[i + 1] + 3 - threshold))
+            pos_start = codon_finder(
+                starts, seq['data'], inf=pos_stop[i] + 3 + add_to_inf, sup=(pos_stop[i + 1] + 3 - threshold))
 
             if pos_start:
                 yield obj.Orf(frame=frame * rev, possible_start_orf=pos_start, end_orf=pos_stop[i + 1] + 2, complet=True, border=False)
@@ -395,14 +400,18 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
         twoStopLen = length_seq - pos_stop[-1] + 3
         twoStopLen = twoStopLen - twoStopLen % 3
         add_to_inf = to_fit_len_max(twoStopLen)  # %3 to get a multiple of 3
-        pos_start = codon_finder(starts, seq['data'], inf=pos_stop[-1] + 3 + add_to_inf, sup=(length_seq - threshold))  # research of starts from 0 to (first stop - thresold)
+        # research of starts from 0 to (first stop - thresold)
+        pos_start = codon_finder(
+            starts, seq['data'], inf=pos_stop[-1] + 3 + add_to_inf, sup=(length_seq - threshold))
         if pos_start:
             # looking for the appropriate stop:
             # It is here a bit tricky : The gene is at the border of the MetaG
             # We are looking for the position of the first nt
             # of the last full codon in the frame of the gene
-            distance = length_seq - pos_start[-1]  # distance between the start and the end of the MetaG
-            stop = length_seq - 3 - (distance % 3)  # -3 is -1 to get index of the last nt because here we start counting at 0 and -2 because we need the first nt of the last codon
+            # distance between the start and the end of the MetaG
+            distance = length_seq - pos_start[-1]
+            # -3 is -1 to get index of the last nt because here we start counting at 0 and -2 because we need the first nt of the last codon
+            stop = length_seq - 3 - (distance % 3)
 
             yield obj.Orf(frame=frame * rev, possible_start_orf=pos_start, end_orf=stop + 2, complet=False, border=True)
 

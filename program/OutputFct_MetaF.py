@@ -187,8 +187,8 @@ def write_adj_gene(gene, neighbours, position):
 def write_short_result(g, post, fl, i):
     g_score = g.dict_score[post.gene_number]
     post_score = post.dict_score[g.gene_number]
-    domain_asso = post_score[0]['domain_association_score']
-    system_score = score.confl(g_score[0]['score'], post_score[0]['score'], domain_asso)
+    # domain_asso = post_score[0]['domain_association_score']
+    # system_score = score.confl(g_score[0]['score'], post_score[0]['score'], domain_asso)
 
     tag_g = give_id(g)
     tag_p = give_id(post)
@@ -214,7 +214,7 @@ def write_human_result(g, post, fl, i):
 def write_line(g, score):
     npc = 3  # number post coma
     line = "Gene {}\tfrom {} to {}\t{}aa ({})\tstart {}\t{}".format(
-        g.gene_number, g.real_start(), g.real_end(), score[0]["length"] / 3, round(score[0]["len_score"], npc), score[0]["start"], g.feature)
+        g.gene_number, g.real_start(), g.real_end(), int(score[0]["length"] / 3), round(score[0]["len_score"], npc), score[0]["start"], g.feature)
 
     domain_va = g.valid_domain(score[0]['start'])
     domain_va = write_domain_lines(domain_va)
@@ -225,7 +225,6 @@ def write_line(g, score):
 def write_domain_lines(domains):
     domain_str_list = []
     do_str = ''
-    npc = 1
     for d in domains:
         type_tot = sum([n for n in d.dict_info['type_prct'].values()])
         type_prct_type_list = ['{}:{}%'.format(t, int(round(float(n)*100/type_tot)))
@@ -233,16 +232,16 @@ def write_domain_lines(domains):
         type_prct_type = ' | '.join(sorted(type_prct_type_list))
         # print type_prct_type
         domain_str_list.append([d.dict_info["acc"],
-                                d.dict_info['family'],  type_prct_type])
+                                d.dict_info['family'], type_prct_type])
 
-    len_max_col0 = max([len(l[0]) for l in domain_str_list])
-    len_max_col1 = max([len(l[1]) for l in domain_str_list])
+    len_max_col0 = max([len(line[0]) for line in domain_str_list])
+    len_max_col1 = max([len(line[1]) for line in domain_str_list])
 
-    for l in domain_str_list:
+    for line in domain_str_list:
 
-        l[0] += ' '*(len_max_col0 - len(l[0]))
-        l[1] += ' '*(len_max_col1 - len(l[1]))
-        do_str += '\t'.join(l) + '\n'
+        line[0] += ' '*(len_max_col0 - len(line[0]))
+        line[1] += ' '*(len_max_col1 - len(line[1]))
+        do_str += '\t'.join(line) + '\n'
 
     return do_str
 
@@ -262,8 +261,8 @@ def visualisation_genes(pre, post, distance):
     final_str += position_g2 * ' ' + post_str + '\n'
     positions = [position_g2, len(pre_str)]
     final_str += (min(positions) - 1) * ' ' + '/' + abs(positions[0] - positions[1]) * ' ' + '\\\n'
-    final_str += (-1 + min(positions) +
-                  (abs(positions[0] - positions[1]) - len(dist_str))/2) * ' ' + dist_str
+    final_str += int(-1 + min(positions) +
+                     (abs(positions[0] - positions[1]) - len(dist_str))/2) * ' ' + dist_str
     # print final_str
     return final_str
 
@@ -271,7 +270,7 @@ def visualisation_genes(pre, post, distance):
 def visual_str(size):
     # min and max size of the gene in characteres on the viual representation
     # vlen = ((length - gene.length_min)) * ((visual_max - visual_min) / (gene.length_max - gene.length_min)) + visual_min
-    vlen = (size / 50) + 1
+    vlen = int((size / 50) + 1)
 
     string = vlen * '=' + str(size / 3) + 'aa' + vlen * '=' + '>'
     return string

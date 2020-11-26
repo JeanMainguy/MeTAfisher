@@ -21,10 +21,8 @@ def score_manager(inf, sup, csv_file, k):
 
 def give_proba_dict(dico, k, N_tot):
     k = 30
-    total = 0
     result = {}
     for nb in range(min(dico)-k, max(dico)+k + 1):
-        somme = 0
         list_to_sum = [dico.get(i, 0) for i in range(nb - k, nb + k + 1)]
         mean_value = sum(list_to_sum)  # / float(len(list_to_sum))
         result[nb] = (mean_value / float(N_tot))
@@ -148,7 +146,7 @@ def get_score(gene, starts, bonus_start, distance=None):
     gene.domain = sorted(gene.domain, key=attrgetter('score'), reverse=True)
     # print([d.score for d in gene.domain])
     domains = iter(gene.domain)
-    d = domains.next()
+    d = next(domains)
 
     for start in starts:
         # valid_domains = [d for d in gene.domain if d.ali_from*3 >= start]
@@ -160,12 +158,14 @@ def get_score(gene, starts, bonus_start, distance=None):
                 break
 
         length = len(gene) - start
+        assert length % 3 == 0
+
         # print '===GENNNNNNE==='
         # print gene
         # print '===LEN==='
         # print 'gene.end {} - gene.start {} + start {} + 1  GIVE THE LEN of {} nt, {} aa '.format(gene.end, gene.start, start, length, length / 3)
 
-        proba_len = obj.Gene.length_proba[length / 3]
+        proba_len = obj.Gene.length_proba[int(length / 3)]
 
         # print 'proba len ', proba_len
 

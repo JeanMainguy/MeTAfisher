@@ -1,10 +1,9 @@
-# coding: utf-8
+#!/usr/bin/env python3
 import Object_MetaF as obj
 import csv
-# import Orf_MetaF as orf2
 import re
-from operator import attrgetter, itemgetter
 from subprocess import call
+from operator import attrgetter
 
 
 def HMM_launcher(faa_file, add_to_name=''):
@@ -53,11 +52,11 @@ def get_hmm_genes(scaffold, table_hmm, gff_file):
     obj.Gene.scaffold = scaffold
     domains_dict = {}  # keys : gene numbers, value: liste of the domain objet !!
     fl = open(table_hmm, 'r')
-    for l in fl:
+    for line in fl:
         # print l[:len(scaffold)]
-        if l[:len(scaffold)] == scaffold:
+        if line[:len(scaffold)] == scaffold:
             #  domain is an OBJECT of class Domain. It gather info about the domain found.
-            nb_gene, domain = hmmtable_parser(l)
+            nb_gene, domain = hmmtable_parser(line)
 
             domains_dict.setdefault(nb_gene, []).append(domain)
     fl.close()
@@ -89,7 +88,7 @@ def get_gff_info(gff_handler, gff_line, scaffold, gene_number):
     gene_number need to come sorted
     return: the file handler of the gff file
     """
-    for l in gff_handler:
+    for line in gff_handler:
         """
         it is a bit obscure but l is a list. To know the number of the gene we need to access to the last (8)
         tab delimiter area [8] and then split by ';' then select the first item [0]
@@ -99,23 +98,24 @@ def get_gff_info(gff_handler, gff_line, scaffold, gene_number):
         CP000569.1	Genbank	CDS	2019629	2020228	.	-	0	ID=CP000569.1|1797;Parent=gene1855;Dbx.....
         """
 
-        if l[2] not in ['CDS', 'ORF', 'gene'] or l[0] != scaffold:
+        if line[2] not in ['CDS', 'ORF', 'gene'] or line[0] != scaffold:
             continue
-        number = int(l[8].split(";")[0].split('|')[1])
+        number = int(line[8].split(";")[0].split('|')[1])
 
         if number == gene_number:
             gene = obj.TA_gene()
-            gene.feature = l[2]
-            gene.start = int(l[3])
-            gene.end = int(l[4])
-            gene.strand = l[6]
+            gene.feature = line[2]
+            gene.start = int(line[3])
+            gene.end = int(line[4])
+            gene.strand = line[6]
             gene.gene_number = number
 
-            s = re.search(ur'protein_id=([^;\n]+)', l[8])
+            # s = re.search(ur'protein_id=([^;\n]+)', l[8])
+            s = re.search('protein_id=([^;\n]+)', line[8])
             if s:
                 gene.protein_id = s.group(1)
 
-            return gene, l, gff_handler
+            return gene, line, gff_handler
 
 
 def hmmtable_parser(line):
@@ -354,7 +354,7 @@ def delete_files(listeFiles):
     for outfile in listeFiles:
         try:
             remove(outfile)
-        except OSError, e:  # if failed, report it back to the user ##
+        except OSError as e:  # if failed, report it back to the user ##
             print("Error: %s - %s." % (e.filename, e.strerror))
 
 

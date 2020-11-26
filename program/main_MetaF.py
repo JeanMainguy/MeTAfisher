@@ -1,15 +1,15 @@
-#!/usr/bin/env python2
-# coding: utf-8
+#!/usr/bin/env python3
+
 import Object_MetaF as obj
 import Function_MetaF as fct
 import Orf_MetaF as orf
 import OutputFct_MetaF as out
 import Score_MetaF as score
-import sys
 import csv
 import argparse
 import os
 import logging
+# import sys
 
 
 project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -102,7 +102,7 @@ with open(csv_domain, 'r') as csvdo:
     reader = csv.DictReader(csvdo)
     for row in reader:
         obj.Gene.domain_dict[row['hmm_name']] = {
-            k: v for k, v in row.iteritems() if k in ['acc', 'family', 'type']}
+            k: v for k, v in row.items() if k in ['acc', 'family', 'type']}
 # print obj.Gene.domain_dict
 
 # SETTING THE THRESHOLD :
@@ -197,14 +197,16 @@ else:  # contig name is only is the name of one contig
     if contig_name not in scaffold_list:
         raise Exception('The contig name is incorrect or no hit have been found by hmmsearch')
     scaffold_list = [contig_name]
-print 'nb sca', len(scaffold_list)
+
+
+logging.info(f'number of sequence to analysed {len(scaffold_list)}')
 
 
 # Loop : each scaffold is treated independntly here
 for scaffold in scaffold_list:
     # print '* *' * 25
     # print ' * ' * 25
-    print scaffold
+    logging.info(f"Analysing {scaffold}")
     # ###
     # TODO REMOVE
     # if scaffold == 'ICM0104MP0310_1000133':

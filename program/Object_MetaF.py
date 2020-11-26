@@ -1,7 +1,5 @@
-# coding: utf-8
+#!/usr/bin/env python3
 import re
-import csv
-from operator import attrgetter, itemgetter
 # import find_orf as orf
 import Orf_MetaF as orf2
 from math import log
@@ -252,26 +250,6 @@ class Orf(Gene):
                 return True
         return False
 
-    def manage_size(self):
-        """
-        TO DELETE !!
-        possible start is not start relativ the the realstart  of the gene and not according the contig..
-        So fct HASBEEN !
-        """
-        if len(self) > Gene.length_max:
-            print "MANAGE SiZe METHOD"
-            print self
-            raw_input("size > max")
-            del self.possible_start[0]
-            while self.end - self.possible_start[0] > Gene.length_max:
-                print len(self), self.possible_start[0]
-                del self.possible_start[0]  # delete the start
-            if self.strand == '+':
-                self.start = self.possible_start[0]
-            else:
-                self.end = self.possible_start[0]
-        self.distanceMin = Gene.distanceMin - abs(self.possible_start[-1] - self.possible_start[0])
-
     def write_faa(self, fl, index):
         """
         Depend of the seq in memory that why it is not a method of Gene
@@ -326,12 +304,9 @@ class Domain:
     def writeGffLike(self):
         try:
             dico_do = Gene.domain_dict[self.domain_name]
-            ta_type = dico_do['type']
-            family = dico_do['family']
-            acc = dico_do['acc']
+            return 'domain={};domain_score={};type={};family={}'.format(dico_do['acc'], self.score, dico_do['type'], dico_do['family'])
         except KeyError:
             return 'domain={};domain_score={};type={};familly={}'.format(self.domain_name, self.score, "domainNotFoundInDB", "domainNotFoundInDB")
-        return 'domain={};domain_score={};type={};family={}'.format(dico_do['acc'], self.score, dico_do['type'], dico_do['family'])
 
     def score_transformed(self):
         # log transformation
