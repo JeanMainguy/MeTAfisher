@@ -1,8 +1,8 @@
-import sys
+# import sys
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-from Bio.Alphabet import IUPAC
+# from Bio.Alphabet import IUPAC
 from os import path
 import argparse
 
@@ -19,9 +19,12 @@ def write_gff(feat, fl_gff, chrm, attributes, nbgene):
     strand = '+' if feat.strand == 1 else '-'
     attributes = "{}|{};".format(chrm, str(nbgene)) + ';'.join(attributes)
     # attributes += giveQualifiersInfo(feat.qualifiers, ["locus_tag", 'protein_id', 'product'])
-
+    start = feat.location.start.real + 1
+    end = feat.location.end.real
     list_gff = [chrm, 'Genbank', feat.type, str(
-        feat.location.start.real + 1), str(feat.location.end.real), ".", strand, ".", attributes+'\n']
+        start), str(end), ".", strand, ".", attributes+'\n']
+
+    assert (end - start + 1) % 3 == 0, f'start { feat.location}, {start} {end}'
     fl_gff.write('\t'.join(list_gff))
 
 
@@ -63,7 +66,7 @@ def from_gb_to_required_format(data_path_base, gb_file):
     faa_fl = open(data_path_base + '.faa', 'w')
     fna_fl = open(data_path_base + '.fna', 'w')
 
-    input_handle = open(gb_file, "rU")
+    input_handle = open(gb_file)
     for record in SeqIO.parse(input_handle, "genbank"):
         # see_objet(record)
         SeqIO.write(record, data_path_base+".fasta", "fasta")
@@ -77,7 +80,7 @@ def from_gb_to_required_format(data_path_base, gb_file):
                 seq = f.extract(record.seq)
                 attributes = giveQualifiersInfo(
                     f.qualifiers, ["old_locus_tag", 'protein_id', "locus_tag", 'product'])
-                if write_faa(f, faa_fl, record.id, seq,  attributes, i) is not False:
+                if write_faa(f, faa_fl, record.id, seq, attributes, i) is not False:
                     write_gff(f, gff_fl, record.id, attributes, i)
                     write_fna(f, fna_fl, record.id, seq, attributes, i)
                 else:
