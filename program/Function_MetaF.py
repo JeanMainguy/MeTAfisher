@@ -4,16 +4,22 @@ import csv
 import re
 from subprocess import call
 from operator import attrgetter
+import os
+import logging
 
 
 def HMM_launcher(faa_file, add_to_name=''):
     hmm_db = obj.Gene.hmmdb
-    table_hmm = obj.Gene.output_way + '/output_HMM_table_' + add_to_name + '.txt'
+    table_hmm = obj.Gene.outdir + '/output_HMM_table_' + add_to_name + '.txt'
 
     bash_commande = "hmmsearch -E 0.5 --domtblout {} {} {} > /dev/null".format(
         table_hmm, hmm_db, faa_file)
 
     call(bash_commande, shell=True)
+
+    if not os.path.isfile(table_hmm):
+        logging.warning(f'bash command failed: {bash_commande}')
+        raise FileNotFoundError(f'hmmsearch command failed to create the file {table_hmm}')
 
     return table_hmm
 

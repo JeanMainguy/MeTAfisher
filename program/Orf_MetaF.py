@@ -200,7 +200,7 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
         print('len du saffold', len(o.seq['data']))
         print("THERE ARE SOME PEDICTED GENE THAt DIDNT FOUND THEIR ORF :-(")
         # TODO LOG CHANGE THAT
-        with open(obj.Gene.output_way + '/Predicted_not_found.err', 'a') as fl:
+        with open(obj.Gene.outdir + '/Predicted_not_found.err', 'a') as fl:
             fl.write("scaffold " + o.scaffold + ' strand :' + strand + '\n' + str(gffEnds[strand]))
             for g in gffEnds[strand]:
                 fl.write(str(g) + '\n')

@@ -153,7 +153,7 @@ def get_score(gene, starts, bonus_start, distance=None):
         # print([d.ali_from for d in gene.domain])
         while d.ali_from * 3 < start:  # to not take into account domain that would be before of the current start investiagted
             try:
-                d = domains.next()
+                d = next(domains)
             except StopIteration:
                 break
 
