@@ -8,7 +8,7 @@ License     : MIT
 Maintainer  : jean.mainguy@outlook.fr
 
 
-Program to retrieve toxin antitoxin (TA) systems in genomes or metagenomes.
+Tool to retrieve toxin antitoxin (TA) systems in genomes or metagenomes.
 """
 
 
@@ -20,7 +20,8 @@ import logging
 
 def rescue_lonely_gene(dico_orf, dico_gff, scaffold, tmp_adjorf_faa):
     """
-    Manage all the step of rescuing lonely gene
+    Manage all the step of rescuing lonely gene.
+
     Argument :
         dico_orf: has the contig sequence file open and the current line. allow to retrieve the sequence
         dico_gff: gff file open and curent line. used by get_gff_ends() to get stop postion of the predicted gene in order
@@ -63,15 +64,8 @@ def rescue_lonely_gene(dico_orf, dico_gff, scaffold, tmp_adjorf_faa):
 
 
 def hmm_orf_get_adj(dico_hmmorf):
-    # Add the hmm orf into the main lists !
-    # obj.TA_gene.genes.extend(dico_hmmorf['+'] + dico_hmmorf['-'])
-    # obj.TA_gene.genes_plus.extend(dico_obj['+'])
-    # obj.TA_gene.genes_minus.extend(dico_obj['-'])
-
+    """Get adjacent gene."""
     for strand in dico_hmmorf:
-        # Adding adjOrf to the main list of TA gene
-        # obj.TA_gene.genes_strand[strand].extend(dico_hmmorf[strand])
-        # obj.TA_gene.genes.extend(dico_hmmorf[strand])
         for hmmorf in dico_hmmorf[strand]:
             for gene in obj.TA_gene.genes_strand[strand]:
                 # if the orf have been already process and added to the list then we don't check it against itself
@@ -89,7 +83,7 @@ def hmm_orf_get_adj(dico_hmmorf):
 
 
 def add_post_pre_attr(strand, g_post, g_prev):
-    # add to the set linked
+    """Add post and pre gene to gene object."""
     obj.TA_gene.linked.add(g_post)
     obj.TA_gene.linked.add(g_prev)
     if strand == '+':
@@ -102,9 +96,10 @@ def add_post_pre_attr(strand, g_post, g_prev):
 
 def adjust_orf_attribut(dico_obj, highestGeneNumber):
     """
-    adjust_possible_start_to_domain
-    give post prev attr
-    give gene number to hmm orf that fit with genes from gff file
+    Adjust possible start to domain.
+
+    Give post prev attribute.
+    Give gene number to hmm orf that fit with genes from gff file.
     """
     for strand in dico_obj:
         for o in dico_obj[strand]:
@@ -149,8 +144,10 @@ def codon_finder(liste, seq, frame=1, inf=0, sup='Not defined'):
 
 def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
     """
-    lonely gene are a list of lonely gene from the same strand
-    check to see if orf is a predicted gene
+    Manage ORF.
+
+    Lonely gene are a list of lonely gene from the same strand
+    check to see if orf is a predicted gene.
     """
     for o in generator:
         if o.real_end() in gffEnds[strand]:
@@ -203,6 +200,8 @@ def adjOrf_HMM(table_hmm):
 
 def get_gff_ends(dico_gff, scaffold):
     """
+    Get gff ends.
+
     dico_gff is composed of the line and the fl of the gff file
     Work in the same way as get_fast_fasta
     Yield the gff stop according the frame
@@ -241,6 +240,7 @@ def get_gff_ends(dico_gff, scaffold):
 
 def findORF(scaffold, seq, rev):
     """Determine the orf of a nucleic sequence.
+
     This function call the orf_by_frame() function  for each frame and give it to it different parameter
     especially the frame and the information if the sequence is reverse or not and finally gather the result in a dictionary
 
@@ -250,7 +250,6 @@ def findORF(scaffold, seq, rev):
         nub_genTable : id Genetic code Table
     Returns:
         A list of ORFs in the class ListGene
-
     """
     threshold = obj.Orf.length_min
     starts = obj.Gene.codon_starts
@@ -351,7 +350,7 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
             starts, seq['data'], inf=pos_stop[-1] + 3 + add_to_inf, sup=(length_seq - threshold))
         if pos_start:
             # looking for the appropriate stop:
-            # It is here a bit tricky : The gene is at the border of the MetaG
+            # It is a bit tricky : The gene is at the border of the MetaG
             # We are looking for the position of the first nt
             # of the last full codon in the frame of the gene
             # distance between the start and the end of the MetaG
@@ -366,7 +365,8 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
 
 def to_fit_len_max(twoStopLen):
     """
-    Determine the inf limit for searching the start codons between two stop codons:
+    Determine the inferior limit for searching the start codons between two stop codons.
+
     Take the length between the two stop codon
     And give back the inferior borne where to begin the searc of start codon
     IF YOU WANT TO HAVE THE FULL ORF WITHOUT A MAX SIZE LIMITATION YOU CAN RETURN 0 ONLY
@@ -377,6 +377,7 @@ def to_fit_len_max(twoStopLen):
 
 
 def complement_reverse(seq):
+    """Complement reverse sequence."""
     compl_rev_seq = {}
     compl_rev_seq = reverse(seq)
     compl_rev_seq = complement(compl_rev_seq)
@@ -385,12 +386,14 @@ def complement_reverse(seq):
 
 
 def reverse(seq):
+    """Reverse sequence."""
     rev_seq = {}
     rev_seq['data'] = seq['data'][::-1]
     return rev_seq
 
 
 def complement(seq):
+    """Complement sequence."""
     result = ''
     complement = {}
     for i in seq['data']:
