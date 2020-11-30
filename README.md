@@ -1,59 +1,36 @@
+<!--
  # Table of contents
 - [Program overview](#Program_overview)
 - [Dependence files](#Dependence_files)
 - [Files format requirement](#Files_format_requirement)
 - [Output file](#Output_file)
-- [How to use MeTAfisher](#How_to_use_MeTAfisher)
-<!--- [GFF file](#gff_file) -->
-
-# MeTAfisher
-Program to retrieve toxin antitoxin (TA) systems in metagenomes
+- [How to use MeTAfisher](#How_to_use_MeTAfisher) -->
 
 
-<!-- [comment]: <> (General intro to the program) -->
+# Overview
+Program to retrieve toxin antitoxin (TA) systems in genomes and metagenomes
 
-<a name="Program_overview"/>
+# Quick start
 
-## Program overview
-MeTAfisher is written in Python 2.7. It is made up of four files which need to be in the same folder.
-* `main_MetaF.py` : It initializes the variable and launches the different functions of the program inside a loop iterating the different contigs. This file takes argument to be able to correctly initialyze the variable.
-* `Function_MetaF.py` : All the general functions of the program
-* `Object_MetaF.py` :  Classes and methods.
-* `Orf_MetaF.py` : Functions specific to ORF process, used when the option `--Rescue` is called.
+1. Clone the metafisher repository: `git clone https://github.com/JeanMainguy/MeTAfisher`
 
-`main_MetaF.py` needs the following arguments:
+2. Create an environement with python3 and HMMER install. You can create an environment using conda.
 
-`python main_MetaF.py [-h] [--Resize] [--Rescue] [--contig_name CONTIG_NAME] [--HMM_db HMM_DB] metaG_name output_pathway data_pathway data_name dependency_pathway`
+3. Run metafisher on the data test:
 
-#### positional arguments:
+```bash
 
-* `metaG_name`            Name of the Metagenome or Genome
-* `output_pathway`        Pathway of the output folder
-* `data_pathway`          Pathway of the data folder where all the data files
-                        are stored : fna_file, faa_file, scaffold_file,
-                        gff_file
-* `data_name`             Common name of all data files, the name without the
-                        extension. fna_file, faa_file, scaffold_file, gff_file
-                        are different only by their extensions : .fna, .faa,
-                        .fasta, .gff respectively
-* `dependency_pathway`    Pathway of the dependency folder where all te
-                        dependencies are stored
 
-#### optional arguments:
-* `-h`, `--help`            show the help message and exit
-* `--Resize`              Resize the genes if they are too big for the
-                        thresholds and take into account the possible start
-                        along the sequence. To do only if the gene prediction
-                        is not trustable
-* `--Rescue`              To do the rescue step of lonely genes
-*  `--contig_name CONTIG_NAME`
-                        Name of a specific contig to analyzed. The program
-                        will analyzed only this conitg
-  `--HMM_db HMM_DB `      name of the HMM database
+
+```
+
+
+# Licence
+This program is released as open source software under the terms of [MIT License](https://raw.githubusercontent.com/bionitio-team/bionitio/master/LICENSE).
+
 
 
 <a name="Dependence_files"/>
-
 ## Dependence files
 MeTAfisher requires specific files to work. These files need to be placed in the same folder and the path to this folder is given as an argument to the program.
 The dependences folder has to have:
@@ -92,11 +69,11 @@ For the protein sequences in amino acid and nucleotide (respectively .faa and .f
  -->
 Exemple : \\
  `>ICM0007MP0313_1000001|5`
- 
+
 <a name="gff_file"/>
 
 ### GFF file
-MeTAfisher needs a gff file containing information of the genes under analysed. 
+MeTAfisher needs a gff file containing information of the genes under analysed.
 > The GFF (General Feature Format) format consists of one line per feature, each containing 9 columns of data, plus optional track definition lines.
 
 The columns used by MeTAfisher:
@@ -152,7 +129,7 @@ The stat file:
 ### Result files
 Four result ﬁles currently exist, they provide the result of the analysis in a different way.
 
-* Short result: 
+* Short result:
 * Human readable result
 * Table csv-like result
 
@@ -209,12 +186,12 @@ You need to provide different information in the script:
 
 Then, the script takes care of the rest: it creates a folder named after the Sequence name given in the general output folder provided. Then, it launches hmmsearch which searches TA domains in the amino acid sequence. If the hmmsearch table output already exists, it skips this step in order not to launch twice the same thing. And finally it launches the python script `main_MetaF.py` with the required arguments. If you want to activate the "Resize" and/or the "Rescue" step, you can then add the flag --Resize or --Rescue in the command line.
 
-In the output folder that you gave to the program you will find the hmmsearch table result and the different output files. 
+In the output folder that you gave to the program you will find the hmmsearch table result and the different output files.
 
 
 
 
-## Score 
+## Score
 
 
 
