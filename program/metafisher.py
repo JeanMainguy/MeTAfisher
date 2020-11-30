@@ -6,7 +6,7 @@ Description : The main entry point for the program.
 Copyright   : (c) Jean Mainguy, 27 nov. 2020
 License     : MIT
 Maintainer  : jean.mainguy@outlook.fr
-Portability : POSIX
+
 
 Program to retrieve toxin antitoxin (TA) systems in genomes or metagenomes.
 """
@@ -42,57 +42,78 @@ def parse_arguments():
     project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     default_tadb_stat_dir = os.path.join(project_dir, "dependence")
     default_hmm_db = os.path.join(default_tadb_stat_dir, 'ALL_plus_MET_curatted.hmm')
+
     parser = argparse.ArgumentParser(
         prog='MeTAfisher',
         description='Identification of Toxin Antitoxin Systems')
+
+    parser.add_argument('--gff',
+                        help="Path to the gff file.", required=True)
+    parser.add_argument('--faa',
+                        help="Path to the faa file. Fasta file of the annotated sequences proteins.",
+                        required=True)
 
     parser.add_argument("-n", "--name",
                         help="Name of the Metagenome or Genome",
                         default='metafisher')
 
     parser.add_argument("-o", '--outdir',
-                        help="Pathway of the output folder",
+                        help="Path to the result directory",
                         default='metafisher_results')
-    parser.add_argument("--data_dir",
-                        required=True,
-                        help="Pathway of the data folder where all the data files are stored : fna_file, faa_file, genomic_seq_file, gff_file")
-    parser.add_argument("--data_name",
-                        help="Common name of all data files, the name without the extension.  fna_file, faa_file, genomic_seq_file, gff_file are different only by their extansions : .fna, .faa, .fasta, .gff respectively")
 
     parser.add_argument("--tadb_stat_dir",
                         help="Pathway of the dependency folder where all the depedencies are stored. default is in the dependence dir of the tool",
                         default=default_tadb_stat_dir)
 
+    help_resize = "Resize the genes if they are too big for the thresholds by taking into account the possible starts along the sequence."
+    help_resize += "To do only if the gene prediction is not trustable. This option requires the argument --fna."
     parser.add_argument('--resize', action='store_true',
-                        help="Resize the genes if they are too big for the thresholds and take into account the possible start along the sequence. To do only if the gene prediction is not trustable")
-    parser.add_argument('--rescue', action='store_true',
-                        help='To do the rescue step of lonely genes, by default it is False')
+                        help=help_resize)
+    parser.add_argument('--fna',
+                        help="Path to the fna file, which is a fasta file of annotated genes dna sequences. This file is required when the option --resize is given.",
+                        required=False)
 
-    parser.add_argument('--contig_name', dest='contig_name', default=None,
+    rescue_help = "Applying the rescue step on lonely genes."
+    rescue_help += "When a gene has TA domain but no other annotated gene around have one,"
+    rescue_help += "or around are identified and searched for potential TA domain."
+    rescue_help += "This option requires the argument --genomic_seq."
+    parser.add_argument('--rescue', action='store_true',
+                        help=rescue_help)
+
+    parser.add_argument('--genomic_seq',
+                        help="Path to the genomic sequence file, which is genomic sequence of the genome/metagenome. This file is required when the option --rescue is given.",
+                        required=False)
+
+    parser.add_argument('--contig_name', dest='contig_name',
                         help='Name of a specific contig to analysed. The program will analysed only this conitg')
 
     parser.add_argument("--hmm_db", default=default_hmm_db,
                         help="name of the HMM database")
+
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                         action="store_true")
-    return parser.parse_args()
+
+    args = parser.parse_args()
+
+    if args.rescue and args.genomic_seq is None:
+        parser.error('argument --genomic_seq is required when rescue mode is on.')
+
+    if args.resize and args.fna is None:
+        parser.error('argument --fna is required when resize mode is on.')
+
+    return args
 
 
 def main():
     """Orchestrate the execution of the program.s"""
     args = parse_arguments()
 
-    if args.verbose:
-        logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.DEBUG)
-        logging.info('Mode verbose ON')
-
-    else:
-        logging.basicConfig(format="%(levelname)s: %(message)s")
+    init_logging(args.verbose)
 
     metaG_name = args.name
     outdir = args.outdir
-    data_way = args.data_dir
-    data_name = args.data_name
+    # data_way = args.data_dir
+
     dependence_way = args.tadb_stat_dir
 
     HMM_db = args.hmm_db
@@ -107,14 +128,16 @@ def main():
     if not os.path.isdir(outdir):
         os.mkdir(outdir)
 
-    gff_file = data_way + '/' + data_name + '.gff'
-    faa_file = data_way + '/' + data_name + '.faa'
+    gff_file = args.gff
+    faa_file = args.faa
 
     if resize:
-        fna_file = data_way + '/' + data_name + '.fna'
+        logging.info('Resize mode is on.')
+        fna_file = args.fna
 
     if rescue:
-        genomic_seq_file = data_way + '/' + data_name + '.fasta'
+        logging.info('Rescue mode is on.')
+        genomic_seq_file = args.genomic_seq
         # prot sequence of adj orf will be written there
         tmp_adj_orf_faa = outdir + '/temporary_adjOrf.faa'
 
