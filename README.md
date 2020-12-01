@@ -7,10 +7,10 @@
 - [How to use MeTAfisher](#How_to_use_MeTAfisher) -->
 
 
-# Overview
+# Metafisher
 Program to retrieve toxin antitoxin (TA) systems in genomes and metagenomes
 
-# Quick start
+## Quick start
 
 1. Clone the metafisher repository: `git clone https://github.com/JeanMainguy/MeTAfisher`
 
@@ -25,13 +25,14 @@ Program to retrieve toxin antitoxin (TA) systems in genomes and metagenomes
 ```
 
 
-# Licence
+## Licence
 This program is released as open source software under the terms of [MIT License](https://raw.githubusercontent.com/bionitio-team/bionitio/master/LICENSE).
 
 
 
 <a name="Dependence_files"/>
-## Dependence files
+
+## Dependency files
 MeTAfisher requires specific files to work. These files need to be placed in the same folder and the path to this folder is given as an argument to the program.
 The dependences folder has to have:
 
