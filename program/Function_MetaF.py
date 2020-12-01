@@ -366,9 +366,8 @@ def check_size(gene_strand):
 
 
 def delete_files(listeFiles):
-    from os import remove
     for outfile in listeFiles:
         try:
-            remove(outfile)
+            os.remove(outfile)
         except OSError as e:  # if failed, report it back to the user ##
-            print(f"Error: {e.filename} - {e.strerror}."
+            print(f"Error: {e.filename} - {e.strerror}.")
