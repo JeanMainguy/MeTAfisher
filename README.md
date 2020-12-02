@@ -108,7 +108,7 @@ Example of correct gff line :    ```ICM0007MP0313_1000310	GPF	CDS	13787	14128	.	
 
 <a name="Output_file"/>
 
-## Output file
+## Output files
 
 MeTAfisher provides different output file: 4 result files showing TA systems found and a csv file gathering statistique information of the analysis is also provided.
 All the output files start with 5 lines starting with `##`.
@@ -142,9 +142,10 @@ The stat file:
 ### Result files
 Four result ﬁles currently exist, they provide the result of the analysis in a different way.
 
-* Short result:
+* Short result
 * Human readable result
-* Table csv-like result
+* Tabular result
+* Gff file
 
 
 ### Short result
@@ -152,7 +153,7 @@ One line for each systems found.
 One line is composed of the two id of the genes, the strand and finally the score of the system.
 This output is just there to give an overview of the result and to get the gene id.  
 
-### Table csv-like result:
+### Tabular result:
 This result file may be open on a spreadsheet.
 Each TA gene is displayed on a line. Information are displayed within 9 columns:
 
@@ -173,11 +174,11 @@ The program also provides a file gathering quantitative information about the an
 
 <a name="How_to_use_MeTAfisher"/>
 
-## How to use MeTAfisher
+<!-- ## How to use MeTAfisher
 
-First of all you should download MeTAfisher files and folders from gitHub.
+First of all you should download MeTAfisher files and folders from gitHub. -->
 
-### File format challenges
+### File format requirement
 The file format requirement of MeTAfisher are quite heavy and may require a lot of effort if you start with some files that do not follow the required pattern. However if the sequence you want to analyze is on genbank, you can use the genbank file of the sequence and process it through the script genbank_parser.py. This script takes as argument the genbank file and creates 3 files needed for the TA analysis (.faa, fna and .gff) in the same folder as the genbank file. `genbank_parser.py` is only able to parse a genbank file with all sequences. When downloading the file on the genbank web page, you should be certain that the sequence of the genes are displayed. In order to do so, you may click in the "Customize" view left panel on the option "Show sequence" and then on "Update view". Finally, to download the file, click on the upper left "Send to" button > Complete Record > Choose Destination: File > Format: Genbank > Create File.
 Then be sure to place the genbank file in a known and specific directory. Then you can launch `genbank_parser.py`:
 
@@ -187,9 +188,9 @@ So for example if you are at the root of MeTAfisher project and you want to pars
 
 `python program/genbank_parser.py data/Desulfovibrio_vulgaris_DP4/sequence.gb`
 
-### Launching the program
+<!-- ### Launching metafisher
 Once you have all the files required and correctly shaped you may want to launch MeTAfisher.
-To launch MeTAfisher you can either launch it directly with the script `main_MetaF.py` and provide correctly all the required argument in the command line - or you may also use the MetaF_launcher.sh bash script as a template.
+To launch MeTAfisher you can either launch it directly with the script `metafisher/metafisher.py` and provide correctly all the required argument in the command line - or you may also use the MetaF_launcher.sh bash script as a template.
 You need to provide different information in the script:
 * general_output_pathway: the folder where the result folder of the sequence analyzed will be created.
 * dependency_pathway: the pathway of the dependence folder where the dependences of MeTAfisher are stored.
@@ -197,14 +198,14 @@ You need to provide different information in the script:
 * data_pathway: Path to the data folder where fasta and gff files are stored.
 * data_name: the common name without the extension of the data files. the 3 fasta files and the gff file should be in the same folder and with a unique name, only the file's extension are different.  
 
-Then, the script takes care of the rest: it creates a folder named after the Sequence name given in the general output folder provided. Then, it launches hmmsearch which searches TA domains in the amino acid sequence. If the hmmsearch table output already exists, it skips this step in order not to launch twice the same thing. And finally it launches the python script `main_MetaF.py` with the required arguments. If you want to activate the "Resize" and/or the "Rescue" step, you can then add the flag --Resize or --Rescue in the command line.
+Then, the script takes care of the rest: it creates a folder named after the Sequence name given in the general output folder provided. Then, it launches hmmsearch which searches TA domains in the amino acid sequence. If the hmmsearch table output already exists, it skips this step in order not to launch twice the same thing. And finally it launches the python script `metafisher/metafisher.py` with the required arguments. If you want to activate the "Resize" and/or the "Rescue" step, you can then add the flag --Resize or --Rescue in the command line.
 
 In the output folder that you gave to the program you will find the hmmsearch table result and the different output files.
 
+ -->
 
 
-
-## Score
+## Scoring method
 
 
 
