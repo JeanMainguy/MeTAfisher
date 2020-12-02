@@ -40,7 +40,7 @@ def parse_arguments():
     Will exit the program on a command line error.
     """
     project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    default_tadb_stat_dir = os.path.join(project_dir, "dependence")
+    default_tadb_stat_dir = os.path.join(project_dir, "TADB_stat")
     default_hmm_db = os.path.join(default_tadb_stat_dir, 'ALL_plus_MET_curatted.hmm')
 
     parser = argparse.ArgumentParser(
@@ -62,7 +62,7 @@ def parse_arguments():
                         default='metafisher_results')
 
     parser.add_argument("--tadb_stat_dir",
-                        help="Pathway of the dependency folder where all the depedencies are stored. default is in the dependence dir of the tool",
+                        help="Pathway of the tadb dtat dir. default is in the TADB_stat dir of the tool",
                         default=default_tadb_stat_dir)
 
     help_resize = "Resize the genes if they are too big for the thresholds by taking into account the possible starts along the sequence."
@@ -114,7 +114,7 @@ def main():
     outdir = args.outdir
     # data_way = args.data_dir
 
-    dependence_way = args.tadb_stat_dir
+    TADB_stat = args.tadb_stat_dir
 
     HMM_db = args.hmm_db
 
@@ -162,16 +162,16 @@ def main():
 
     # DISTANCE AND LENGTH DICO :
     # Dist and length of TA from TADB to mmake a proba
-    file_len = dependence_way + "/length_TA.csv"
-    file_dist = dependence_way + "/distance.csv"
+    file_len = TADB_stat + "/length_TA.csv"
+    file_dist = TADB_stat + "/distance.csv"
 
     # domain vs domain : occurence of domain association in TADB inA pair
-    file_domain_association = dependence_way + "/domain_domain_association.json"
+    file_domain_association = os.path.join(TADB_stat, "domain_domain_association.json")
     # domain type how often the domain is found in a toxin and in antitoxin
-    file_domain_gene_type = dependence_way + "/domain_gene_type.json"
+    file_domain_gene_type = os.path.join(TADB_stat, "/domain_gene_type.json")
 
     # CSV FILE DOMAINS
-    csv_domain = dependence_way + '/domaines_METAfisher.csv'
+    csv_domain = os.path.join(TADB_stat, '/domaines_METAfisher.csv')
 
     with open(csv_domain, 'r') as csvdo:
         reader = csv.DictReader(csvdo)
