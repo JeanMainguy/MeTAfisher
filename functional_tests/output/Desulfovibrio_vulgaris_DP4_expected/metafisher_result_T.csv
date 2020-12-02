@@ -1,0 +1,19 @@
+## result_T
+## Name of the sequence analysed: metafisher
+## Rescue lonely gene : False
+## Resize gene : False
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+Contig	Gene number	Gene id	start	end	length	length_score	strand	feature	domain	Neighbor gene
+CP000527.1	1437	ABM28461.1	1745393	1745686	294		-	CDS	"COG3636	Antitoxin	HTH"	"Down:	ABM28462.1	 distance -16 (score 0.844)	system score 0.949"
+CP000527.1	1438	ABM28462.1	1745670	1745984	315		-	CDS	"COG3657	Toxin	relBE"	"Up:  	ABM28461.1	 distance -16 (score 0.844)	system score 0.949"
+CP000527.1	1448	ABM28472.1	1754463	1754807	345		+	CDS	"COG3549	Toxin	relBE higBA"	"Up:  	ABM28473.1	 distance 11 (score 0.851)	system score 0.946"
+CP000527.1	1449	ABM28473.1	1754818	1755120	303		+	CDS	"COG3093	NA	PubMed:17678530"	"Down:	ABM28472.1	 distance 11 (score 0.851)	system score 0.946"
+CP000527.1	1484	ABM28508.1	1783598	1783867	270		+	CDS	"COG2929	NA	RHH"	"Up:  	ABM28509.1	 distance -13 (score 0.855)	system score 0.946"
+CP000527.1	1485	ABM28509.1	1783854	1784171	318		+	CDS	"COG3514	Antitoxin	NA"	"Down:	ABM28508.1	 distance -13 (score 0.855)	system score 0.946"
+CP000527.1	1487	ABM28511.1	1784900	1785172	273		+	CDS	"COG2929	NA	RHH"	"Up:  	ABM28512.1	 distance -22 (score 0.793)	system score 0.873"
+CP000527.1	1488	ABM28512.1	1785150	1785392	243		+	CDS	"PF12441.6	NA	NA"	"Down:	ABM28511.1	 distance -22 (score 0.793)	system score 0.873"
+CP000527.1	2594	ABM29618.1	3041222	3041509	288		-	CDS	"COG3668	Toxin	RelBE"	"Down:	ABM29619.1	 distance -10 (score 0.862)	system score 0.922"
+CP000527.1	2595	ABM29619.1	3041499	3041738	240		-	CDS	"COG3905	Antitoxin	relBE"	"Up:  	ABM29618.1	 distance -10 (score 0.862)	system score 0.922"
+CP000527.1	2757	ABM29781.1	3220041	3220478	438		-	CDS	"PF15919	Antitoxin	hicBA"	"Down:	ABM29782.1	 distance 97 (score 0.035)	system score 0.012"
+CP000527.1	2758	ABM29782.1	3220575	3220781	207		-	CDS	"COG1724	Toxin	hicBA"	"Up:  	ABM29781.1	 distance 97 (score 0.035)	system score 0.012"

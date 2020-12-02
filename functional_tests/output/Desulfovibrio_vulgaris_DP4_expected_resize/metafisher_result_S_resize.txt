@@ -1,0 +1,14 @@
+## result_S
+## Name of the sequence analysed: metafisher
+## Rescue lonely gene : False
+## Resize gene : True
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+
+====CP000527.1====
+1. Genes ABM28462.1 & ABM28461.1	strand -	score 0.9547993931242035
+2. Genes ABM28472.1 & ABM28473.1	strand +	score 0.9539550504904358
+3. Genes ABM28508.1 & ABM28509.1	strand +	score 0.9464150492038429
+4. Genes ABM28511.1 & ABM28512.1	strand +	score 0.9054869479922756
+5. Genes ABM29619.1 & ABM29618.1	strand -	score 0.9221766381480953
+6. Genes ABM29782.1 & ABM29781.1	strand -	score 0.012814529064924864

@@ -1,0 +1,8 @@
+## Name of the sequence analysed: metafisher
+## Rescue lonely gene : True
+## Resize gene : False
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+contig	gene with TA domain	lonely gene	linked gene	adjacent orf	orf with TA domain	lonely gene rescue
+CP000527.1	69	52	17	606	2	2
+CP000527.1	69	52	17	606	2	2

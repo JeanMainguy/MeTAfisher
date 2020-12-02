@@ -1,0 +1,456 @@
+## result_H
+## Name of the sequence analysed: metafisher
+## Rescue lonely gene : True
+## Resize gene : True
+## Distance threshold from -100nt to 300nt
+## Length threshold from 30aa to 1500aa
+
+====CP000527.1====
+
+
+PRE GENE
+Gene 2944	from 51657 to 50722	103aa (0.654)	start 627	ORF
+DOMAIN:
+cd00093	relBE higBA	AT:99% | T:1%
+cd00093	relBE higBA	AT:99% | T:1%
+
+POST GENE
+Gene 35	from 51636 to 50721	22aa (0.008)	start 849	CDS
+DOMAIN:
+cd00093	relBE higBA	AT:99% | T:1%
+
+DISTANCE -65 (0.016)	Domain-Domain ASSOCIATION: 0.016	SYSTEM score: 0.0
+===================312aa===================>
+                                         ===================305aa===================>
+                                        /   \
+                                       -65nt
+
+PRE GENE
+Gene 2952	from 65618 to 65145	106aa (0.661)	start 156	ORF
+DOMAIN:
+pfam04221	relBE relBE	AT:99% | T:1%
+pfam04221	relBE relBE	AT:99% | T:1%
+
+POST GENE
+Gene 52	from 65561 to 65144	29aa (0.019)	start 330	CDS
+DOMAIN:
+pfam04221	relBE relBE	AT:99% | T:1%
+
+DISTANCE -86 (0.003)	Domain-Domain ASSOCIATION: 0.011	SYSTEM score: 0.0
+==========158aa==========>
+                       =========139aa=========>
+                      /   \
+                     -86nt
+
+PRE GENE
+Gene 2951	from 101921 to 101700	74aa (0.467)	start 0	ORF
+DOMAIN:
+pfam01381	relBE higBA	AT:99% | T:1%
+pfam01381	relBE higBA	AT:99% | T:1%
+
+POST GENE
+Gene 85	from 101921 to 101699	24aa (0.01)	start 150	CDS
+DOMAIN:
+pfam01381	relBE higBA	AT:99% | T:1%
+
+DISTANCE -71 (0.01)	Domain-Domain ASSOCIATION: 0.001	SYSTEM score: 0.0
+=====74aa=====>
+            =====74aa=====>
+           /   \
+          -71nt
+
+PRE GENE
+Gene 1034	from 1274393 to 1274114	93aa (0.619)	start 0	CDS
+DOMAIN:
+COG2944  	HTH        	AT:99% | T:1%
+pfam01381	relBE higBA	AT:99% | T:1%
+cd00093  	relBE higBA	AT:99% | T:1%
+COG1396  	hipBA      	AT:99% | T:1%
+
+POST GENE
+Gene 2953	from 1274112 to 1273876	79aa (0.517)	start 0	ORF
+DOMAIN:
+PF09957.7	NA	AT:100% | T:0%
+PF09957.7	NA	AT:100% | T:0%
+
+DISTANCE 2 (0.871)	Domain-Domain ASSOCIATION: 0.0	SYSTEM score: 0.0
+======93aa======>
+                  =====79aa=====>
+                / \
+               2nt
+
+PRE GENE
+Gene 1438	from 1745984 to 1745669	105aa (0.662)	start 0	CDS
+DOMAIN:
+COG3657   	relBE      	AT:28% | T:72%
+PF05973.13	HigB       	AT:1% | T:99%
+COG3636   	HTH        	AT:82% | T:18%
+COG2026   	relBE relBE	AT:5% | T:95%
+COG4679   	relBE      	AT:23% | T:77%
+
+POST GENE
+Gene 1437	from 1745686 to 1745392	95aa (0.626)	start 9	CDS
+DOMAIN:
+COG3636  	HTH        	AT:82% | T:18%
+COG3657  	relBE      	AT:28% | T:72%
+pfam01381	relBE higBA	AT:99% | T:1%
+pfam01381	relBE higBA	AT:99% | T:1%
+COG1396  	hipBA      	AT:99% | T:1%
+cd00093  	relBE higBA	AT:99% | T:1%
+
+DISTANCE -8 (0.863)	Domain-Domain ASSOCIATION: 0.77	SYSTEM score: 0.986
+=======105aa=======>
+                   ======98aa======>
+                  / \
+                -8nt
+
+PRE GENE
+Gene 1438	from 1745984 to 1745669	105aa (0.662)	start 0	CDS
+DOMAIN:
+COG3657   	relBE      	AT:28% | T:72%
+PF05973.13	HigB       	AT:1% | T:99%
+COG3636   	HTH        	AT:82% | T:18%
+COG2026   	relBE relBE	AT:5% | T:95%
+COG4679   	relBE      	AT:23% | T:77%
+
+POST GENE
+Gene 2943	from 1745809 to 1745393	95aa (0.626)	start 132	ORF
+DOMAIN:
+COG3657  	relBE      	AT:28% | T:72%
+pfam01381	relBE higBA	AT:99% | T:1%
+COG1396  	hipBA      	AT:99% | T:1%
+cd00093  	relBE higBA	AT:99% | T:1%
+
+DISTANCE -8 (0.863)	Domain-Domain ASSOCIATION: 0.77	SYSTEM score: 0.986
+=======105aa=======>
+                   =========139aa=========>
+                  / \
+                -8nt
+
+PRE GENE
+Gene 2947	from 1746020 to 1745670	105aa (0.662)	start 36	ORF
+DOMAIN:
+COG3657   	relBE      	AT:28% | T:72%
+PF05973.13	HigB       	AT:1% | T:99%
+COG3636   	HTH        	AT:82% | T:18%
+COG2026   	relBE relBE	AT:5% | T:95%
+COG4679   	relBE      	AT:23% | T:77%
+
+POST GENE
+Gene 1437	from 1745686 to 1745392	95aa (0.626)	start 9	CDS
+DOMAIN:
+COG3636  	HTH        	AT:82% | T:18%
+COG3657  	relBE      	AT:28% | T:72%
+pfam01381	relBE higBA	AT:99% | T:1%
+pfam01381	relBE higBA	AT:99% | T:1%
+COG1396  	hipBA      	AT:99% | T:1%
+cd00093  	relBE higBA	AT:99% | T:1%
+
+DISTANCE -7 (0.866)	Domain-Domain ASSOCIATION: 0.77	SYSTEM score: 0.986
+========117aa========>
+                     ======98aa======>
+                    / \
+                  -7nt
+
+PRE GENE
+Gene 2947	from 1746020 to 1745670	105aa (0.662)	start 36	ORF
+DOMAIN:
+COG3657   	relBE      	AT:28% | T:72%
+PF05973.13	HigB       	AT:1% | T:99%
+COG3636   	HTH        	AT:82% | T:18%
+COG2026   	relBE relBE	AT:5% | T:95%
+COG4679   	relBE      	AT:23% | T:77%
+
+POST GENE
+Gene 2943	from 1745809 to 1745393	95aa (0.626)	start 132	ORF
+DOMAIN:
+COG3657  	relBE      	AT:28% | T:72%
+pfam01381	relBE higBA	AT:99% | T:1%
+COG1396  	hipBA      	AT:99% | T:1%
+cd00093  	relBE higBA	AT:99% | T:1%
+
+DISTANCE -7 (0.866)	Domain-Domain ASSOCIATION: 0.77	SYSTEM score: 0.986
+========117aa========>
+                     =========139aa=========>
+                    / \
+                  -7nt
+
+PRE GENE
+Gene 1448	from 1754462 to 1754807	105aa (0.662)	start 30	CDS
+DOMAIN:
+COG3549         	relBE higBA	AT:0% | T:100%
+pfam05015       	relBE higBA	AT:0% | T:100%
+COG3041         	relBE      	AT:0% | T:100%
+Toxin_yefM-yoeB 	yefM-yoeB  	AT:0% | T:100%
+Toxin2_parD(pem)	parD(pem)  	AT:1% | T:99%
+PF15738.4       	YafNOQ     	AT:1% | T:99%
+PF06769.13      	yefM-yoeB  	AT:0% | T:100%
+
+POST GENE
+Gene 1449	from 1754817 to 1755120	101aa (0.649)	start 0	CDS
+DOMAIN:
+COG3093  	PubMed:17678530	AT:98% | T:2%
+pfam01381	relBE higBA    	AT:99% | T:1%
+cd00093  	relBE higBA    	AT:99% | T:1%
+COG1396  	hipBA          	AT:99% | T:1%
+COG5499  	HTH-Xre        	AT:100% | T:0%
+
+DISTANCE 10 (0.85)	Domain-Domain ASSOCIATION: 0.694	SYSTEM score: 0.979
+=======115aa=======>
+                     =======101aa=======>
+                   / \
+                 10nt
+
+PRE GENE
+Gene 2948	from 1783156 to 1782890	89aa (0.599)	start 0	ORF
+DOMAIN:
+COG3657   	relBE	AT:28% | T:72%
+PF05973.13	HigB 	AT:1% | T:99%
+
+POST GENE
+Gene 1482	from 1782906 to 1782642	85aa (0.571)	start 9	CDS
+DOMAIN:
+COG3636  	HTH        	AT:82% | T:18%
+COG3657  	relBE      	AT:28% | T:72%
+pfam01381	relBE higBA	AT:99% | T:1%
+
+DISTANCE -7 (0.866)	Domain-Domain ASSOCIATION: 0.77	SYSTEM score: 0.977
+======89aa======>
+                ======88aa======>
+               / \
+             -7nt
+
+PRE GENE
+Gene 1484	from 1783597 to 1783867	90aa (0.605)	start 0	CDS
+DOMAIN:
+COG2929   	RHH   	AT:0% | T:100%
+PF04365.12	BernTA	AT:0% | T:100%
+
+POST GENE
+Gene 1485	from 1783853 to 1784171	106aa (0.661)	start 0	CDS
+DOMAIN:
+COG3514  	NA    	AT:100% | T:0%
+PF14384.5	BernTA	AT:100% | T:0%
+COG5304  	NA    	AT:100% | T:0%
+
+DISTANCE -14 (0.852)	Domain-Domain ASSOCIATION: 0.935	SYSTEM score: 0.996
+======90aa======>
+                =======106aa=======>
+               / \
+             -14nt
+
+PRE GENE
+Gene 1485	from 1783853 to 1784171	106aa (0.661)	start 0	CDS
+DOMAIN:
+COG3514  	NA    	AT:100% | T:0%
+PF14384.5	BernTA	AT:100% | T:0%
+COG5304  	NA    	AT:100% | T:0%
+
+POST GENE
+Gene 2942	from 1784190 to 1784513	108aa (0.652)	start 0	ORF
+DOMAIN:
+COG3093  	PubMed:17678530	AT:98% | T:2%
+pfam01381	relBE higBA    	AT:99% | T:1%
+cd00093  	relBE higBA    	AT:99% | T:1%
+COG1396  	hipBA          	AT:99% | T:1%
+COG5499  	HTH-Xre        	AT:100% | T:0%
+
+DISTANCE 19 (0.749)	Domain-Domain ASSOCIATION: 0.0	SYSTEM score: 0.0
+=======106aa=======>
+                     =======108aa=======>
+                   / \
+                 19nt
+
+PRE GENE
+Gene 1487	from 1784899 to 1785172	91aa (0.61)	start 0	CDS
+DOMAIN:
+COG2929   	RHH   	AT:0% | T:100%
+PF04365.12	BernTA	AT:0% | T:100%
+
+POST GENE
+Gene 1488	from 1785149 to 1785392	77aa (0.495)	start 12	CDS
+DOMAIN:
+PF12441.6	NA   	AT:100% | T:0%
+pfam01402	RelBE	AT:100% | T:0%
+
+DISTANCE -11 (0.859)	Domain-Domain ASSOCIATION: 0.519	SYSTEM score: 0.91
+======91aa======>
+                =====81aa=====>
+               / \
+             -11nt
+
+PRE GENE
+Gene 2595	from 3041738 to 3041498	80aa (0.527)	start 0	CDS
+DOMAIN:
+COG3905  	relBE 	AT:100% | T:0%
+COG4710  	RHH   	AT:100% | T:0%
+pfam01402	RelBE 	AT:100% | T:0%
+PF07878.9	NA    	AT:100% | T:0%
+PF07878.9	NA    	AT:100% | T:0%
+pfam05509	pasABC	AT:100% | T:0%
+
+POST GENE
+Gene 2594	from 3041509 to 3041221	96aa (0.63)	start 0	CDS
+DOMAIN:
+COG3668             	RelBE         	AT:1% | T:99%
+Toxin_paaR-paaA-parE	paaR-paaA-parE	AT:0% | T:100%
+pfam05016           	relBE relBE   	AT:0% | T:100%
+
+DISTANCE -11 (0.859)	Domain-Domain ASSOCIATION: 0.659	SYSTEM score: 0.957
+=====80aa=====>
+              ======96aa======>
+             / \
+           -11nt
+
+PRE GENE
+Gene 2595	from 3041738 to 3041498	80aa (0.527)	start 0	CDS
+DOMAIN:
+COG3905  	relBE 	AT:100% | T:0%
+COG4710  	RHH   	AT:100% | T:0%
+pfam01402	RelBE 	AT:100% | T:0%
+PF07878.9	NA    	AT:100% | T:0%
+PF07878.9	NA    	AT:100% | T:0%
+pfam05509	pasABC	AT:100% | T:0%
+
+POST GENE
+Gene 2949	from 3041509 to 3041222	96aa (0.63)	start 0	ORF
+DOMAIN:
+COG3668             	RelBE         	AT:1% | T:99%
+Toxin_paaR-paaA-parE	paaR-paaA-parE	AT:0% | T:100%
+pfam05016           	relBE relBE   	AT:0% | T:100%
+
+DISTANCE -11 (0.859)	Domain-Domain ASSOCIATION: 0.659	SYSTEM score: 0.957
+=====80aa=====>
+              ======96aa======>
+             / \
+           -11nt
+
+PRE GENE
+Gene 2950	from 3041774 to 3041499	92aa (0.614)	start 0	ORF
+DOMAIN:
+COG3905  	relBE 	AT:100% | T:0%
+COG4710  	RHH   	AT:100% | T:0%
+pfam01402	RelBE 	AT:100% | T:0%
+PF07878.9	NA    	AT:100% | T:0%
+pfam05509	pasABC	AT:100% | T:0%
+
+POST GENE
+Gene 2594	from 3041509 to 3041221	96aa (0.63)	start 0	CDS
+DOMAIN:
+COG3668             	RelBE         	AT:1% | T:99%
+Toxin_paaR-paaA-parE	paaR-paaA-parE	AT:0% | T:100%
+pfam05016           	relBE relBE   	AT:0% | T:100%
+
+DISTANCE -10 (0.862)	Domain-Domain ASSOCIATION: 0.659	SYSTEM score: 0.97
+======92aa======>
+                ======96aa======>
+               / \
+             -10nt
+
+PRE GENE
+Gene 2950	from 3041774 to 3041499	92aa (0.614)	start 0	ORF
+DOMAIN:
+COG3905  	relBE 	AT:100% | T:0%
+COG4710  	RHH   	AT:100% | T:0%
+pfam01402	RelBE 	AT:100% | T:0%
+PF07878.9	NA    	AT:100% | T:0%
+pfam05509	pasABC	AT:100% | T:0%
+
+POST GENE
+Gene 2949	from 3041509 to 3041222	96aa (0.63)	start 0	ORF
+DOMAIN:
+COG3668             	RelBE         	AT:1% | T:99%
+Toxin_paaR-paaA-parE	paaR-paaA-parE	AT:0% | T:100%
+pfam05016           	relBE relBE   	AT:0% | T:100%
+
+DISTANCE -10 (0.862)	Domain-Domain ASSOCIATION: 0.659	SYSTEM score: 0.97
+======92aa======>
+                ======96aa======>
+               / \
+             -10nt
+
+PRE GENE
+Gene 2758	from 3220781 to 3220574	69aa (0.409)	start 0	CDS
+DOMAIN:
+COG1724	hicBA	AT:28% | T:72%
+PF07927	hicBA	AT:1% | T:99%
+
+POST GENE
+Gene 2757	from 3220478 to 3220040	118aa (0.593)	start 84	CDS
+DOMAIN:
+pfam01402	RelBE	AT:100% | T:0%
+pfam01402	RelBE	AT:100% | T:0%
+PF07878.9	NA   	AT:100% | T:0%
+PF07878.9	NA   	AT:100% | T:0%
+
+DISTANCE 180 (0.013)	Domain-Domain ASSOCIATION: 0.966	SYSTEM score: 0.267
+=====69aa=====>
+                     =========146aa=========>
+              /      \
+              180nt
+
+PRE GENE
+Gene 2758	from 3220781 to 3220574	69aa (0.409)	start 0	CDS
+DOMAIN:
+COG1724	hicBA	AT:28% | T:72%
+PF07927	hicBA	AT:1% | T:99%
+
+POST GENE
+Gene 2945	from 3220505 to 3220041	155aa (0.269)	start 0	ORF
+DOMAIN:
+PF15919  	hicBA	AT:98% | T:2%
+COG1598  	hicBA	AT:98% | T:2%
+pfam01402	RelBE	AT:100% | T:0%
+pfam01402	RelBE	AT:100% | T:0%
+pfam01402	RelBE	AT:100% | T:0%
+PF07878.9	NA   	AT:100% | T:0%
+COG1724  	hicBA	AT:28% | T:72%
+
+DISTANCE 69 (0.059)	Domain-Domain ASSOCIATION: 0.966	SYSTEM score: 0.312
+=====69aa=====>
+                  ==========155aa==========>
+              /   \
+             69nt
+
+PRE GENE
+Gene 2946	from 3220841 to 3220575	89aa (0.599)	start 0	ORF
+DOMAIN:
+COG1724	hicBA	AT:28% | T:72%
+PF07927	hicBA	AT:1% | T:99%
+
+POST GENE
+Gene 2757	from 3220478 to 3220040	118aa (0.593)	start 84	CDS
+DOMAIN:
+pfam01402	RelBE	AT:100% | T:0%
+pfam01402	RelBE	AT:100% | T:0%
+PF07878.9	NA   	AT:100% | T:0%
+PF07878.9	NA   	AT:100% | T:0%
+
+DISTANCE 181 (0.013)	Domain-Domain ASSOCIATION: 0.966	SYSTEM score: 0.443
+======89aa======>
+                        =========146aa=========>
+                /       \
+                 181nt
+
+PRE GENE
+Gene 2946	from 3220841 to 3220575	89aa (0.599)	start 0	ORF
+DOMAIN:
+COG1724	hicBA	AT:28% | T:72%
+PF07927	hicBA	AT:1% | T:99%
+
+POST GENE
+Gene 2945	from 3220505 to 3220041	155aa (0.269)	start 0	ORF
+DOMAIN:
+PF15919  	hicBA	AT:98% | T:2%
+COG1598  	hicBA	AT:98% | T:2%
+pfam01402	RelBE	AT:100% | T:0%
+pfam01402	RelBE	AT:100% | T:0%
+pfam01402	RelBE	AT:100% | T:0%
+PF07878.9	NA   	AT:100% | T:0%
+COG1724  	hicBA	AT:28% | T:72%
+
+DISTANCE 70 (0.058)	Domain-Domain ASSOCIATION: 0.966	SYSTEM score: 0.489
+======89aa======>
+                    ==========155aa==========>
+                /   \
+               70nt
