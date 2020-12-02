@@ -114,7 +114,7 @@ def main():
     outdir = args.outdir
     # data_way = args.data_dir
 
-    TADB_stat = args.tadb_stat_dir
+    tadb_stat_dir = args.tadb_stat_dir
 
     HMM_db = args.hmm_db
 
@@ -162,23 +162,22 @@ def main():
 
     # DISTANCE AND LENGTH DICO :
     # Dist and length of TA from TADB to mmake a proba
-    file_len = TADB_stat + "/length_TA.csv"
-    file_dist = TADB_stat + "/distance.csv"
+    file_len = os.path.join(tadb_stat_dir, "length_TA.csv")
+    file_dist = os.path.join(tadb_stat_dir, "distance.csv")
 
     # domain vs domain : occurence of domain association in TADB inA pair
-    file_domain_association = os.path.join(TADB_stat, "domain_domain_association.json")
+    file_domain_association = os.path.join(tadb_stat_dir, "domain_domain_association.json")
     # domain type how often the domain is found in a toxin and in antitoxin
-    file_domain_gene_type = os.path.join(TADB_stat, "/domain_gene_type.json")
+    file_domain_gene_type = os.path.join(tadb_stat_dir, "domain_gene_type.json")
 
     # CSV FILE DOMAINS
-    csv_domain = os.path.join(TADB_stat, '/domaines_METAfisher.csv')
+    csv_domain = os.path.join(tadb_stat_dir, 'domaines_METAfisher.csv')
 
     with open(csv_domain, 'r') as csvdo:
         reader = csv.DictReader(csvdo)
         for row in reader:
             obj.Gene.domain_dict[row['hmm_name']] = {
                 k: v for k, v in row.items() if k in ['acc', 'family', 'type']}
-    # print obj.Gene.domain_dict
 
     # SETTING THE THRESHOLD :
     # There are the first the thrshold there very large then the proabilty score step is going to define the better conf
