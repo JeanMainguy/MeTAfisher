@@ -10,17 +10,26 @@
 # Metafisher
 Program to retrieve toxin antitoxin (TA) systems in genomes and metagenomes
 
+
 ## Quick start
 
-1. Clone the metafisher repository: `git clone https://github.com/JeanMainguy/MeTAfisher`
+1. Clone the metafisher repository:
+```bash
+git clone https://github.com/JeanMainguy/MeTAfisher
+cd MeTAfisher/
+```
 
-2. Create an environement with python3 and HMMER install. You can create an environment using conda.
-
-3. Run metafisher on the data test:
+2. Create an environement with python3 and HMMER installed. You can create this environment using conda .
 
 ```bash
+conda env create -f env/metafisher.yml
+conda activate metafisher
+```
 
+3. Run metafisher on the genome of Desulfovibrio vulgaris:
 
+```bash
+./metafisher/metafisher.py --gff tests/data_test/Desulfovibrio_vulgaris_DP4/sequence.gff --faa tests/data_test/Desulfovibrio_vulgaris_DP4/sequence.faa
 
 ```
 
@@ -30,7 +39,8 @@ This program is released as open source software under the terms of [MIT License
 
 
 
-<a name="Dependence_files"/>
+
+==========================
 
 ## Dependency files
 MeTAfisher requires specific files to work. These files need to be placed in the same folder and the path to this folder is given as an argument to the program.
