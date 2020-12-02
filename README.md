@@ -204,10 +204,10 @@ In the output folder that you gave to the program you will find the hmmsearch ta
 
  -->
 
-
+<!-- 
 ## Scoring method
 
 
 
 REF
-http://www.ensembl.org/info/website/upload/gff.html
+http://www.ensembl.org/info/website/upload/gff.html -->
