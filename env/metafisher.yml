@@ -1,0 +1,7 @@
+name: metafisher_env
+channels:
+  - bioconda
+  - defaults
+dependencies:
+  - python=3
+  - HMMER
