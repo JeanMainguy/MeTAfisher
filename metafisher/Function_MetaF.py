@@ -54,10 +54,10 @@ def get_fast_fasta(fl, line, scaffold):
         print("seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence {}".format(scaffold))
 
 
-def get_hmm_genes(scaffold, table_hmm, gff_file):
+def get_hmm_genes(contig, table_hmm, gff_file):
     """
     Take all gene in table hmm and build an object off class ListGene() with them.
-    scaffold = contig name
+    contig = contig name
     table_hmm = file name
     gff_lines = list of gff line of the contig
 
@@ -65,42 +65,49 @@ def get_hmm_genes(scaffold, table_hmm, gff_file):
     genes : objet class ListGenes. Contain every gene of the given contig that are in table hmm.
     Info of the gff line are parsed and info about domain form hmm are also parsed.
     """
+    genes = []
+    genes_by_strand = {'+': [], '-': []}
+
+
     # attribut of the classe gene like every objet (orf and TA_gene) will have this attribut, then no need to give it that each time
-    obj.Gene.scaffold = scaffold
+    obj.Gene.scaffold = contig
     domains_dict = {}  # keys : gene numbers, value: liste of the domain objet !!
     fl = open(table_hmm, 'r')
     for line in fl:
-        # print l[:len(scaffold)]
-        if line[:len(scaffold)] == scaffold:
+        if line[:len(contig)] == contig:
             #  domain is an OBJECT of class Domain. It gather info about the domain found.
-            nb_gene, domain = hmmtable_parser(line)
+            gene_number, domain = hmmtable_parser(line)
 
-            domains_dict.setdefault(nb_gene, []).append(domain)
+            domains_dict.setdefault(gene_number, []).append(domain)
     fl.close()
 
-    gff_fl = csv.reader(open(gff_file, 'r'), delimiter='\t')
-    gff_line = ""  # next(gff_fl)
-    for n in sorted(domains_dict):
-        """
-        Search the gene info of the gene in the gff file
-        n is the keys of domains dict and then take the value all the gene number with a hmm hit
-        """
+    with open(gff_file, 'r') as gff_fl:
+        gff_tsv_reader = csv.reader(gff_fl, delimiter='\t')
 
-        gene, gff_line, gff_fl = get_gff_info(gff_fl, gff_line, scaffold, n)
+        for gene_number in sorted(domains_dict):
+            """
+            Search the gene info of the gene in the gff file
+            gene_number is the keys of domains dict and then take the value all the gene number with a hmm hit
+            """
 
-        gene.domain = domains_dict[n]
+            gene = get_gff_info(gff_tsv_reader, contig, gene_number)
 
-        gene.domain_Ct_border = max((d.ali_from * 3 for d in domains_dict[n]))
-        obj.TA_gene.genes.append(gene)
-        # if gene.strand == '+':
-        #     obj.TA_gene.genes_plus.append(gene)
-        # else:
-        #     obj.TA_gene.genes_minus.append(gene)
-        obj.TA_gene.genes_strand[gene.strand].append(gene)
-    # return obj.TA_gene.genes
+            gene.domain = domains_dict[gene_number]
+
+            gene.domain_Ct_border = max((d.ali_from * 3 for d in domains_dict[gene_number]))
+
+            genes.append(gene)
+            genes_by_strand[gene.strand].append(gene)
+
+    # TO remove
+    obj.TA_gene.genes = genes
+    obj.TA_gene.genes_strand["+"] = genes_by_strand["+"]
+    obj.TA_gene.genes_strand['-'] = genes_by_strand['-']
+
+    return genes
 
 
-def get_gff_info(gff_handler, gff_line, scaffold, gene_number):
+def get_gff_info(gff_handler, contig, gene_number):
     """
     gene_number need to come sorted
     return: the file handler of the gff file
@@ -115,24 +122,26 @@ def get_gff_info(gff_handler, gff_line, scaffold, gene_number):
         CP000569.1	Genbank	CDS	2019629	2020228	.	-	0	ID=CP000569.1|1797;Parent=gene1855;Dbx.....
         """
 
-        if line[2] not in ['CDS', 'ORF', 'gene'] or line[0] != scaffold:
+        seqname, _, feature, start, end, _, strand, _,attribute = tuple(line)
+
+        if feature not in ['CDS', 'ORF', 'gene'] or seqname != contig:
             continue
-        number = int(line[8].split(";")[0].split('|')[1])
+        number = int(attribute.split(";")[0].split('|')[1])
 
         if number == gene_number:
             gene = obj.TA_gene()
-            gene.feature = line[2]
-            gene.start = int(line[3])
-            gene.end = int(line[4])
-            gene.strand = line[6]
+            gene.feature = feature
+            gene.start = int(start)
+            gene.end = int(end)
+            gene.strand = strand
             gene.gene_number = number
 
             # s = re.search(ur'protein_id=([^;\n]+)', l[8])
-            s = re.search('protein_id=([^;\n]+)', line[8])
-            if s:
-                gene.protein_id = s.group(1)
+            protein_id_search = re.search('protein_id=([^;\n]+)', line[8])
+            if protein_id_search:
+                gene.protein_id = protein_id_search.group(1)
 
-            return gene, line, gff_handler
+            return gene
 
 
 def hmmtable_parser(line):
@@ -186,59 +195,51 @@ def hmmtable_parser(line):
     return gene_number, domain
 
 
-def get_start_po(dico):
+def get_start_po(fna_seq_dict, genes):
     """
-    Process the search of start position over the main liste of gene obj.TA_gene.genes.
+    Process the search of start position over the liste of gene.
     """
-    obj.TA_gene.genes = sorted(obj.TA_gene.genes, key=attrgetter('gene_number'))
+
     non_valides = []
-    for g in obj.TA_gene.genes:
-        start_po = g.give_start_po(dico, min_max_intervall=True)
-        # print 'gene number', g.gene_number
-        # print 'start po : ', start_po
-        # print 'START PO \t', start_po
-        # print 'START PO', start_po
-        # g.possible_starts = start_po # nouvelle attribut tous les position des start possibles
+    for gene in sorted(genes, key=attrgetter('gene_number')):
+        start_po = gene.give_start_po(fna_seq_dict, min_max_intervall=True)
 
         if not start_po:
-            # print 'invalide', g
-            non_valides.append(g)
+            # print 'invalide', gene
+            non_valides.append(gene)
             continue
 
-        g.distanceMin = obj.Gene.distanceMin - abs(start_po[-1] - start_po[0])
+        gene.distanceMin = obj.Gene.distanceMin - abs(start_po[-1] - start_po[0])
 
         # WARNING absolute value of distance min should not be greater than the length of the gene !!
         # because it would allow overlap of more than the length of the gene
         # and then could give a post gene before a pre gene so a non sense
 
-        if abs(g.distanceMin) >= len(g):
-            g.distanceMin = -len(g) + 1  # if so distance min is len -1
+        if abs(gene.distanceMin) >= len(gene):
+            gene.distanceMin = -len(gene) + 1  # if so distance min is len -1
 
         # Uncomment this part if instead of having the position of start inside the intial gene,
         # it is desire to have the position inthe contig
 
-        if g.strand == '+':
-            # start_po = [x + g.start for x in start_po]
-            g.start += start_po[0]
+        if gene.strand == '+':
+            # start_po = [x + gene.start for x in start_po]
+            gene.start += start_po[0]
 
         else:
-            # start_po = [g.end - x for x in start_po]
-            g.end -= start_po[0]
+            # start_po = [gene.end - x for x in start_po]
+            gene.end -= start_po[0]
 
-        g.possible_start = start_po  # nouvelle attribut tous les position des start possibles
-        # print 'POSSIBLE START', g.possible_start
+        gene.possible_start = start_po
+
     # ATTENTION need to discard the gene in the main liste and also in minus and plus
-    for g in non_valides:
-        # print 'INVALIDE',g.gene_number
-        obj.TA_gene.genes.remove(g)
-        obj.TA_gene.genes_strand[g.strand].remove(g)
-        # if g.strand == '+':
-        #     obj.TA_gene.genes_plus.remove(g)
-        # else:
-        #     obj.TA_gene.genes_minus.remove(g)
+    for gene in non_valides:
+        genes.remove(gene)
+
+        # obj.TA_gene.genes.remove(gene)
+        # obj.TA_gene.genes_strand[gene.strand].remove(gene)
 
 
-def get_list_scaffold(table_hmm):
+def get_contig_from_hmmsearch_result(table_hmm):
     # input : Name of the table hmm file
     # output : List of all the scaffold of the table
 
@@ -252,39 +253,37 @@ def get_list_scaffold(table_hmm):
     return list(set_of_scaffold)
 
 
-def get_adj():
+def compute_gene_adjacency(genes):
     """
     Treat independently list plus and minus
     Sort the list by the end position
     then take the first one and look for the next gene (the gene has the its end after the end of the first one).
     call tandem gene function to check if the gene fit the distance threshold
     """
-    # obj.TA_gene.genes_plus = sorted(obj.TA_gene.genes_plus, key=attrgetter('end'))
-    # obj.TA_gene.genes_minus = sorted(obj.TA_gene.genes_minus, key=attrgetter('start'))
-    obj.TA_gene.genes_strand['+'] = sorted(obj.TA_gene.genes_strand['+'], key=attrgetter('end'))
-    obj.TA_gene.genes_strand['-'] = sorted(obj.TA_gene.genes_strand['-'], key=attrgetter('start'))
-    #
-    # TODO Ameliorer mettre un break quand les gene sont de toute facon trop loin.. bu actually harder than excepted because
-    # Passe si le end du gene suivant est plus loin que la taille max + la
-    # distance max dans ces cas là ya pas de possbilité pour qu'il soit adj!
 
-    # Strand plus !
+    genes_strand_plus = sorted((gene for gene in genes if gene.strand == '+' ), key=attrgetter('end'))
+    genes_strand_minus =  sorted((gene for gene in genes if gene.strand == '-' ), key=attrgetter('start'))
+
     # adj_by_strand(obj.TA_gene.genes_plus)
     # adj_by_strand(obj.TA_gene.genes_minus)
-    adj_by_strand(obj.TA_gene.genes_strand['+'])
-    adj_by_strand(obj.TA_gene.genes_strand['-'])
+    linked_genes = adj_by_strand(genes_strand_plus)
+    linked_genes |= adj_by_strand(genes_strand_minus)
+
+    return linked_genes
 
 
-def adj_by_strand(liste):
+def adj_by_strand(genes):
     """
     liste: list of hmm gene with homogenous strand
     Check if the gene is in tandem with another and if so store the gene inside a set obj.TA_gene.linked
     In parallel it clean up the list obj.TA_gene.genes
     by removing the genes that forme a tandem. Then TA_gene.genes has only the lonely_gene
     """
-    for gi, gene in enumerate(liste):
+    linked_genes = set()
+
+    for gi, gene in enumerate(genes):
         # print obj.TA_gene.genes_plus[gi].gene_number,  obj.TA_gene.genes_plus[gi].len_val
-        for gpost in liste[gi + 1:]:
+        for gpost in genes[gi + 1:]:
             if gpost.end - gene.end + 1 > obj.Gene.length_max + obj.Gene.distanceMax:
                 """
                 if the distance between gene.end and gpost.end is superior to lenmax + distmax
@@ -303,10 +302,10 @@ def adj_by_strand(liste):
                     gpost.post.append(gene)
                     gene.prev.append(gpost)
                 # add the gene because it has a link in the set linked of class TA_gene
-                obj.TA_gene.linked.add(gene)
+                linked_genes.add(gene)
                 # add the gene because it has a link in the set linked of class TA_gene
-                obj.TA_gene.linked.add(gpost)
-
+                linked_genes.add(gpost)
+    return linked_genes
 
 def only_lonely_gene():
     """
@@ -324,46 +323,37 @@ def only_lonely_gene():
             obj.TA_gene.genes_strand['-'].remove(link_gene)
     obj.TA_gene.linked.clear()
 
-
-def create_lonely_gene_list():
-    """
-    From Gene.genes_minus and plus liste we build a lonely_plus and minus liste that gather lonely genes
-    so gene that are not in the set linked
-    If there is no lonely gene then the attribute lonely stays None
-    """
-    if len(obj.TA_gene.genes) > len(obj.TA_gene.linked):  # that mean there are lonely gene
-        obj.TA_gene.lonely = {'+': [], '-': []}
-        for gene in obj.TA_gene.genes:
-            if gene not in obj.TA_gene.linked:
-                obj.TA_gene.lonely[gene.strand].append(gene)
-
-
-def check_size(gene_strand):
+def check_size(genes):
     """
     Remove genes with a length that does not fit the length thresholds.
     """
-    for strand in gene_strand:
-        invalide = []
-        for gene in gene_strand[strand]:
-            # print gene.gene_number, '.....*'
-            if obj.Gene.length_min <= len(gene) <= obj.Gene.length_max:
-                gene.possible_start = [0]
-                # WARNING absolute value of distance min should not be greater than the length of the gene !!
-                # because it would allow overlap of more than the length of the gene
-                # and then could give a post gene before a pre gene so a non sense
-                if abs(gene.distanceMin) >= len(gene):
-                    # print 'OOOOOOh'
-                    # print gene.distanceMin
-                    gene.distanceMin = -len(gene) + 1  # if so distance min is len -1
-                    # print gene
-                    # print gene.distanceMin
-                    # raw_input()
-            else:
-                invalide.append(gene)
-        for g in invalide:
-            obj.TA_gene.genes.remove(g)
-            obj.TA_gene.genes_strand[strand].remove(g)
+    invalide_genes = []
+    for gene in genes:
+        if obj.Gene.length_min <= len(gene) <= obj.Gene.length_max:
+            gene.possible_start = [0]
 
+            # WARNING absolute value of distance min should not be greater than the length of the gene !!
+            # because it would allow overlap of more than the length of the gene
+            # and then could give a post gene before a pre gene so a non sense
+            if abs(gene.distanceMin) >= len(gene):
+                logging.warning(f'gene distance min >= length of gene')
+                gene.distanceMin = -len(gene) + 1  # if so distance min is len -1
+
+        else:
+            invalide_genes.append(gene)
+
+    for gene in invalide_genes:
+        genes.remove(gene)
+
+
+def get_linked_genes(genes):
+    return (gene for gene in genes if gene.post or gene.prev)
+
+def get_lonely_genes(genes):
+    """
+    Retrieve gene that are not linked to any other genes.
+    """
+    return (gene for gene in genes if not gene.post and not gene.prev)
 
 def delete_files(listeFiles):
     for outfile in listeFiles:

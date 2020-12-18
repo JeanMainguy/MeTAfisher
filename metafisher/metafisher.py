@@ -224,29 +224,29 @@ def main():
     # And don't proceess the orf that have the same end position
 
     if rescue:
-        # Open step of the scaffold file ! used by fast_fasta function in orf file
+        # Open step of the contig file ! used by fast_fasta function in orf file
         # the file won't be close until the end.Each time the algo won't have to
-        # read the whle file again until the scaffold needed. We can do that
-        # because the scaffold list has been sorted
+        # read the whle file again until the contig needed. We can do that
+        # because the contig list has been sorted
         # New version use this dictionnary:
-        dico_orf = {}
-        dico_orf['fl'] = open(genomic_seq_file, 'r')
-        dico_orf['line'] = next(dico_orf['fl'])
+        orf_dict = {}
+        orf_dict['fl'] = open(genomic_seq_file, 'r')
+        orf_dict['line'] = next(orf_dict['fl'])
 
-        gff_dico = {}
+        gff_dict = {}
         fl_csv = open(gff_file, 'r')
-        gff_dico['csv'] = csv.reader(fl_csv, delimiter='\t')
-        gff_dico['line'] = next(gff_dico['csv'])
+        gff_dict['csv'] = csv.reader(fl_csv, delimiter='\t')
+        gff_dict['line'] = next(gff_dict['csv'])
 
     if resize:
         # Open file fna to retrieve sequence of the predicted gene
         # variable are stored in a dico to not have to retourned it every time !!
-        dico_seq = {}
-        dico_seq["fl"] = open(fna_file, 'r')
+        fna_seq_dict = {}
+        fna_seq_dict["fl"] = open(fna_file, 'r')
 
-        dico_seq["line"] = dico_seq["fl"].readline()
+        fna_seq_dict["line"] = fna_seq_dict["fl"].readline()
         # PUT info in a dico to not have to retourned it every time !! dico is used in check_size
-        dico_seq["codon_start"] = table['start']
+        fna_seq_dict["codon_start"] = table['start']
         # print "start", table['start']
 
     # SCORE PREPARaTION
@@ -260,22 +260,23 @@ def main():
     obj.Gene.dict_domain_association = score.decoder(file_domain_association)
     obj.Gene.dict_domain_gene_type = score.decoder(file_domain_gene_type)
 
-    # Take every scaffold present in the HMM output and sort them in order to
+    # Take every contig present in the HMM output and sort them in order to
     # be able to retrieve their sequence correctly in the input file
-    scaffold_list = fct.get_list_scaffold(table_hmm)
-    if not contig_name:  # if the contig name option to give only one contig is not provided then contig_name is False and all contig are analysed
-        scaffold_list = sorted(fct.get_list_scaffold(table_hmm))
-    else:  # contig name is only is the name of one contig
-        if contig_name not in scaffold_list:
-            raise Exception('The contig name is incorrect or no hit have been found by hmmsearch')
-        scaffold_list = [contig_name]
+    contigs = sorted(fct.get_contig_from_hmmsearch_result(table_hmm))
 
-    logging.info(f'number of sequence to analysed {len(scaffold_list)}')
+    if contig_name:
+        if contig_name in contigs:
+            contigs = [contig_name]
+        else:
+            raise Exception(f'The contig name {contig_name} is incorrect or no hit have been found by hmmsearch on this contig')
 
-    # Loop : each scaffold is treated independntly here
-    for scaffold in scaffold_list:
 
-        logging.info(f"Analysing {scaffold}")
+    logging.info(f'number of contigs to analysed {len(contigs)}')
+
+    # Loop : each contig is treated independntly here
+    for contig in contigs:
+
+        logging.info(f"Analysing {contig}")
 
         # Reset obj.TA_gene and Orf class attribut
         obj.TA_gene.genes = []
@@ -286,36 +287,43 @@ def main():
         obj.Orf.adj_orf_index = 0
         obj.Orf.hmm_orf = {}
 
-        fct.get_hmm_genes(scaffold, table_hmm, gff_file)
+        genes = fct.get_hmm_genes(contig, table_hmm, gff_file)
 
         if resize:
-            fct.get_start_po(dico_seq)  # resize and calculate start position
+            fct.get_start_po(fna_seq_dict, genes)  # resize and calculate start position
         else:
             # eliminate te genes that have a length > threshold
-            fct.check_size(obj.TA_gene.genes_strand)
+            fct.check_size(genes)
 
         # STEP : GENE PAIR ORGANISATION CHECKING
-        fct.get_adj()   # set the adj gene for each gene which has
+        linked_genes = fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
+        logging.info(f'There are {len(linked_genes)} linked genes')
 
-        fct.create_lonely_gene_list()
+        # lonely_genes = list(fct.get_lonely_genes(genes, linked_genes))
 
-        initial_nb_lonely = len(obj.TA_gene.genes) - len(obj.TA_gene.linked)
+        initial_nb_lonely = len(genes) - len(linked_genes)
+        logging.info(f'There are {initial_nb_lonely} lonely genes.')
 
-        if obj.TA_gene.lonely is not None and rescue:
-            orf.rescue_lonely_gene(dico_orf, gff_dico, scaffold, tmp_adj_orf_faa)
+        # assert len(lonely_genes) == initial_nb_lonely
 
-        # score.score_TA_list(obj.TA_gene.genes_strand, bonus_start)
+        if initial_nb_lonely and rescue:
+            orfs = orf.rescue_lonely_genes(orf_dict, gff_dict, contig, tmp_adj_orf_faa, genes)
+            logging.info(f'Metafisher identified {len(orfs)} orfs as potential TA genes.')
+            linked_genes = list(fct.get_linked_genes(genes))
+            logging.info(f'There are now {len(linked_genes)} linked genes')
+        else:
+            orfs = []
 
-        score.score_TA_list(obj.TA_gene.linked, bonus_start)
+        score.score_TA_list(linked_genes, bonus_start)
 
         # Write stat
         if info_contig_stat:
-            out.contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat)
+            out.contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, linked_genes, orfs)
 
         # write output
         # If there is some gene linked meaning if tere is TA system
-        if obj.TA_gene.linked and dict_output['is_output']:
-            out.write_result(obj.TA_gene.linked, dict_output, scaffold)
+        if linked_genes and dict_output['is_output']:
+            out.write_result(linked_genes, dict_output, contig)
 
     # Total Stat information about the Metagenome
     if info_contig_stat:

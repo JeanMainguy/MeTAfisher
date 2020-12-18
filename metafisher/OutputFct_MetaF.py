@@ -87,20 +87,20 @@ def stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, compl
     return False, False, False
 
 
-def contig_stat_manager(writer_stat, scaffold, initial_nb_lonely, rescue, total_stat):
+def contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, linked_genes, orfs=[] ):
     contig_stat = {}
-    contig_stat['contig'] = scaffold
-    contig_stat['gene with TA domain'] = len(obj.TA_gene.genes)
-    contig_stat['linked gene'] = len(obj.TA_gene.linked)
+    contig_stat['contig'] = contig
+    contig_stat['gene with TA domain'] = len(genes)
+    contig_stat['linked gene'] = len(linked_genes)
     contig_stat['lonely gene'] = contig_stat['gene with TA domain'] - contig_stat['linked gene']
     if rescue:
         contig_stat['lonely gene rescue'] = initial_nb_lonely - contig_stat['lonely gene']
         contig_stat['adjacent orf'] = obj.Orf.adj_orf_index
-        contig_stat['orf with TA domain'] = len(obj.Orf.hmm_orf)
+        contig_stat['orf with TA domain'] = len(orfs)
 
     for k in contig_stat:  # add the value of the row in obj.Gene.metaG_stat to make the total at the end
         total_stat[k] += contig_stat[k]  # contig is not there yet because it is not numerical value
-    total_stat['contig'] = scaffold
+    total_stat['contig'] = contig
     writer_stat.writerow(contig_stat)
 
 

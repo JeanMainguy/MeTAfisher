@@ -32,6 +32,7 @@ function compare_result_dir {
         if [ -n "$difference" ]; then
             let num_errors+=1
             echo "Test output failed: $output vs $expected_output_file"
+            echo "diff  $expected_output_file $output"
             # echo "Actual output:"
             # head "$output"
             # expected_output=$(cat $expected_output_file)
@@ -111,7 +112,7 @@ cmd="./metafisher/metafisher.py \
 --rescue --genomic_seq $data_dir/sequence.fasta \
  > ${outdir}/cmd.out"
 
- # compare_result_dir "$cmd" $outdir $expdir 0
+compare_result_dir "$cmd" $outdir $expdir 0
 
 # 3. End of testing - check if any errors occurrred
 if [ "$num_errors" -gt 0 ]; then
