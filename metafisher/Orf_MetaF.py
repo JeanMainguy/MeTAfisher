@@ -30,11 +30,11 @@ def rescue_lonely_genes(dico_orf, dico_gff, contig, tmp_adjorf_faa, genes):
         tmp_adjorf_faa: name of the file where adj orf will be write
     """
 
-    lonely_genes_on_strand_plus = any((True for gene in fct.get_lonely_genes(genes) if gene.strand == "+"))
-    lonely_genes_on_strand_minus = any((True for gene in fct.get_lonely_genes(genes) if gene.strand == "-"))
+    lonely_genes_on_strand_plus = [gene for gene in fct.get_lonely_genes(genes) if gene.strand == "+"]
+    lonely_genes_on_strand_minus = [gene for gene in fct.get_lonely_genes(genes) if gene.strand == "-"]
 
-    genes_plus = [gene for gene in genes if gene.strand == '-' ]
-    genes_minus = [gene for gene in genes if gene.strand == '+' ]
+    genes_plus = [gene for gene in genes if gene.strand == '+' ]
+    genes_minus = [gene for gene in genes if gene.strand == '-' ]
 
     with open(tmp_adjorf_faa, 'w') as fl:
         # Extraction of the sequence of the contig in order to find the orf inside.
@@ -50,10 +50,13 @@ def rescue_lonely_genes(dico_orf, dico_gff, contig, tmp_adjorf_faa, genes):
             # then check if the orf is adjacent with a TA_gene
             # If so then the faa ORF file is written...
             # orf manager will do everything !!
+
             orf_manager(orf_generator, '+', genes_plus, gff_ends, fl)
         # TEST IF THERE ARE LONELY GENES IN STRAND minus
         if lonely_genes_on_strand_minus:
             orf_generator = findORF(contig, contig_seq, rev=-1)
+            # orf_generator = list(orf_generator)
+
             orf_manager(orf_generator, '-', genes_minus, gff_ends, fl)
 
     # If the program finds adj orf then several step are applied
@@ -154,7 +157,6 @@ def codon_finder(liste, seq, frame=1, inf=0, sup='Not defined'):
             position.append(i)
     return position
 
-
 def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
     """
     Manage ORF.
@@ -176,7 +178,6 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
             orf.distanceMin = -len(orf) + 1  # if so distance min is len -1
 
         if orf.is_adj(lonelyGenes):
-
             obj.Orf.adj_orf_index += 1
             obj.Orf.adj_orf[obj.Orf.adj_orf_index] = orf
             orf.write_faa(fl, index=obj.Orf.adj_orf_index)  # write the file to tmp faa file

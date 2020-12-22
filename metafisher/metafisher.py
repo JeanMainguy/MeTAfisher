@@ -270,7 +270,6 @@ def main():
         else:
             raise Exception(f'The contig name {contig_name} is incorrect or no hit have been found by hmmsearch on this contig')
 
-
     logging.info(f'number of contigs to analysed {len(contigs)}')
 
     # Loop : each contig is treated independntly here
@@ -297,20 +296,16 @@ def main():
 
         # STEP : GENE PAIR ORGANISATION CHECKING
         linked_genes = fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
-        logging.info(f'There are {len(linked_genes)} linked genes')
 
         # lonely_genes = list(fct.get_lonely_genes(genes, linked_genes))
 
         initial_nb_lonely = len(genes) - len(linked_genes)
-        logging.info(f'There are {initial_nb_lonely} lonely genes.')
 
         # assert len(lonely_genes) == initial_nb_lonely
 
         if initial_nb_lonely and rescue:
             orfs = orf.rescue_lonely_genes(orf_dict, gff_dict, contig, tmp_adj_orf_faa, genes)
-            logging.info(f'Metafisher identified {len(orfs)} orfs as potential TA genes.')
             linked_genes = list(fct.get_linked_genes(genes))
-            logging.info(f'There are now {len(linked_genes)} linked genes')
         else:
             orfs = []
 
