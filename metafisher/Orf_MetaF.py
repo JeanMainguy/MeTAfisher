@@ -16,6 +16,7 @@ from itertools import chain
 import Object_MetaF as obj
 import Function_MetaF as fct
 import logging
+import os
 
 
 # def rescue_lonely_genes(orf_dict, gff_dict, contig, tmp_adjorf_faa, genes):
@@ -59,17 +60,21 @@ def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
         adj_orfs += get_adjacent_orfs_by_strand(orf_generator, '-', genes_minus, gff_ends)
     return adj_orfs
 
-def identify_ta_orfs(adj_orfs, genes, tmp_adjorf_faa):
+def identify_ta_orfs(adj_orfs, genes, outdir):
     adj_orf_dict = {}
     gene_index = max([gene.gene_number for gene in genes])
-    with open(tmp_adjorf_faa, 'w') as fl:
+
+    logging.info(f'{len(adj_orfs)} adjacent orfs have been found! ')
+
+    adjorf_faa_file = os.path.join(outdir , 'temporary_adjOrf.faa')
+    with open(adjorf_faa_file, 'w') as fl:
         for i, orf in enumerate(adj_orfs):
             orf.write_faa(fl, i)
             adj_orf_dict[i] = orf
 
-    logging.info(f'{len(adj_orfs)} adjacent orfs have been found! ')
     # launch hmmsearch
-    table_hmm = fct.HMM_launcher(tmp_adjorf_faa, add_to_name='adj_orf')
+    hmm_result_file = os.path.join(outdir , 'output_HMM_table_adj_orf.txt')
+    table_hmm = fct.HMM_launcher(adjorf_faa_file, hmm_result_file)
     # parsing result and store it in obj.Orf.hmm_orf
     ta_orfs = adjOrf_HMM(table_hmm, adj_orf_dict)
     logging.info(f'{len(ta_orfs)} have TA domains')

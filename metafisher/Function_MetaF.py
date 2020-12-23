@@ -20,20 +20,18 @@ import os
 import logging
 
 
-def HMM_launcher(faa_file, add_to_name=''):
+def HMM_launcher(faa_file, outfile):
     hmm_db = obj.Gene.hmmdb
-    table_hmm = obj.Gene.outdir + '/output_HMM_table_' + add_to_name + '.txt'
-
-    # bash_commande = f"hmmsearch -E 0.5 --domtblout {table_hmm} {hmm_db} {faa_file} > /dev/null"
-    bash_commande = f"hmmsearch --domtblout {table_hmm} {hmm_db} {faa_file} > /dev/null"
+    bash_commande = f"hmmsearch -E 0.5 --domtblout {outfile} {hmm_db} {faa_file} > /dev/null"
+    # bash_commande = f"hmmsearch --domtblout {table_hmm} {hmm_db} {faa_file} > /dev/null"
 
     call(bash_commande, shell=True)
 
-    if not os.path.isfile(table_hmm):
+    if not os.path.isfile(outfile):
         logging.warning(f'bash command failed: {bash_commande}')
-        raise FileNotFoundError(f'hmmsearch command failed to create the file {table_hmm}')
+        raise FileNotFoundError(f'hmmsearch command failed to create the file {outfile}')
 
-    return table_hmm
+    return outfile
 
 
 def get_fast_fasta(fl, line, scaffold):

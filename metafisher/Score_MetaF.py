@@ -45,10 +45,10 @@ def from_file_to_dict(file_name, inf=None, sup=None):
     return dico
 
 
-def score_TA_list(genes, bonus_start):
+def score_TA_list(genes):
     for gene in genes:
         for post in gene.post:
-            score_pair(gene, post, bonus_start)  # GIVE THE SCOREEE
+            score_pair(gene, post)  # GIVE THE SCOREEE
 
 
 def conflaction_proba(proba1, proba2):
@@ -100,7 +100,7 @@ def score_do_association(post, pre, dict_domain_association, dict_domain_gene_ty
     return max(asso)
 
 
-def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pre !
+def score_pair(pre, post):  # post is a gene located upstream of pre !
     """
     Give the score of the pair
     return False if not possible to pair them
@@ -116,8 +116,8 @@ def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pr
     compatible_starts = [s for s in post.possible_start if
                          obj.Gene.distanceMin < initial_dist + s < obj.Gene.distanceMax]
 
-    score_post = get_score(post, compatible_starts, bonus_start, distance=initial_dist)
-    score = get_score(pre, pre.possible_start, bonus_start)
+    score_post = get_score(post, compatible_starts, distance=initial_dist)
+    score = get_score(pre, pre.possible_start)
 
     score_do_asso = score_do_association(post, pre, obj.Gene.dict_domain_association,
                                          obj.Gene.dict_domain_gene_type)
@@ -130,7 +130,7 @@ def score_pair(pre, post, bonus_start):  # post is a gene located upstream of pr
     post.dict_score[pre.gene_number] = score_post
 
 
-def get_score(gene, starts, bonus_start, distance=None):
+def get_score(gene, starts, distance=None):
     """
     Return a double dico with first start as a key and another dico
     with score of domain and length and when pre_end isn't Noneth distance score
@@ -153,25 +153,15 @@ def get_score(gene, starts, bonus_start, distance=None):
         length = len(gene) - start
         assert length % 3 == 0
 
-        # print '===GENNNNNNE==='
-        # print gene
-        # print '===LEN==='
-        # print 'gene.end {} - gene.start {} + start {} + 1  GIVE THE LEN of {} nt, {} aa '.format(gene.end, gene.start, start, length, length / 3)
-
         proba_len = obj.Gene.length_proba[int(length / 3)]
 
-        # print 'proba len ', proba_len
 
         dico_score = {"start": start, "domain": d.score, "len_score": proba_len,
                       'length': length, "score": proba_len}  # Ajout de distance:None? ? ?
         if distance is not None:
-            # print('distance', distance + start)
             dico_score['dist_score'] = obj.Gene.distance_proba[distance + start]
             dico_score['distance'] = distance + start
             dico_score['score'] = conflaction_proba(dico_score['dist_score'], proba_len)
-
-        # Give a bonus to the initial start !!
-        dico_score['bonus_init_start'] = bonus_start if start == 0 else 0
 
         score.append(dico_score)
     score = sorted(score, key=itemgetter('score'), reverse=True)

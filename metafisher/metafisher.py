@@ -21,6 +21,7 @@ import argparse
 import os
 import logging
 import sys
+import gzip
 
 
 def init_logging(verbose_flag):
@@ -138,8 +139,6 @@ def main():
     if rescue:
         logging.info('Rescue mode is on.')
         genomic_seq_file = args.genomic_seq
-        # prot sequence of adj orf will be written there
-        tmp_adj_orf_faa = outdir + '/temporary_adjOrf.faa'
 
     table_hmm = outdir + '/output_HMM_table_' + metaG_name + '.txt'
 
@@ -151,14 +150,14 @@ def main():
                    'result_T': output_table, 'result_GFF': output_gff}
 
     # Storing information as Gene class attribut to be use when we launch hmmsearch
-    obj.Gene.outdir = outdir
     obj.Gene.hmmdb = HMM_db
 
     if not os.path.isfile(table_hmm):
-        logging.warning('HMM launcher')
-        print(table_hmm)
+        logging.info('Running hmmsearch to identify TA genes.')
+
         table_hmm = fct.HMM_launcher(faa_file, metaG_name)
-        print(table_hmm)
+    else:
+        logging.info(f'Hmmresult file {table_hmm} exists already. We use it.')
 
     # DISTANCE AND LENGTH DICO :
     # Dist and length of TA from TADB to mmake a proba
@@ -234,7 +233,8 @@ def main():
         orf_dict['line'] = next(orf_dict['fl'])
 
         gff_dict = {}
-        fl_csv = open(gff_file, 'r')
+        proper_open = gzip.open if gff_file.endswith('.gz') else open
+        fl_csv = proper_open(gff_file, 'r')
         gff_dict['csv'] = csv.reader(fl_csv, delimiter='\t')
         gff_dict['line'] = next(gff_dict['csv'])
 
@@ -277,15 +277,6 @@ def main():
 
         logging.info(f"Analysing {contig}")
 
-        # Reset obj.TA_gene and Orf class attribut
-        # obj.TA_gene.genes = []
-        # obj.TA_gene.genes_strand = {'+': [], '-': []}
-        # obj.TA_gene.linked = set()
-        # obj.TA_gene.lonely = None
-        # obj.Orf.adj_orf = {}
-        # obj.Orf.adj_orf_index = 0
-        # obj.Orf.hmm_orf = {}
-
         genes = fct.get_hmm_genes(contig, table_hmm, gff_file)
         if resize:
             fct.get_start_po(fna_seq_dict, genes)  # resize and calculate start position
@@ -296,29 +287,26 @@ def main():
         # STEP : GENE PAIR ORGANISATION CHECKING
         fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
 
-        # lonely_genes = list(fct.get_lonely_genes(genes, linked_genes))
-
         initial_nb_lonely = len(genes) - len(list(fct.get_linked_genes(genes)))
-
-        # assert len(lonely_genes) == initial_nb_lonely
 
         if initial_nb_lonely and rescue:
             adj_orfs = orf.get_adjacent_orfs(orf_dict, gff_dict, contig, genes)
-            ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, tmp_adj_orf_faa)
+            ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, outdir)
         else:
             ta_orfs = []
             adj_orfs = []
 
-        score.score_TA_list(genes, bonus_start)
-        linked_genes = list(fct.get_linked_genes(genes))
+        score.score_TA_list(genes)
+
         # Write stat
         if info_contig_stat:
             out.contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs)
 
         # write output
         # If there is some gene linked meaning if tere is TA system
-        if linked_genes and dict_output['is_output']:
-            out.write_result(linked_genes, dict_output, contig)
+
+        if dict_output['is_output']:
+            out.write_result(fct.get_linked_genes(genes), dict_output, contig)
 
     # Total Stat information about the Metagenome
     if info_contig_stat:
