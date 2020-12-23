@@ -2,7 +2,7 @@
 
 """
 Module      : Orf
-Description : The main entry point for the program.
+Description : Orf specific functions.
 Copyright   : (c) Jean Mainguy, 27 nov. 2020
 License     : MIT
 Maintainer  : jean.mainguy@outlook.fr
@@ -18,13 +18,14 @@ import Function_MetaF as fct
 import logging
 
 
-def rescue_lonely_genes(dico_orf, dico_gff, contig, tmp_adjorf_faa, genes):
+# def rescue_lonely_genes(orf_dict, gff_dict, contig, tmp_adjorf_faa, genes):
+def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
     """
     Manage all the step of rescuing lonely gene.
 
     Argument :
-        dico_orf: has the contig sequence file open and the current line. allow to retrieve the sequence
-        dico_gff: gff file open and curent line. used by get_gff_ends() to get stop postion of the predicted gene in order
+        orf_dict: has the contig sequence file open and the current line. allow to retrieve the sequence
+        gff_dict: gff file open and curent line. used by get_gff_ends() to get stop postion of the predicted gene in order
         to not take into acount the related orf.
         contig: name of the current contig
         tmp_adjorf_faa: name of the file where adj orf will be write
@@ -33,48 +34,53 @@ def rescue_lonely_genes(dico_orf, dico_gff, contig, tmp_adjorf_faa, genes):
     lonely_genes_on_strand_plus = [gene for gene in fct.get_lonely_genes(genes) if gene.strand == "+"]
     lonely_genes_on_strand_minus = [gene for gene in fct.get_lonely_genes(genes) if gene.strand == "-"]
 
-    genes_plus = [gene for gene in genes if gene.strand == '+' ]
-    genes_minus = [gene for gene in genes if gene.strand == '-' ]
+    genes_plus = [gene for gene in genes if gene.strand == '+']
+    genes_minus = [gene for gene in genes if gene.strand == '-']
 
+    # Extraction of the sequence of the contig in order to find the orf inside.
+    contig_seq, orf_dict["line"] = fct.get_fast_fasta(orf_dict['fl'], orf_dict['line'], contig)
+    obj.Orf.seq = contig_seq
+    # retrieve the end position of the predicted gene to then skip the related ORF:
+    gff_ends, highestGeneNumber = get_gff_ends(gff_dict, contig)
+
+    # TEST IF THERE ARE LONELY GENE IN STRAND plus
+    if lonely_genes_on_strand_plus:
+        orf_generator = findORF(contig, contig_seq, rev=1)
+        # read the orfs: check if the orf is a predicted gene
+        # then check if the orf is adjacent with a TA_gene
+        # If so then the faa ORF file is written...
+        # orf manager will do everything !!
+
+        adj_orfs = get_adjacent_orfs_by_strand(orf_generator, '+', genes_plus, gff_ends)
+    # TEST IF THERE ARE LONELY GENES IN STRAND minus
+    if lonely_genes_on_strand_minus:
+        orf_generator = findORF(contig, contig_seq, rev=-1)
+
+        adj_orfs += get_adjacent_orfs_by_strand(orf_generator, '-', genes_minus, gff_ends)
+    return adj_orfs
+
+def identify_ta_orfs(adj_orfs, genes, tmp_adjorf_faa):
+    adj_orf_dict = {}
+    gene_index = max([gene.gene_number for gene in genes])
     with open(tmp_adjorf_faa, 'w') as fl:
-        # Extraction of the sequence of the contig in order to find the orf inside.
-        contig_seq, dico_orf["line"] = fct.get_fast_fasta(dico_orf['fl'], dico_orf['line'], contig)
-        obj.Orf.seq = contig_seq
-        # retrieve the end position of the predicted gene to then skip the related ORF:
-        gff_ends, highestGeneNumber = get_gff_ends(dico_gff, contig)
+        for i, orf in enumerate(adj_orfs):
+            orf.write_faa(fl, i)
+            adj_orf_dict[i] = orf
 
-        # TEST IF THERE ARE LONELY GENE IN STRAND plus
-        if lonely_genes_on_strand_plus:
-            orf_generator = findORF(contig, contig_seq, rev=1)
-            # read the generator: check if the orf is a predicted gene
-            # then check if the orf is adjacent with a TA_gene
-            # If so then the faa ORF file is written...
-            # orf manager will do everything !!
+    logging.info(f'{len(adj_orfs)} adjacent orfs have been found! ')
+    # launch hmmsearch
+    table_hmm = fct.HMM_launcher(tmp_adjorf_faa, add_to_name='adj_orf')
+    # parsing result and store it in obj.Orf.hmm_orf
+    ta_orfs = adjOrf_HMM(table_hmm, adj_orf_dict)
+    logging.info(f'{len(ta_orfs)} have TA domains')
+    # taking into account the domain in the possible start of the ORF
+    # give gene number to hmm orf that fit with genes from gff file
+    adjust_orf_attribut(ta_orfs, gene_index)
 
-            orf_manager(orf_generator, '+', genes_plus, gff_ends, fl)
-        # TEST IF THERE ARE LONELY GENES IN STRAND minus
-        if lonely_genes_on_strand_minus:
-            orf_generator = findORF(contig, contig_seq, rev=-1)
-            # orf_generator = list(orf_generator)
+    # Adding adjOrf to list of TA gene and finding with who there are adjacent
+    hmm_orf_get_adj(ta_orfs, genes)
 
-            orf_manager(orf_generator, '-', genes_minus, gff_ends, fl)
-
-    # If the program finds adj orf then several step are applied
-    if obj.Orf.adj_orf:
-        logging.info(f'{len(obj.Orf.adj_orf)} adjacent orfs have been found! ')
-        # launch hmmsearch
-        table_hmm = fct.HMM_launcher(tmp_adjorf_faa, add_to_name='adj_orf')
-        # parsing result and store it in obj.Orf.hmm_orf
-        hmm_orfs = adjOrf_HMM(table_hmm)
-        logging.info(f'{len(hmm_orfs)} have TA domains')
-        # taking into account the domain in the possible start of the ORF
-        # give gene number to hmm orf that fit with genes from gff file
-        adjust_orf_attribut(hmm_orfs, highestGeneNumber)
-
-        # Adding adjOrf to list of TA gene and finding with who there are adjacent
-        hmm_orf_get_adj(hmm_orfs, genes)
-
-    return hmm_orfs
+    return ta_orfs
 
 
 def hmm_orf_get_adj(hmm_orfs, genes):
@@ -111,7 +117,7 @@ def add_post_pre_attr(strand, g_post, g_prev):
         g_prev.prev.append(g_post)
 
 
-def adjust_orf_attribut(orfs, highestGeneNumber):
+def adjust_orf_attribut(orfs, gene_index):
     """
     Adjust possible start to domain.
 
@@ -130,8 +136,8 @@ def adjust_orf_attribut(orfs, highestGeneNumber):
 
         orf.post = []
         orf.prev = []
-        highestGeneNumber += 1
-        orf.gene_number = highestGeneNumber
+        gene_index += 1
+        orf.gene_number = gene_index
 
 
 def codon_finder(liste, seq, frame=1, inf=0, sup='Not defined'):
@@ -157,16 +163,17 @@ def codon_finder(liste, seq, frame=1, inf=0, sup='Not defined'):
             position.append(i)
     return position
 
-def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
+def get_adjacent_orfs_by_strand(orfs, strand, lonelyGenes, gff_ends):
     """
     Manage ORF.
 
     Lonely gene are a list of lonely gene from the same strand
     check to see if orf is a predicted gene.
     """
-    for orf in generator:
-        if orf.real_end() in gffEnds[strand]:
-            gffEnds[strand].remove(orf.real_end())
+    adj_orfs = []
+    for orf in orfs:
+        if orf.real_end() in gff_ends[strand]:
+            gff_ends[strand].remove(orf.real_end())
             continue
         # EDIT now orfinder size max and min correctly...
         orf.distanceMin = obj.Gene.distanceMin - (orf.possible_start[-1] - orf.possible_start[0])
@@ -178,55 +185,57 @@ def orf_manager(generator, strand, lonelyGenes, gffEnds, fl):
             orf.distanceMin = -len(orf) + 1  # if so distance min is len -1
 
         if orf.is_adj(lonelyGenes):
-            obj.Orf.adj_orf_index += 1
-            obj.Orf.adj_orf[obj.Orf.adj_orf_index] = orf
-            orf.write_faa(fl, index=obj.Orf.adj_orf_index)  # write the file to tmp faa file
+            # obj.Orf.adj_orf_index += 1
+            # adj_orf_index += 1
+            # obj.Orf.adj_orf[adj_orf_index] = orf
+            adj_orfs.append(orf)
 
-    if gffEnds[strand]:
+    if gff_ends[strand]:
         logging.warning(orf.scaffold)
         logging.warning(strand)
         logging.warning(f"len du saffold {len(orf.seq['data'])}")
         logging.warning("THERE ARE SOME PEDICTED GENE THAt DIDNT FOUND THEIR ORF :-(")
 
         with open(obj.Gene.outdir + '/Predicted_not_found.err', 'a') as fl:
-            fl.write("scaffold " + orf.scaffold + ' strand :' + strand + '\n' + str(gffEnds[strand]))
-            for g in gffEnds[strand]:
+            fl.write("scaffold " + orf.scaffold + ' strand :' + strand + '\n' + str(gff_ends[strand]))
+            for g in gff_ends[strand]:
                 fl.write(str(g) + '\n')
+    return adj_orfs
 
-
-def adjOrf_HMM(table_hmm):
+def adjOrf_HMM(table_hmm, adj_orf_dict):
     """Do something."""
     hmm_orfs = []
     with open(table_hmm, 'r') as fl:
         for line in fl:
-            if line[0] != "#":
-                gene_number, domain = fct.hmmtable_parser(line)
-                hmm_orf = obj.Orf.adj_orf[gene_number]
-                # hmm_orf.gene_number = obj.Gene.highestGeneNumber
+            if line.startswith("#"):
+                continue
+            gene_number, domain = fct.hmmtable_parser(line)
+            hmm_orf = adj_orf_dict[gene_number]
+            # hmm_orf.gene_number = obj.Gene.highestGeneNumber
 
-                try:
-                    hmm_orf.domain.append(domain)
-                    hmm_orf.domain_Ct_border = max(hmm_orf.domain_Ct_border, domain.ali_from * 3)
-                except AttributeError:
-                    hmm_orf.domain_Ct_border = domain.ali_from * 3
-                    hmm_orf.domain = [domain]
+            try:
+                hmm_orf.domain.append(domain)
+                hmm_orf.domain_Ct_border = max(hmm_orf.domain_Ct_border, domain.ali_from * 3)
+            except AttributeError:
+                hmm_orf.domain_Ct_border = domain.ali_from * 3
+                hmm_orf.domain = [domain]
 
-                    # obj.Orf.hmm_orf.setdefault(hmm_orf.strand, []).append(hmm_orf)
-                    hmm_orfs.append(hmm_orf)
+                # obj.Orf.hmm_orf.setdefault(hmm_orf.strand, []).append(hmm_orf)
+                hmm_orfs.append(hmm_orf)
     return hmm_orfs
 
-def get_gff_ends(dico_gff, scaffold):
+def get_gff_ends(gff_dict, scaffold):
     """
     Get gff ends.
 
-    dico_gff is composed of the line and the fl of the gff file
+    gff_dict is composed of the line and the fl of the gff file
     Work in the same way as get_fast_fasta
     Yield the gff stop according the frame
-    Then return a dictionary composed of the generator by frame
+    Then return a dictionary composed of the orfs by frame
     """
     gff_ends = {'+': [], '-': []}
-    line = dico_gff["line"]
-    fl = dico_gff["csv"]
+    line = gff_dict["line"]
+    fl = gff_dict["csv"]
     while line and line[0] != scaffold:
         line = next(fl)
 
@@ -251,7 +260,7 @@ def get_gff_ends(dico_gff, scaffold):
         except StopIteration:
             break
 
-    dico_gff["line"] = line
+    gff_dict["line"] = line
     return gff_ends, highestGeneNumber
 
 
@@ -293,7 +302,7 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
         seq : sequence where the orf will be determine
         frame : give the frame of the search
         threshold : the minimum size of orf
-        dico_orf: store start and stop codon of the geneic code 11
+        orf_dict: store start and stop codon of the geneic code 11
         rev : 1 or -1 to know if the sequence has been completed reverted in order to fill correctly the frame.
         EDIT: reverse info is stored in seq dictionary
 

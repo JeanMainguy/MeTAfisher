@@ -24,8 +24,8 @@ def HMM_launcher(faa_file, add_to_name=''):
     hmm_db = obj.Gene.hmmdb
     table_hmm = obj.Gene.outdir + '/output_HMM_table_' + add_to_name + '.txt'
 
-    bash_commande = "hmmsearch -E 0.5 --domtblout {} {} {} > /dev/null".format(
-        table_hmm, hmm_db, faa_file)
+    # bash_commande = f"hmmsearch -E 0.5 --domtblout {table_hmm} {hmm_db} {faa_file} > /dev/null"
+    bash_commande = f"hmmsearch --domtblout {table_hmm} {hmm_db} {faa_file} > /dev/null"
 
     call(bash_commande, shell=True)
 
@@ -66,83 +66,77 @@ def get_hmm_genes(contig, table_hmm, gff_file):
     Info of the gff line are parsed and info about domain form hmm are also parsed.
     """
     genes = []
-    genes_by_strand = {'+': [], '-': []}
-
 
     # attribut of the classe gene like every objet (orf and TA_gene) will have this attribut, then no need to give it that each time
     obj.Gene.scaffold = contig
     domains_dict = {}  # keys : gene numbers, value: liste of the domain objet !!
-    fl = open(table_hmm, 'r')
-    for line in fl:
-        if line[:len(contig)] == contig:
-            #  domain is an OBJECT of class Domain. It gather info about the domain found.
-            gene_number, domain = hmmtable_parser(line)
+    with open(table_hmm) as fl:
+        for line in fl:
+            if line[:len(contig)] == contig:
+                #  domain is an OBJECT of class Domain. It gather info about the domain found.
+                gene_number, domain = hmmtable_parser(line)
 
-            domains_dict.setdefault(gene_number, []).append(domain)
-    fl.close()
-
+                domains_dict.setdefault(gene_number, []).append(domain)
+    gff_headers = ("seqname", "_3", "feature", "start", "end", "_2", "strand", "_1","attribute")
     with open(gff_file, 'r') as gff_fl:
-        gff_tsv_reader = csv.reader(gff_fl, delimiter='\t')
+        gff_tsv_dict_reader = csv.DictReader(gff_fl, delimiter='\t', fieldnames=gff_headers)
 
-        for gene_number in sorted(domains_dict):
-            """
-            Search the gene info of the gene in the gff file
-            gene_number is the keys of domains dict and then take the value all the gene number with a hmm hit
-            """
+        for line_dict in gff_tsv_dict_reader:
+            if line_dict["feature"] not in ['CDS', 'ORF', 'gene'] or line_dict["seqname"] != contig:
+                continue
 
-            gene = get_gff_info(gff_tsv_reader, contig, gene_number)
+            gene_number = int(line_dict['attribute'].split(";")[0].split('|')[1])
 
-            gene.domain = domains_dict[gene_number]
+            if gene_number in domains_dict:
+                gene = build_ta_gene_from_gff_line(line_dict)
+                gene.domain = domains_dict[gene_number]
 
-            gene.domain_Ct_border = max((d.ali_from * 3 for d in domains_dict[gene_number]))
+                gene.domain_Ct_border = max((d.ali_from * 3 for d in domains_dict[gene_number]))
 
-            genes.append(gene)
-            genes_by_strand[gene.strand].append(gene)
-
-    # TO remove
-    obj.TA_gene.genes = genes
-    obj.TA_gene.genes_strand["+"] = genes_by_strand["+"]
-    obj.TA_gene.genes_strand['-'] = genes_by_strand['-']
+                genes.append(gene)
 
     return genes
 
+def build_ta_gene_from_gff_line(gff_line):
+    gene_number = int(gff_line['attribute'].split(";")[0].split('|')[1])
 
-def get_gff_info(gff_handler, contig, gene_number):
-    """
-    gene_number need to come sorted
-    return: the file handler of the gff file
-    """
-    for line in gff_handler:
-        """
-        it is a bit obscure but l is a list. To know the number of the gene we need to access to the last (8)
-        tab delimiter area [8] and then split by ';' then select the first item [0]
-        and split by | to finally get the gene number by selecting item 1.
-        Example of gff line:
-        ICM0007MP0313_1000001	GPMF	CDS	1	1101	.	+	0	ID=ICM0007MP0313_1000001|1;partial=10;s...
-        CP000569.1	Genbank	CDS	2019629	2020228	.	-	0	ID=CP000569.1|1797;Parent=gene1855;Dbx.....
-        """
+    gene = obj.TA_gene()
+    gene.feature = gff_line["feature"]
+    gene.start = int(gff_line['start'])
+    gene.end = int(gff_line['end'])
+    gene.strand = gff_line['strand']
+    gene.gene_number = gene_number
 
-        seqname, _, feature, start, end, _, strand, _,attribute = tuple(line)
+    protein_id_search = re.search('protein_id=([^;\n]+)', gff_line['attribute'])
+    if protein_id_search:
+        gene.protein_id = protein_id_search.group(1)
 
-        if feature not in ['CDS', 'ORF', 'gene'] or seqname != contig:
-            continue
-        number = int(attribute.split(";")[0].split('|')[1])
-
-        if number == gene_number:
-            gene = obj.TA_gene()
-            gene.feature = feature
-            gene.start = int(start)
-            gene.end = int(end)
-            gene.strand = strand
-            gene.gene_number = number
-
-            # s = re.search(ur'protein_id=([^;\n]+)', l[8])
-            protein_id_search = re.search('protein_id=([^;\n]+)', line[8])
-            if protein_id_search:
-                gene.protein_id = protein_id_search.group(1)
-
-            return gene
-
+    return gene
+#
+# def get_gff_info(gff_handler, contig, gene_number):
+#     """
+#     gene_number need to come sorted
+#     return: the file handler of the gff file
+#     """
+#     for line in gff_handler:
+#         """
+#         it is a bit obscure but l is a list. To know the number of the gene we need to access to the last (8)
+#         tab delimiter area [8] and then split by ';' then select the first item [0]
+#         and split by | to finally get the gene number by selecting item 1.
+#         Example of gff line:
+#         ICM0007MP0313_1000001	GPMF	CDS	1	1101	.	+	0	ID=ICM0007MP0313_1000001|1;partial=10;s...
+#         CP000569.1	Genbank	CDS	2019629	2020228	.	-	0	ID=CP000569.1|1797;Parent=gene1855;Dbx.....
+#         """
+#
+#         seqname, _, feature, start, end, _, strand, _,attribute = tuple(line)
+#
+#         if feature not in ['CDS', 'ORF', 'gene'] or seqname != contig:
+#             continue
+#         number = int(attribute.split(";")[0].split('|')[1])
+#
+#         # if number == gene_number:
+#
+#
 
 def hmmtable_parser(line):
     """
@@ -151,11 +145,11 @@ def hmmtable_parser(line):
     pattern = re.compile(r"""
     (?P<scaffold>[^|]+)\|(?P<gene_number>\d{1,4}) #scaffold name and gene_number separated by a |
     \s+-\s+
-    (?P<gene_len>\d+) #length of the gene sequence in residu
+    (?P<gene_len>\d+) # length of the gene sequence in residu
     \s+
-    (?P<domain>[\w.\(\)_+-]+) #domain name
+    (?P<domain>[\w.\(\)_+-]+) # domain name
     \s+
-    (?P<domain_acc>[\w.+-]+) #domain acc pour pfam
+    (?P<domain_acc>[\w.+-]+) # domain acc pour pfam
     \s+\d+\s+
     (?P<evalue>[\w.-]+) # E-value of the overall sequence/profile comparison (including all domains).
     \s+
@@ -197,7 +191,7 @@ def hmmtable_parser(line):
 
 def get_start_po(fna_seq_dict, genes):
     """
-    Process the search of start position over the liste of gene.
+    Process the search of start position over the list of genes.
     """
 
     non_valides = []
@@ -231,12 +225,8 @@ def get_start_po(fna_seq_dict, genes):
 
         gene.possible_start = start_po
 
-    # ATTENTION need to discard the gene in the main liste and also in minus and plus
     for gene in non_valides:
         genes.remove(gene)
-
-        # obj.TA_gene.genes.remove(gene)
-        # obj.TA_gene.genes_strand[gene.strand].remove(gene)
 
 
 def get_contig_from_hmmsearch_result(table_hmm):
@@ -306,22 +296,6 @@ def adj_by_strand(genes):
                 # add the gene because it has a link in the set linked of class TA_gene
                 linked_genes.add(gpost)
     return linked_genes
-
-def only_lonely_gene():
-    """
-    Sine Round1 and Round2 are merged in a single run this fct is hasbeen
-    Function only useful in round1 when we focus only on rescuing lonely gene
-    Make space by deleting all the obj that are grouped
-    Normally at the end genes_minus and genes_plus lists contain only lonely gene.
-
-    """
-    for link_gene in obj.TA_gene.linked:
-        obj.TA_gene.genes.remove(link_gene)
-        try:
-            obj.TA_gene.genes_strand['+'].remove(link_gene)
-        except ValueError:
-            obj.TA_gene.genes_strand['-'].remove(link_gene)
-    obj.TA_gene.linked.clear()
 
 def check_size(genes):
     """

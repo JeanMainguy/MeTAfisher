@@ -278,16 +278,15 @@ def main():
         logging.info(f"Analysing {contig}")
 
         # Reset obj.TA_gene and Orf class attribut
-        obj.TA_gene.genes = []
-        obj.TA_gene.genes_strand = {'+': [], '-': []}
-        obj.TA_gene.linked = set()
-        obj.TA_gene.lonely = None
-        obj.Orf.adj_orf = {}
-        obj.Orf.adj_orf_index = 0
-        obj.Orf.hmm_orf = {}
+        # obj.TA_gene.genes = []
+        # obj.TA_gene.genes_strand = {'+': [], '-': []}
+        # obj.TA_gene.linked = set()
+        # obj.TA_gene.lonely = None
+        # obj.Orf.adj_orf = {}
+        # obj.Orf.adj_orf_index = 0
+        # obj.Orf.hmm_orf = {}
 
         genes = fct.get_hmm_genes(contig, table_hmm, gff_file)
-
         if resize:
             fct.get_start_po(fna_seq_dict, genes)  # resize and calculate start position
         else:
@@ -295,25 +294,26 @@ def main():
             fct.check_size(genes)
 
         # STEP : GENE PAIR ORGANISATION CHECKING
-        linked_genes = fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
+        fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
 
         # lonely_genes = list(fct.get_lonely_genes(genes, linked_genes))
 
-        initial_nb_lonely = len(genes) - len(linked_genes)
+        initial_nb_lonely = len(genes) - len(list(fct.get_linked_genes(genes)))
 
         # assert len(lonely_genes) == initial_nb_lonely
 
         if initial_nb_lonely and rescue:
-            orfs = orf.rescue_lonely_genes(orf_dict, gff_dict, contig, tmp_adj_orf_faa, genes)
-            linked_genes = list(fct.get_linked_genes(genes))
+            adj_orfs = orf.get_adjacent_orfs(orf_dict, gff_dict, contig, genes)
+            ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, tmp_adj_orf_faa)
         else:
-            orfs = []
+            ta_orfs = []
+            adj_orfs = []
 
-        score.score_TA_list(linked_genes, bonus_start)
-
+        score.score_TA_list(genes, bonus_start)
+        linked_genes = list(fct.get_linked_genes(genes))
         # Write stat
         if info_contig_stat:
-            out.contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, linked_genes, orfs)
+            out.contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs)
 
         # write output
         # If there is some gene linked meaning if tere is TA system

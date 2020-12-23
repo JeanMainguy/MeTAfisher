@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
 import re
-# import find_orf as orf
-import Orf_MetaF as orf2
+import Orf_MetaF as orf
 from math import log
-import Function_MetaF as fct2
+import Function_MetaF as fct
 
 
 class Gene:
-    # Mettre des stats.. ici en mémoire qui enregistre tout
-    # Nb de gene avec un hit de HMM
-    # nb d'orf donné à
-    #  Class attribut
 
     # Metafisher Parameters :
     # --> treshold size of gene
@@ -21,9 +16,8 @@ class Gene:
     distanceMax = None  # 300
 
     # Allowance of integrity loss of domain (5%) arbitrary number
-    allowance = 0.05  # IS not USE anyway...
+    allowance = 0.05
     scaffold = None  # contig name
-    highestGeneNumber = 0
     metaG_stat = {}
     domain_dict = {}
 
@@ -103,13 +97,14 @@ class Gene:
 
 
 class TA_gene(Gene):
-    genes = []
-    genes_strand = {'+': [], '-': []}
-    linked = set()
-    lonely = None  # {'+': [], '-': []}
+    # genes = []
+    # genes_strand = {'+': [], '-': []}
+    # linked = set()
+    # lonely = None  # {'+': [], '-': []}
+    # counter = 0
 
     def __init__(self):
-
+        # TA_gene.counter += 1
         # info of the gff line
         self.gene_number = None
         self.feature = None
@@ -127,7 +122,7 @@ class TA_gene(Gene):
         self.post = []
         self.prev = []
         # N'est pas hyper utile pour le moment....
-        self.statue = None  # statue dit si le gene valide ou non.. il est pas valide dans le cas ou le resize ne marche pas
+        self.statue = None
         # score:
         self.dict_score = {}
 
@@ -161,7 +156,7 @@ class TA_gene(Gene):
         # we have to build this because of fast_fasta function
         scaffold_gnb = self.scaffold + '|' + str(self.gene_number)
         # use of get fast fasta as before.
-        seq, dico[line_name] = fct2.get_fast_fasta(dico[fl_name], dico[line_name], scaffold_gnb)
+        seq, dico[line_name] = fct.get_fast_fasta(dico[fl_name], dico[line_name], scaffold_gnb)
         # print seq['description']
         # print seq["data"]
         """Setting min and max parameter : where to start and end the start dectection
@@ -188,7 +183,7 @@ class TA_gene(Gene):
         # print self.gene_number, 'a une sequence de', len(seq['data']), 'sup and inf', sup, inf
 
         # give evry start position of the sequence
-        start_po = orf2.codon_finder(start_codon, seq["data"][inf:sup + 1])
+        start_po = orf.codon_finder(start_codon, seq["data"][inf:sup + 1])
 
         if inf == 0 and (len(start_po) == 0 or start_po[0] != 0):
             start_po.insert(0, 0)
@@ -199,37 +194,30 @@ class TA_gene(Gene):
 class Orf(Gene):
     # dict with seq, header of the fasta
     seq = {'data': 'ADCBD'}  # scaffold name
-    adj_orf = {}
-    adj_orf_index = 0
-    hmm_orf = {}
+    # adj_orf = {}
+    # adj_orf_index = 0
+    # hmm_orf = {}
 
     def __init__(self, frame, possible_start_orf, end_orf, complet=True, border=False):
         """
         end_orf and possible_start_orf in the context of the orf
         meaning position on the personal strand of the gene and the sequence start with 0
         """
-        # print "possible_start OF ORF", possible_start_orf
         # possible start in the context of the orf
         self.end_orf = end_orf
         self.start_orf = possible_start_orf[0]  # should be start
         self.frame = frame
         self.possible_start_orf = possible_start_orf
         self.possible_start = [s - self.start_orf for s in possible_start_orf]
-        # print 'self.possible_start_orf ', self.possible_start_orf
-        # print 'self.possible_start ', self.possible_start
+        # self.id = str(end_orf) if self.frame > 0 else f'-{end_orf}'
         # Conversion to get start and stop found with official orf finder
         # and to match with predicted gene
         if self.frame < 0:
             len_contig = len(Orf.seq['data'])
-            # self.possible_start = [len_contig - x for x in possible_start_orf]
-
             self.start = len_contig - end_orf  # ncbi start
-
             self.end = len_contig - possible_start_orf[0]  # ncbi_end
             self.strand = '-'
-            # self.gff_start = self.ncbi_end # USE real start instead
         else:
-            # self.possible_start = [x + 1 for x in possible_start_orf]
             self.end = end_orf + 1
             self.start = possible_start_orf[0] + 1
             self.strand = '+'
@@ -257,7 +245,7 @@ class Orf(Gene):
         # print 'IN write FAA'
         if (Orf.seq["rev"] is not True and self.strand == '-') or (Orf.seq["rev"] is True and self.strand == '+'):
             # print 'Need to be reverse comp... seq is rev?', Orf.seq["rev"], ' strand :', self.strand
-            Orf.seq = orf2.complement_reverse(Orf.seq)
+            Orf.seq = orf.complement_reverse(Orf.seq)
             # print 'Need to be reverse comp... seq is rev?', Orf.seq["rev"], ' strand :', self.strand
         # print 'seq is rev? ', Orf.seq["rev"], 'self is ', self.strand
         fl.write('>{}|{}\n'.format(self.scaffold, index))
@@ -268,7 +256,7 @@ class Orf(Gene):
 
     def protein(self):
         seq = {'data': self.data_nt()[3:]}
-        return 'M' + orf2.translate(seq)['data']  # ATTENTION every prot seq start with a M...
+        return 'M' + orf.translate(seq)['data']  # ATTENTION every prot seq start with a M...
 
 
 class Domain:

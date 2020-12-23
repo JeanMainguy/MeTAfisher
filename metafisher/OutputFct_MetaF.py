@@ -1,6 +1,6 @@
 # coding: utf-8
 import csv
-import Object_MetaF as obj
+import Function_MetaF as fct
 from operator import attrgetter
 import Score_MetaF as score
 
@@ -87,16 +87,16 @@ def stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, compl
     return False, False, False
 
 
-def contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, linked_genes, orfs=[] ):
+def contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs=[] ):
     contig_stat = {}
     contig_stat['contig'] = contig
     contig_stat['gene with TA domain'] = len(genes)
-    contig_stat['linked gene'] = len(linked_genes)
+    contig_stat['linked gene'] = len(list(fct.get_linked_genes(genes)))
     contig_stat['lonely gene'] = contig_stat['gene with TA domain'] - contig_stat['linked gene']
     if rescue:
         contig_stat['lonely gene rescue'] = initial_nb_lonely - contig_stat['lonely gene']
-        contig_stat['adjacent orf'] = obj.Orf.adj_orf_index
-        contig_stat['orf with TA domain'] = len(orfs)
+        contig_stat['adjacent orf'] = len(adj_orfs)
+        contig_stat['orf with TA domain'] = len([gene for gene in genes if gene.feature == 'ORF'])
 
     for k in contig_stat:  # add the value of the row in obj.Gene.metaG_stat to make the total at the end
         total_stat[k] += contig_stat[k]  # contig is not there yet because it is not numerical value
@@ -212,9 +212,9 @@ def write_human_result(g, post, fl, i):
 
 
 def write_line(g, score):
-    npc = 3  # number post coma
-    line = "Gene {}\tfrom {} to {}\t{}aa ({})\tstart {}\t{}".format(
-        g.gene_number, g.real_start(), g.real_end(), int(score[0]["length"] / 3), round(score[0]["len_score"], npc), score[0]["start"], g.feature)
+    line = f"{g.feature} {g.gene_number}\tfrom {g.real_start()} to {g.real_end()}"
+    line += f"\t{int(score[0]['length']/3)}aa ({score[0]['len_score']:.3})"
+    line += f"\tstart {score[0]['start']}"
 
     domain_va = g.valid_domain(score[0]['start'])
     domain_va = write_domain_lines(domain_va)

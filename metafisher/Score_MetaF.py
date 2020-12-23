@@ -45,15 +45,8 @@ def from_file_to_dict(file_name, inf=None, sup=None):
     return dico
 
 
-def score_TA_list(genes_strand, bonus_start):
-    # for strand in genes_strand:
-    #     for gene in genes_strand[strand]:
-    #         for post in gene.post:
-    #             # print 'Gene :\n', gene
-    #             # print 'Gene Post :\n', post
-    #             score_pair(gene, post, bonus_start)  # GIVE THE SCOREEE
-    #             # fct2.write_human_result(g, g_post, fl_hu_res)
-    for gene in genes_strand:
+def score_TA_list(genes, bonus_start):
+    for gene in genes:
         for post in gene.post:
             score_pair(gene, post, bonus_start)  # GIVE THE SCOREEE
 
