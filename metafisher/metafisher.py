@@ -223,11 +223,6 @@ def main():
     # And don't proceess the orf that have the same end position
 
     if rescue:
-        # Open step of the contig file ! used by fast_fasta function in orf file
-        # the file won't be close until the end.Each time the algo won't have to
-        # read the whle file again until the contig needed. We can do that
-        # because the contig list has been sorted
-        # New version use this dictionnary:
         orf_dict = {}
         orf_dict['fl'] = open(genomic_seq_file, 'r')
         orf_dict['line'] = next(orf_dict['fl'])
@@ -281,7 +276,7 @@ def main():
         if resize:
             fct.get_start_po(fna_seq_dict, genes)  # resize and calculate start position
         else:
-            # eliminate te genes that have a length > threshold
+            # eliminate ta genes that have a length > threshold
             fct.check_size(genes)
 
         # STEP : GENE PAIR ORGANISATION CHECKING

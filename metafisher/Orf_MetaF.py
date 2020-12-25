@@ -42,7 +42,7 @@ def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
     contig_seq, orf_dict["line"] = fct.get_fast_fasta(orf_dict['fl'], orf_dict['line'], contig)
     obj.Orf.seq = contig_seq
     # retrieve the end position of the predicted gene to then skip the related ORF:
-    gff_ends, highestGeneNumber = get_gff_ends(gff_dict, contig)
+    gff_ends = get_gff_ends(gff_dict, contig)
 
     # TEST IF THERE ARE LONELY GENE IN STRAND plus
     if lonely_genes_on_strand_plus:
@@ -190,9 +190,6 @@ def get_adjacent_orfs_by_strand(orfs, strand, lonelyGenes, gff_ends):
             orf.distanceMin = -len(orf) + 1  # if so distance min is len -1
 
         if orf.is_adj(lonelyGenes):
-            # obj.Orf.adj_orf_index += 1
-            # adj_orf_index += 1
-            # obj.Orf.adj_orf[adj_orf_index] = orf
             adj_orfs.append(orf)
 
     if gff_ends[strand]:
@@ -201,10 +198,9 @@ def get_adjacent_orfs_by_strand(orfs, strand, lonelyGenes, gff_ends):
         logging.warning(f"len du saffold {len(orf.seq['data'])}")
         logging.warning("THERE ARE SOME PEDICTED GENE THAt DIDNT FOUND THEIR ORF :-(")
 
-        with open(obj.Gene.outdir + '/Predicted_not_found.err', 'a') as fl:
-            fl.write("scaffold " + orf.scaffold + ' strand :' + strand + '\n' + str(gff_ends[strand]))
-            for g in gff_ends[strand]:
-                fl.write(str(g) + '\n')
+        logging.warning("scaffold " + orf.scaffold + ' strand :' + strand + '\n' + str(gff_ends[strand]))
+        for g in gff_ends[strand]:
+            logging.warning(str(g) + '\n')
     return adj_orfs
 
 def adjOrf_HMM(table_hmm, adj_orf_dict):
@@ -216,7 +212,6 @@ def adjOrf_HMM(table_hmm, adj_orf_dict):
                 continue
             gene_number, domain = fct.hmmtable_parser(line)
             hmm_orf = adj_orf_dict[gene_number]
-            # hmm_orf.gene_number = obj.Gene.highestGeneNumber
 
             try:
                 hmm_orf.domain.append(domain)
@@ -254,7 +249,7 @@ def get_gff_ends(gff_dict, scaffold):
             except StopIteration:
                 break
         # this number is used when we write the gff into file to have a number that doesn't overlap with other gene in round2
-        highestGeneNumber = int(line[8].split(";")[0].split('|')[1])
+        # highestGeneNumber = int(line[8].split(";")[0].split('|')[1])
 
         if line[6] == '+':
             gff_ends['+'].append(int(line[4]))
@@ -266,7 +261,7 @@ def get_gff_ends(gff_dict, scaffold):
             break
 
     gff_dict["line"] = line
-    return gff_ends, highestGeneNumber
+    return gff_ends
 
 
 def findORF(scaffold, seq, rev):
