@@ -155,7 +155,7 @@ def main():
     if not os.path.isfile(table_hmm):
         logging.info('Running hmmsearch to identify TA genes.')
 
-        table_hmm = fct.HMM_launcher(faa_file, metaG_name)
+        table_hmm = fct.HMM_launcher(faa_file, table_hmm)
     else:
         logging.info(f'Hmmresult file {table_hmm} exists already. We use it.')
 
@@ -298,8 +298,6 @@ def main():
             out.contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs)
 
         # write output
-        # If there is some gene linked meaning if tere is TA system
-
         if dict_output['is_output']:
             out.write_result(fct.get_linked_genes(genes), dict_output, contig)
 

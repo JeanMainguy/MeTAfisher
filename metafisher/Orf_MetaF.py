@@ -43,7 +43,7 @@ def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
     obj.Orf.seq = contig_seq
     # retrieve the end position of the predicted gene to then skip the related ORF:
     gff_ends = get_gff_ends(gff_dict, contig)
-
+    adj_orfs = []
     # TEST IF THERE ARE LONELY GENE IN STRAND plus
     if lonely_genes_on_strand_plus:
         orf_generator = findORF(contig, contig_seq, rev=1)
@@ -52,7 +52,7 @@ def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
         # If so then the faa ORF file is written...
         # orf manager will do everything !!
 
-        adj_orfs = get_adjacent_orfs_by_strand(orf_generator, '+', genes_plus, gff_ends)
+        adj_orfs += get_adjacent_orfs_by_strand(orf_generator, '+', genes_plus, gff_ends)
     # TEST IF THERE ARE LONELY GENES IN STRAND minus
     if lonely_genes_on_strand_minus:
         orf_generator = findORF(contig, contig_seq, rev=-1)
