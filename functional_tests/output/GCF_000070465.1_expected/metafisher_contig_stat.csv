@@ -4,5 +4,5 @@
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 30aa to 1500aa
 contig	gene with TA domain	lonely gene	linked gene
-CP000527.1	66	54	12
-CP000527.1	66	54	12
+NC_010645.1	102	90	12
+NC_010645.1	102	90	12
