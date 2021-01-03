@@ -1,16 +1,14 @@
-functional_tests/#!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # Run a command and check that the output is
-# exactly equal the contents of a specified file
-# ARG1: command we want to test as a string
-# ARG2: a file path containing the expected output
-# ARG3: expected exit status
+# exactly equal the contents of expected files
 function compare_result_dir {
 
     exit_status=$?
     output_dir=$2
     expected_output_dir=$3
     expected_exit_status=$4
+    mkdir $output_dir
     rm $output_dir/metafisher_*
     echo $1
     eval $1
@@ -32,7 +30,7 @@ function compare_result_dir {
         if [ -n "$difference" ]; then
             let num_errors+=1
             echo "Test output failed: $output vs $expected_output_file"
-            echo "diff  $expected_output_file $output"
+            echo "diff  $expected_output_file $output -u"
             # echo "Actual output:"
             # head "$output"
             # expected_output=$(cat $expected_output_file)
@@ -63,18 +61,20 @@ num_errors=0
 # Total number of tests run
 num_tests=0
 
-expected_result='functional_tests/output/Desulfovibrio_vulgaris_DP4_expected'
-data_dir='data_test/Desulfovibrio_vulgaris_DP4/'
+genome_tested="GCF_000070465.1"
+data_dir="data_test/${genome_tested}/"
 
-generic_outdir='functional_tests/output/fresh_output_Desulfovibrio_vulgaris_DP4'
+expected_result="functional_tests/output/${genome_tested}_expected"
+
+generic_outdir="functional_tests/output/fresh_output_${genome_tested}"
 
 echo "regular execution test"
 outdir=$generic_outdir
 expdir=$expected_result
 
 cmd="./metafisher/metafisher.py \
---gff $data_dir/sequence.gff \
---faa $data_dir/sequence.faa \
+--gff $data_dir/GCF_000070465.1_ASM7046v1_genomic.gff.gz \
+--faa $data_dir/GCF_000070465.1_ASM7046v1_protein.faa.gz \
 -o $outdir --name metafisher -v \
  > ${outdir}/cmd.out"
 
@@ -87,13 +87,13 @@ outdir=${generic_outdir}_resize
 expdir=${expected_result}_resize
 
 cmd="./metafisher/metafisher.py \
---gff $data_dir/sequence.gff \
---faa $data_dir/sequence.faa \
+--gff $data_dir/GCF_000070465.1_ASM7046v1_genomic.gff.gz \
+--faa $data_dir/GCF_000070465.1_ASM7046v1_protein.faa.gz \
 -o $outdir --name metafisher \
---resize --fna $data_dir/sequence.fna \
+--resize --fna $data_dir/GCF_000070465.1_ASM7046v1_rna_from_genomic.fna.gz \
  > ${outdir}/cmd.out"
 
-compare_result_dir "$cmd" $outdir $expdir 0
+# compare_result_dir "$cmd" $outdir $expdir 0
 
 
 echo "exit status test"
@@ -106,13 +106,13 @@ outdir=${generic_outdir}_rescue
 expdir=${expected_result}_rescue
 
 cmd="./metafisher/metafisher.py \
---gff $data_dir/sequence.gff \
---faa $data_dir/sequence.faa \
+--gff $data_dir/GCF_000070465.1_ASM7046v1_genomic.gff.gz \
+--faa $data_dir/GCF_000070465.1_ASM7046v1_protein.faa.gz \
 -o $outdir --name metafisher -v \
---rescue --genomic_seq $data_dir/sequence.fasta \
+--rescue --genomic_seq $data_dir/GCF_000070465.1_ASM7046v1_genomic.fna.gz \
  > ${outdir}/cmd.out"
 
-compare_result_dir "$cmd" $outdir $expdir 0
+# compare_result_dir "$cmd" $outdir $expdir 0
 
 # 3. End of testing - check if any errors occurrred
 if [ "$num_errors" -gt 0 ]; then

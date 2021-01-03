@@ -45,10 +45,10 @@ def from_file_to_dict(file_name, inf=None, sup=None):
     return dico
 
 
-def score_TA_list(genes):
+def score_TA_list(genes, score_dict):
     for gene in genes:
         for post in gene.post:
-            score_pair(gene, post)  # GIVE THE SCOREEE
+            score_pair(gene, post, score_dict)  # GIVE THE SCOREEE
 
 
 def conflaction_proba(proba1, proba2):
@@ -70,7 +70,7 @@ def confl(*proba):
     return conflation
 
 
-def domain_association_perct(do1, do2, association, domain_types):
+def domain_association_prct(do1, do2, association, domain_types):
     try:
         number_of_association = float(association[do1][do2])
     except KeyError:
@@ -94,13 +94,13 @@ def score_do_association(post, pre, dict_domain_association, dict_domain_gene_ty
     for pre_do in pre.domain:
 
         for post_do in post.domain:
-            perct_asso = domain_association_perct(
+            perct_asso = domain_association_prct(
                 pre_do.domain_name, post_do.domain_name, dict_domain_association, dict_domain_gene_type)
             asso.append(perct_asso)
     return max(asso)
 
 
-def score_pair(pre, post):  # post is a gene located upstream of pre !
+def score_pair(pre, post, score_dict):  # post is a gene located upstream of pre !
     """
     Give the score of the pair
     return False if not possible to pair them
@@ -116,11 +116,13 @@ def score_pair(pre, post):  # post is a gene located upstream of pre !
     compatible_starts = [s for s in post.possible_start if
                          obj.Gene.distanceMin < initial_dist + s < obj.Gene.distanceMax]
 
-    score_post = get_score(post, compatible_starts, distance=initial_dist)
-    score = get_score(pre, pre.possible_start)
+    score_post = get_score(post, compatible_starts, distance=initial_dist,
+                    length_proba=score_dict['length_proba'], distance_proba=score_dict['distance_proba'])
+    score = get_score(pre, pre.possible_start,
+                    length_proba=score_dict['length_proba'], distance_proba=score_dict['distance_proba'])
 
-    score_do_asso = score_do_association(post, pre, obj.Gene.dict_domain_association,
-                                         obj.Gene.dict_domain_gene_type)
+    score_do_asso = score_do_association(post, pre, score_dict['domain_association'],
+                                         score_dict['domain_gene_type'])
 
     for s in score_post:  # don't manage alternative start.. !!
         s['domain_association_score'] = score_do_asso
@@ -130,7 +132,7 @@ def score_pair(pre, post):  # post is a gene located upstream of pre !
     post.dict_score[pre.gene_number] = score_post
 
 
-def get_score(gene, starts, distance=None):
+def get_score(gene, starts, length_proba, distance_proba, distance=None):
     """
     Return a double dico with first start as a key and another dico
     with score of domain and length and when pre_end isn't Noneth distance score
@@ -153,13 +155,13 @@ def get_score(gene, starts, distance=None):
         length = len(gene) - start
         assert length % 3 == 0
 
-        proba_len = obj.Gene.length_proba[int(length / 3)]
+        proba_len = length_proba[int(length / 3)]
 
 
         dico_score = {"start": start, "domain": d.score, "len_score": proba_len,
                       'length': length, "score": proba_len}  # Ajout de distance:None? ? ?
         if distance is not None:
-            dico_score['dist_score'] = obj.Gene.distance_proba[distance + start]
+            dico_score['dist_score'] = distance_proba[distance + start]
             dico_score['distance'] = distance + start
             dico_score['score'] = conflaction_proba(dico_score['dist_score'], proba_len)
 

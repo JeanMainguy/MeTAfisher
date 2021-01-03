@@ -18,27 +18,37 @@ from subprocess import call
 from operator import attrgetter
 import os
 import logging
-
+from collections import defaultdict, namedtuple
+import gzip
 
 def HMM_launcher(faa_file, outfile):
     hmm_db = obj.Gene.hmmdb
-    bash_commande = f"hmmsearch -E 0.5 --domtblout {outfile} {hmm_db} {faa_file} > /dev/null"
-    # bash_commande = f"hmmsearch --domtblout {table_hmm} {hmm_db} {faa_file} > /dev/null"
 
-    call(bash_commande, shell=True)
+    if faa_file.endswith('.gz'):
+        logging.info(f'Protein sequence file {faa_file} ends with gz. It will be unzipped first to be used in hmmsearch.')
+        zipped_faa_file = faa_file
+        faa_file = os.path.join(os.path.dirname(outfile), os.path.basename(faa_file)[:-3])
+        zcat_command =  f"zcat {zipped_faa_file} > {faa_file}"
+        exit_code = os.system(zcat_command)
+        if exit_code != 0:
+            raise ValueError(f"Unzipping protein file has failed. command:'{zcat_command}'  exit_code:{exit_code} ")
 
+    hmmsearch_command = f"hmmsearch -E 0.5 --domtblout {outfile} {hmm_db} {faa_file} > /dev/null"
+    logging.info(f"Hmmsearch command: {hmmsearch_command}")
+    exit_code = os.system(hmmsearch_command)
+    if exit_code != 0:
+        raise ValueError(f"Hmmsearch has failed. exit_code={exit_code} ")
+    # call(hmmsearch_command, shell=True)
     if not os.path.isfile(outfile):
-        logging.warning(f'bash command failed: {bash_commande}')
+        # logging.warning(f'hmmsearch has failed.')
         raise FileNotFoundError(f'hmmsearch command failed to create the file {outfile}')
 
     return outfile
 
 
 def get_fast_fasta(fl, line, scaffold):
-    # line est la dernière ligne lu dans le fichier et doit correspondre à un entête >
-    # la liste de scaffold est trié donc normalement y'a pas de problem.. Et les scaffold cherché devrait être dans le bonne ordre
     seq = {'description': scaffold, 'data': '', 'rev': False}
-    # print scaffold + '=' + line[:len(scaffold) + 1]
+
     while line and line[:len(scaffold) + 1] != '>' + scaffold:
         line = next(fl)
     for line in fl:
@@ -52,17 +62,47 @@ def get_fast_fasta(fl, line, scaffold):
         print("seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence {}".format(scaffold))
 
 
-def get_hmm_genes(contig, table_hmm, gff_file):
-    """
-    Take all gene in table hmm and build an object off class ListGene() with them.
-    contig = contig name
-    table_hmm = file name
-    gff_lines = list of gff line of the contig
+def get_ta_genes_from_hmmsearch(hmm_result):
 
-    OUTPUT:
-    genes : objet class ListGenes. Contain every gene of the given contig that are in table hmm.
-    Info of the gff line are parsed and info about domain form hmm are also parsed.
-    """
+    domtblout_headers = ("target_name", "target_accession",
+                        "tlen", "query_name", "query_accession",
+                        "qlen", "seq_e_value", "seq_score", "seq_bias",
+                        "domain_count", "domain_of", "domain_c_Evalue", "domain_i_Evalue",
+                        "domain_score", "domain_bias", "hmm_coord_from", "hmm_coord_to",
+                        "ali_coord_from", "ali_coord_to", "env_coord_from",
+                        "env_coord_to", "acc", "description_of_target")
+
+    HmmLineParser = namedtuple('HmmLineParser', domtblout_headers)
+
+    gene_to_hits = defaultdict(list)  # keys : gene numbers, value: liste of the domain objet !!
+    with open(hmm_result) as fl:
+        for line in fl:
+            if line.startswith('#'):
+                continue
+
+            hmmhit = HmmLineParser._make(line.split()[:23])
+
+            gene_id = hmmhit.target_name
+
+            domain = obj.Domain(
+                domain_number=hmmhit.domain_count,
+                ali_from=hmmhit.ali_coord_from,
+                ali_to=hmmhit.ali_coord_to,
+                env_from=hmmhit.env_coord_from,
+                env_to=hmmhit.env_coord_to,
+                domain_name=hmmhit.query_name,
+                domain_acc=hmmhit.query_accession,
+                e_value=hmmhit.seq_e_value,
+                score=hmmhit.seq_score,
+                line=line)
+
+            gene_to_hits[gene_id].append(domain)
+
+    return gene_to_hits
+
+
+def get_hmm_genes(contig, table_hmm, gff_file):
+    """ """
     genes = []
 
     # attribut of the classe gene like every objet (orf and TA_gene) will have this attribut, then no need to give it that each time
@@ -96,45 +136,20 @@ def get_hmm_genes(contig, table_hmm, gff_file):
     return genes
 
 def build_ta_gene_from_gff_line(gff_line):
-    gene_number = int(gff_line['attribute'].split(";")[0].split('|')[1])
-
     gene = obj.TA_gene()
+    gene.scaffold = gff_line["seqname"]
     gene.feature = gff_line["feature"]
     gene.start = int(gff_line['start'])
     gene.end = int(gff_line['end'])
     gene.strand = gff_line['strand']
-    gene.gene_number = gene_number
+    # gene.gene_number = cds_number
 
     protein_id_search = re.search('protein_id=([^;\n]+)', gff_line['attribute'])
     if protein_id_search:
         gene.protein_id = protein_id_search.group(1)
 
     return gene
-#
-# def get_gff_info(gff_handler, contig, gene_number):
-#     """
-#     gene_number need to come sorted
-#     return: the file handler of the gff file
-#     """
-#     for line in gff_handler:
-#         """
-#         it is a bit obscure but l is a list. To know the number of the gene we need to access to the last (8)
-#         tab delimiter area [8] and then split by ';' then select the first item [0]
-#         and split by | to finally get the gene number by selecting item 1.
-#         Example of gff line:
-#         ICM0007MP0313_1000001	GPMF	CDS	1	1101	.	+	0	ID=ICM0007MP0313_1000001|1;partial=10;s...
-#         CP000569.1	Genbank	CDS	2019629	2020228	.	-	0	ID=CP000569.1|1797;Parent=gene1855;Dbx.....
-#         """
-#
-#         seqname, _, feature, start, end, _, strand, _,attribute = tuple(line)
-#
-#         if feature not in ['CDS', 'ORF', 'gene'] or seqname != contig:
-#             continue
-#         number = int(attribute.split(";")[0].split('|')[1])
-#
-#         # if number == gene_number:
-#
-#
+
 
 def hmmtable_parser(line):
     """
@@ -171,7 +186,11 @@ def hmmtable_parser(line):
     """, re.VERBOSE)
     """
     regex in one line:
-    (?P<scaffold>[^|]+)\|(?P<gene_number>\d{1,4})\s+-\s+(?P<gene_len>\d+)\s+(?P<domain>[\w.-]+)\s+(?P<domain_acc>[\w.+-]+)\s+\d+\s+(?P<evalue>[\w.-]+)\s+(?P<score>[\d.]+)\s+[\d.]+\s+(?P<domain_number>\d+)\s+(?P<total_domain>\d+)\s+[\w.+-]+\s+([\w.+-]+)\s+[\w.+-]+\s+[\w.+-]+\s+\d+\s+\d+\s+(?P<ali_from>\d+)\s+(?P<ali_to>\d+)\s+(?P<env_from>\d+)\s+(?P<env_to>\d+)\s
+    (?P<scaffold>[^|]+)\|(?P<gene_number>\d{1,4})\s+-\s+(?P<gene_len>\d+)\s
+    +(?P<domain>[\w.-]+)\s+(?P<domain_acc>[\w.+-]+)\s+\d+\s+(?P<evalue>[\w.-]
+    +)\s+(?P<score>[\d.]+)\s+[\d.]+\s+(?P<domain_number>\d+)\s+(?P<total_domain>\d+)\
+    s+[\w.+-]+\s+([\w.+-]+)\s+[\w.+-]+\s+[\w.+-]+\s+\d+\s+\d+\s+(?P<ali_from>\d+)\s+(?P
+    <ali_to>\d+)\s+(?P<env_from>\d+)\s+(?P<env_to>\d+)\s
 
     link : https://regex101.com/r/kKHzsB/2
     """
@@ -181,8 +200,10 @@ def hmmtable_parser(line):
         raise Exception(
             'The parser of HMM table has failed... you may check the HMM table output ---> hmmtable line with a problem', line)
     domain = obj.Domain(
-        domain_number=result.group("domain_number"), ali_from=result.group("ali_from"), ali_to=result.group("ali_to"), env_from=result.group("env_from"),
-        env_to=result.group("env_to"), domain_name=result.group("domain"), domain_acc=result.group("domain_acc"), e_value=result.group("evalue"), score=result.group("score"), line=line)
+        domain_number=result.group("domain_number"),
+        ali_from=result.group("ali_from"), ali_to=result.group("ali_to"), env_from=result.group("env_from"),
+        env_to=result.group("env_to"), domain_name=result.group("domain"),
+        domain_acc=result.group("domain_acc"), e_value=result.group("evalue"), score=result.group("score"), line=line)
     gene_number = int(result.group("gene_number"))
     return gene_number, domain
 
@@ -278,7 +299,6 @@ def adj_by_strand(genes):
                 Then the two gene won't be in pair and the next postgene either because they are sorted by their start
                 So we can break the gpost for loop and check the next gene
                 """
-                # print 'distance between gene number {} .end and gpost {}.end is superior to lenmax + distmax'.format(gene.gene_number, gpost.gene_number)
                 break
             # it is a simple test that ckeck if the two gene are adjacent
             if gene.is_pre_adj_to(gpost):
@@ -333,3 +353,57 @@ def delete_files(listeFiles):
             os.remove(outfile)
         except OSError as e:  # if failed, report it back to the user ##
             print(f"Error: {e.filename} - {e.strerror}.")
+
+def annotate_domains(gene_to_domains, info_domains, dict_domain_gene_type):
+    for domains in gene_to_domains.values():
+        for domain in domains:
+            domain.annotate_domain(info_domains, dict_domain_gene_type)
+
+
+def get_genes_by_contigs(gene_to_domains, gff_file):
+    genes = []
+    current_seqname = ""
+    gene_count_by_contig = 0
+    gff_headers = ("seqname", "_3", "feature", "start", "end", "_2", "strand", "_1", "attribute")
+    gene_id_pattern = re.compile('ID=([^;\n]+)')
+    protein_id_pattern = re.compile('protein_id=([^;\n]+)')
+
+    proper_open = gzip.open if gff_file.endswith('.gz') else open
+
+    with proper_open(gff_file, 'rt') as gff_fl:
+        gff_tsv_dict_reader = csv.DictReader(gff_fl, delimiter='\t', fieldnames=gff_headers)
+
+        for line_dict in gff_tsv_dict_reader:
+
+            if line_dict["seqname"] != current_seqname:
+                gene_count_by_contig = 0
+                if genes:
+                    yield (current_seqname, genes)
+                    genes = []
+                current_seqname = line_dict["seqname"]
+
+
+            if line_dict["feature"] not in ['CDS', 'ORF']:
+                continue
+            gene_count_by_contig += 1
+
+            id_search = protein_id_pattern.search(line_dict['attribute'])
+            if not id_search:
+                id_search = gene_id_pattern.search(line_dict['attribute'])
+
+            try:
+                gene_id = id_search.group(1)
+            except AttributeError as err:
+                logging.critical(f'Attribute of gff line has no protein_id or ID: {line_dict["attribute"]}')
+                raise err
+
+            if gene_id in gene_to_domains:
+                gene = build_ta_gene_from_gff_line(line_dict)
+                gene.gene_number = gene_count_by_contig
+                gene.domain = gene_to_domains[gene_id]
+                gene.domain_Ct_border = max((d.ali_from * 3 for d in gene_to_domains[gene_id]))
+                genes.append(gene)
+
+
+        if  genes:
+            yield (line_dict["seqname"], genes)

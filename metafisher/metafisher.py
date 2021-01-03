@@ -106,7 +106,7 @@ def parse_arguments():
 
 
 def main():
-    """Orchestrate the execution of the program.s"""
+    """Orchestrate the execution of the program"""
     args = parse_arguments()
 
     init_logging(args.verbose)
@@ -151,8 +151,8 @@ def main():
 
     # Storing information as Gene class attribut to be use when we launch hmmsearch
     obj.Gene.hmmdb = HMM_db
-
-    if not os.path.isfile(table_hmm):
+    force = True
+    if not os.path.isfile(table_hmm) or force:
         logging.info('Running hmmsearch to identify TA genes.')
 
         table_hmm = fct.HMM_launcher(faa_file, table_hmm)
@@ -171,14 +171,14 @@ def main():
 
     # CSV FILE DOMAINS
     csv_domain = os.path.join(tadb_stat_dir, 'domaines_METAfisher.csv')
-
+    info_domains = {}
     with open(csv_domain, 'r') as csvdo:
         reader = csv.DictReader(csvdo)
         for row in reader:
-            obj.Gene.domain_dict[row['hmm_name']] = {
+            info_domains[row['hmm_name']] = {
                 k: v for k, v in row.items() if k in ['acc', 'family', 'type']}
 
-    # SETTING THE THRESHOLD :
+    # THRESHOLD :
     # There are the first the thrshold there very large then the proabilty score step is going to define the better conf
     # treshold size of gene
     lenMin = 10 * 3  # VERY IMPORTANT LENGTH HAVE TO BE GIVEN IN AA and then transform in nt
@@ -246,18 +246,65 @@ def main():
 
     # SCORE PREPARaTION
     k = 20
-    # dist_mltp = 7
-    # len_mltp = 7
-    bonus_start = 7  # +7 is given to configuration that start with their initial start and not a start determined by the program
 
-    obj.Gene.length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k)
-    obj.Gene.distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k)
-    obj.Gene.dict_domain_association = score.decoder(file_domain_association)
-    obj.Gene.dict_domain_gene_type = score.decoder(file_domain_gene_type)
+    length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k)
+    distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k)
+    dict_domain_association = score.decoder(file_domain_association)
+    dict_domain_gene_type = score.decoder(file_domain_gene_type)
+
+    score_dict = {"length_proba":length_proba,
+                  "distance_proba":distance_proba,
+                  "domain_association":dict_domain_association,
+                  "domain_gene_type":dict_domain_gene_type}
 
     # Take every contig present in the HMM output and sort them in order to
     # be able to retrieve their sequence correctly in the input file
-    contigs = sorted(fct.get_contig_from_hmmsearch_result(table_hmm))
+    # contigs = sorted(fct.get_contig_from_hmmsearch_result(table_hmm))
+
+
+    gene_to_domains = fct.get_ta_genes_from_hmmsearch(table_hmm)
+
+    fct.annotate_domains(gene_to_domains, info_domains, dict_domain_gene_type)
+
+    contig_to_genes = fct.get_genes_by_contigs(gene_to_domains, gff_file)
+
+    for contig, genes in contig_to_genes:
+        if contig_name and contig != contig_name:
+
+            continue
+
+        print(contig, len(genes))
+        fct.check_size(genes)
+
+        fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
+        initial_nb_lonely = len(genes) - len(list(fct.get_linked_genes(genes)))
+        print('lonely',initial_nb_lonely )
+        ta_orfs = []
+        adj_orfs = []
+
+        score.score_TA_list(genes, score_dict)
+        # Write stat
+        if info_contig_stat:
+            out.contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs)
+            logging.info(total_stat)
+
+        # write output
+        if dict_output['is_output']:
+            out.write_result(fct.get_linked_genes(genes), dict_output, contig)
+
+
+
+    # Total Stat information about the Metagenome
+    if info_contig_stat:
+        writer_stat.writerow(total_stat)
+        fl_stat.close()
+
+    for kfl in dict_output:
+        try:
+            dict_output[kfl].close()
+        except AttributeError:
+            pass
+    return
 
     if contig_name:
         if contig_name in contigs:
@@ -291,7 +338,7 @@ def main():
             ta_orfs = []
             adj_orfs = []
 
-        score.score_TA_list(genes)
+        score.score_TA_list(genes, score_dict)
 
         # Write stat
         if info_contig_stat:

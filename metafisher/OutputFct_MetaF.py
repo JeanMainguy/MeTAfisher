@@ -226,13 +226,13 @@ def write_domain_lines(domains):
     domain_str_list = []
     do_str = ''
     for d in domains:
-        type_tot = sum([n for n in d.dict_info['type_prct'].values()])
+        type_tot = sum([n for n in d.domain_info['type_prct'].values()])
         type_prct_type_list = ['{}:{}%'.format(t, int(round(float(n)*100/type_tot)))
-                               for t, n in d.dict_info['type_prct'].items()]
+                               for t, n in d.domain_info['type_prct'].items()]
         type_prct_type = ' | '.join(sorted(type_prct_type_list))
         # print type_prct_type
-        domain_str_list.append([d.dict_info["acc"],
-                                d.dict_info['family'], type_prct_type])
+        domain_str_list.append([d.domain_info["acc"],
+                                d.domain_info['family'], type_prct_type])
 
     len_max_col0 = max([len(line[0]) for line in domain_str_list])
     len_max_col1 = max([len(line[1]) for line in domain_str_list])

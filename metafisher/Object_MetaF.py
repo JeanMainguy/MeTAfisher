@@ -19,7 +19,6 @@ class Gene:
     allowance = 0.05
     scaffold = None  # contig name
     metaG_stat = {}
-    domain_dict = {}
 
     def __init__(self):
         self.start = None
@@ -275,24 +274,27 @@ class Domain:
         self.score = float(score)
         self.line = line
 
+        self.domain_info = {}
+
+
+    def annotate_domain(self, info_domains, gene_type_domains):
         try:
-            self.dict_info = Gene.domain_dict[self.domain_name]
+            self.domain_info = info_domains[self.domain_name]
         except KeyError:
-            self.dict_info = {"acc": 'NA', 'type': 'NA', 'family': 'NA'}
+            self.domain_info = {"acc": 'NA', 'type': 'NA', 'family': 'NA'}
 
         try:
-            self.dict_info['type_prct'] = Gene.dict_domain_gene_type[self.domain_name]
+            self.domain_info['type_prct'] = gene_type_domains[self.domain_name]
         except KeyError:
-            self.dict_info['type_prct'] = "NA"
+            self.domain_info['type_prct'] = "NA"
 
     def __str__(self):
         # return self.name + '\nfrom %d to %d \n' % (self.ali_from * 3, self.ali_to * 3)
-        return "{}\t{}\t{}".format(self.dict_info["acc"], self.dict_info['type'], self.dict_info['family'])
+        return "{}\t{}\t{}".format(self.domain_info["acc"], self.domain_info['type'], self.domain_info['family'])
 
     def writeGffLike(self):
         try:
-            dico_do = Gene.domain_dict[self.domain_name]
-            return 'domain={};domain_score={};type={};family={}'.format(dico_do['acc'], self.score, dico_do['type'], dico_do['family'])
+            return 'domain={};domain_score={};type={};family={}'.format(self.domain_info['acc'], self.score, self.domain_info['type'], self.domain_info['family'])
         except KeyError:
             return 'domain={};domain_score={};type={};familly={}'.format(self.domain_name, self.score, "domainNotFoundInDB", "domainNotFoundInDB")
 
