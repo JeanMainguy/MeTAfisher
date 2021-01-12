@@ -24,14 +24,12 @@ def output_headinfo_creation(metaG_name, thresholds, rescue, resize):
         complement += '_rescue'
     if resize:
         complement += '_resize'
-        
-    headinfo = '## Name of the sequence analysed: ' + metaG_name
-    headinfo += "\n## Rescue lonely gene : {}\n".format(rescue)
-    headinfo += "## Resize gene : {}\n".format(resize)
-    headinfo += "## Distance threshold from {}nt to {}nt\n".format(
-        thresholds['distanceMin'], thresholds['distanceMax'])
-    headinfo += "## Length threshold from {}aa to {}aa\n".format(
-        thresholds['lenMin'], thresholds['lenMax'])
+
+    headinfo = f'## Name of the sequence analysed: {metaG_name}\n' +
+    headinfo += f"\n## Rescue lonely gene : {rescue}\n"
+    headinfo += f"## Resize gene : {resize}\n"
+    headinfo += f"## Distance threshold from {thresholds['distanceMin']}nt to {thresholds['distanceMax']}nt\n"
+    headinfo += f"## Length threshold from {thresholds['lenMin']/3}aa to {thresholds['lenMax']/3}aa\n"
     return headinfo, complement
 
 
