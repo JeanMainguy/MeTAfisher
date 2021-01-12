@@ -3,7 +3,7 @@ import csv
 import Function_MetaF as fct
 from operator import attrgetter
 import Score_MetaF as score
-
+import os
 
 def output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize):
     headinfo, complement = output_headinfo_creation(metaG_name, thresholds, rescue, resize)
@@ -25,11 +25,11 @@ def output_headinfo_creation(metaG_name, thresholds, rescue, resize):
     if resize:
         complement += '_resize'
 
-    headinfo = f'## Name of the sequence analysed: {metaG_name}\n' +
+    headinfo = f'## Name of the sequence analysed: {metaG_name}\n'
     headinfo += f"\n## Rescue lonely gene : {rescue}\n"
     headinfo += f"## Resize gene : {resize}\n"
     headinfo += f"## Distance threshold from {thresholds['distanceMin']}nt to {thresholds['distanceMax']}nt\n"
-    headinfo += f"## Length threshold from {thresholds['lenMin']/3}aa to {thresholds['lenMax']/3}aa\n"
+    headinfo += f"## Length threshold from {int(thresholds['lenMin']/3)}aa to {int(thresholds['lenMax']/3)}aa\n"
     return headinfo, complement
 
 
@@ -53,13 +53,12 @@ def output_file_creation(output_way, metaG_name, dict_output, headinfo, compleme
         if out_name:  # if the flag is not False
             extension = 'txt'
             if out_name == 'result_T':
-                extension = 'csv'
+                extension = 'tsv'
             elif out_name == 'result_GFF':
                 extension = 'gff'
                 # out_name = 'TA_Genes'
 
-            file_out = '{}/{}_{}{}.{}'.format(output_way, metaG_name,
-                                              out_name, complement, extension)
+            file_out = os.path.join(output_way, f"{metaG_name}_{out_name}{complement}.{extension}")
             flout = open(file_out, "w")
             flout.write("## {}\n".format(out_name))
             flout.write(headinfo)
@@ -76,7 +75,7 @@ def stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, compl
         if rescue:
             header += ['adjacent orf', 'orf with TA domain', 'lonely gene rescue']
 
-        fl_stat = open('{}/{}_contig_stat{}.csv'.format(output_way, metaG_name, complement), 'w')
+        fl_stat = open('{}/{}_contig_stat{}.tsv'.format(output_way, metaG_name, complement), 'w')
         fl_stat.write(headinfo)
         writer_stat = csv.DictWriter(fl_stat, fieldnames=header, delimiter='\t')
         writer_stat.writeheader()
@@ -137,7 +136,7 @@ def write_gff(gene, fl):
     fl.write('\t'.join(list_gff))
 
 
-def write_table_result(gene, csvfl):
+def write_table_result(gene, tsvfl):
     line = {}
     line["Contig"] = gene.contig
     line["Gene number"] = gene.gene_number
@@ -151,7 +150,7 @@ def write_table_result(gene, csvfl):
     line["domain"] = writeDomain(gene)
     line["Neighbor gene"] = write_adj_gene(gene, gene.prev, 'Down:')
     line["Neighbor gene"] += write_adj_gene(gene, gene.post, 'Up:  ')
-    csvfl.writerow(line)
+    tsvfl.writerow(line)
 
 
 def writeDomain(gene):
@@ -191,8 +190,11 @@ def write_short_result(g, post, fl, i):
 
     tag_g = give_id(g)
     tag_p = give_id(post)
+
+    system_score = score.confl(g_score[0]['score'], post_score[0]['score'], post_score[0]['domain_association_score'])
+
     fl.write("{}. Genes {} & {}\tstrand {}\tscore {}\n".format(
-        i, tag_g, tag_p, g.strand, score.confl(g_score[0]['score'], post_score[0]['score'])))
+        i, tag_g, tag_p, g.strand, system_score))
 
 
 def write_human_result(g, post, fl, i):
@@ -200,14 +202,14 @@ def write_human_result(g, post, fl, i):
     g_score = g.dict_score[post.gene_number]
     post_score = post.dict_score[g.gene_number]
     domain_asso = round(post_score[0]['domain_association_score'], npc)
-    system_score = score.confl(g_score[0]['score'], post_score[0]['score'], domain_asso)
+    system_score = score.confl(g_score[0]['score'], post_score[0]['score'], post_score[0]['domain_association_score'])
     dist_score = round(post_score[0]['dist_score'], npc)
 
-    fl.write("\n\nPRE GENE\n" + write_line(g, g_score))
+    fl.write("\nPRE GENE\n" + write_line(g, g_score))
     fl.write("\nPOST GENE\n" + write_line(post, post_score) + '\n')
     fl.write("DISTANCE {} ({})\tDomain-Domain ASSOCIATION: {}\tSYSTEM score: {}\n".format(
         post_score[0]['distance'], dist_score, domain_asso, round(system_score, npc)))
-    fl.write(visualisation_genes(g, post, post_score[0]['distance']))
+    fl.write(visualisation_genes(g, post, post_score[0]['distance'])+'\n')
 
 
 def write_line(g, score):
@@ -249,12 +251,10 @@ def visualisation_genes(pre, post, distance):
     pre_str = visual_str(len(pre))
     post_str = visual_str(len(post))
     dist_str = str(distance) + 'nt'
-    # print pre_str
-    # print post_str
-    # print 'disatance ', distance
+
     sign = (distance + 1) / abs(distance + 1)
     visual_dist = int(distance / 30.0 + 0.98 * sign)
-    # print visual_dist
+
     final_str = pre_str + '\n'
     position_g2 = (len(pre_str) + visual_dist)
     final_str += position_g2 * ' ' + post_str + '\n'
