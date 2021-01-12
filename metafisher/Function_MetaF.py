@@ -46,20 +46,21 @@ def HMM_launcher(faa_file, outfile):
     return outfile
 
 
-def get_fast_fasta(fl, line, scaffold):
-    seq = {'description': scaffold, 'data': '', 'rev': False}
+def get_fast_fasta(fl, line, contig):
+    seq = {'id': contig, 'data': '', 'rev': False}
 
-    while line and line[:len(scaffold) + 1] != '>' + scaffold:
+    while line and line[:len(contig) + 1] != f'>{contig}':
         line = next(fl)
+
     for line in fl:
         if line[0] == '>':
             break
-        seq['data'] += line.rstrip()
+        seq['data'] += line.rstrip().upper()
+
     if seq['data']:
-        seq['data'] = seq["data"].upper()
         return seq, line
     else:
-        print("seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence {}".format(scaffold))
+        raise ValueError(f"seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence of {contig}")
 
 
 def get_ta_genes_from_hmmsearch(hmm_result):
@@ -106,7 +107,7 @@ def get_hmm_genes(contig, table_hmm, gff_file):
     genes = []
 
     # attribut of the classe gene like every objet (orf and TA_gene) will have this attribut, then no need to give it that each time
-    obj.Gene.scaffold = contig
+    # obj.Gene.scaffold = contig
     domains_dict = {}  # keys : gene numbers, value: liste of the domain objet !!
     with open(table_hmm) as fl:
         for line in fl:
@@ -137,7 +138,7 @@ def get_hmm_genes(contig, table_hmm, gff_file):
 
 def build_ta_gene_from_gff_line(gff_line):
     gene = obj.TA_gene()
-    gene.scaffold = gff_line["seqname"]
+    gene.contig = gff_line["seqname"]
     gene.feature = gff_line["feature"]
     gene.start = int(gff_line['start'])
     gene.end = int(gff_line['end'])
@@ -354,8 +355,8 @@ def delete_files(listeFiles):
         except OSError as e:  # if failed, report it back to the user ##
             print(f"Error: {e.filename} - {e.strerror}.")
 
-def annotate_domains(gene_to_domains, info_domains, dict_domain_gene_type):
-    for domains in gene_to_domains.values():
+def annotate_domains(domains, info_domains, dict_domain_gene_type):
+    for domains in domains:
         for domain in domains:
             domain.annotate_domain(info_domains, dict_domain_gene_type)
 

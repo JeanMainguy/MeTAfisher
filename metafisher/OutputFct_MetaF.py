@@ -24,6 +24,7 @@ def output_headinfo_creation(metaG_name, thresholds, rescue, resize):
         complement += '_rescue'
     if resize:
         complement += '_resize'
+        
     headinfo = '## Name of the sequence analysed: ' + metaG_name
     headinfo += "\n## Rescue lonely gene : {}\n".format(rescue)
     headinfo += "## Resize gene : {}\n".format(resize)
@@ -104,9 +105,9 @@ def contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_st
     writer_stat.writerow(contig_stat)
 
 
-def write_result(set_linked, dict_output, scaffold):
+def write_result(set_linked, dict_output, contig):
     i = 0
-    contig_header = "\n" + '==' * 2 + scaffold + '==' * 2 + '\n'
+    contig_header = "\n" + '==' * 2 + contig + '==' * 2 + '\n'
     # if dict_output['result_T']:
     #     dict_output['result_T'].write(contig_header)
     if dict_output['result_H']:
@@ -131,16 +132,16 @@ def write_result(set_linked, dict_output, scaffold):
 def write_gff(gene, fl):
     neighbors = "possible_partners="+','.join([give_id(n) for n in gene.prev+gene.post])
     list_attrib = ["protein_id="+give_id(gene), 'best_'+gene.domain[0].writeGffLike(), neighbors]
-    attributes = '{}|{};'.format(gene.scaffold, gene.gene_number)
+    attributes = '{}|{};'.format(gene.contig, gene.gene_number)
     attributes += ';'.join(list_attrib)
-    list_gff = [gene.scaffold, 'metaF', gene.feature, str(
+    list_gff = [gene.contig, 'metaF', gene.feature, str(
         gene.start), str(gene.end), ".", gene.strand, ".", attributes+'\n']
     fl.write('\t'.join(list_gff))
 
 
 def write_table_result(gene, csvfl):
     line = {}
-    line["Contig"] = gene.scaffold
+    line["Contig"] = gene.contig
     line["Gene number"] = gene.gene_number
     line["Gene id"] = give_id(gene)
     line["start"] = gene.start

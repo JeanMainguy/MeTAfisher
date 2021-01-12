@@ -224,12 +224,13 @@ def main():
 
     if rescue:
         orf_dict = {}
-        orf_dict['fl'] = open(genomic_seq_file, 'r')
+        proper_open = gzip.open if genomic_seq_file.endswith('.gz') else open
+        orf_dict['fl'] = proper_open(genomic_seq_file, 'rt')
         orf_dict['line'] = next(orf_dict['fl'])
 
         gff_dict = {}
         proper_open = gzip.open if gff_file.endswith('.gz') else open
-        fl_csv = proper_open(gff_file, 'r')
+        fl_csv = proper_open(gff_file, 'rt')
         gff_dict['csv'] = csv.reader(fl_csv, delimiter='\t')
         gff_dict['line'] = next(gff_dict['csv'])
 
@@ -242,11 +243,9 @@ def main():
         fna_seq_dict["line"] = fna_seq_dict["fl"].readline()
         # PUT info in a dico to not have to retourned it every time !! dico is used in check_size
         fna_seq_dict["codon_start"] = table['start']
-        # print "start", table['start']
 
-    # SCORE PREPARaTION
+    # Score preparation
     k = 20
-
     length_proba = score.score_manager(int(lenMin / 3), int(lenMax / 3), file_len, k)
     distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k)
     dict_domain_association = score.decoder(file_domain_association)
@@ -264,7 +263,7 @@ def main():
 
     gene_to_domains = fct.get_ta_genes_from_hmmsearch(table_hmm)
 
-    fct.annotate_domains(gene_to_domains, info_domains, dict_domain_gene_type)
+    fct.annotate_domains(gene_to_domains.values(), info_domains, dict_domain_gene_type)
 
     contig_to_genes = fct.get_genes_by_contigs(gene_to_domains, gff_file)
 
@@ -273,14 +272,21 @@ def main():
 
             continue
 
-        print(contig, len(genes))
+        logging.info(f'{contig}: {len(genes)} TA genes.')
+
         fct.check_size(genes)
 
         fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
         initial_nb_lonely = len(genes) - len(list(fct.get_linked_genes(genes)))
-        print('lonely',initial_nb_lonely )
-        ta_orfs = []
-        adj_orfs = []
+
+        if initial_nb_lonely and rescue:
+            adj_orfs = orf.get_adjacent_orfs(orf_dict, gff_dict, contig, genes)
+            ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, outdir)
+            ta_domains = [orf.domain for orf in ta_orfs]
+            fct.annotate_domains(ta_domains, info_domains, dict_domain_gene_type)
+        else:
+            ta_orfs = []
+            adj_orfs = []
 
         score.score_TA_list(genes, score_dict)
         # Write stat
@@ -292,8 +298,6 @@ def main():
         if dict_output['is_output']:
             out.write_result(fct.get_linked_genes(genes), dict_output, contig)
 
-
-
     # Total Stat information about the Metagenome
     if info_contig_stat:
         writer_stat.writerow(total_stat)
@@ -304,60 +308,60 @@ def main():
             dict_output[kfl].close()
         except AttributeError:
             pass
-    return
-
-    if contig_name:
-        if contig_name in contigs:
-            contigs = [contig_name]
-        else:
-            raise Exception(f'The contig name {contig_name} is incorrect or no hit have been found by hmmsearch on this contig')
-
-    logging.info(f'number of contigs to analysed {len(contigs)}')
-
-    # Loop : each contig is treated independntly here
-    for contig in contigs:
-
-        logging.info(f"Analysing {contig}")
-
-        genes = fct.get_hmm_genes(contig, table_hmm, gff_file)
-        if resize:
-            fct.get_start_po(fna_seq_dict, genes)  # resize and calculate start position
-        else:
-            # eliminate ta genes that have a length > threshold
-            fct.check_size(genes)
-
-        # STEP : GENE PAIR ORGANISATION CHECKING
-        fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
-
-        initial_nb_lonely = len(genes) - len(list(fct.get_linked_genes(genes)))
-
-        if initial_nb_lonely and rescue:
-            adj_orfs = orf.get_adjacent_orfs(orf_dict, gff_dict, contig, genes)
-            ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, outdir)
-        else:
-            ta_orfs = []
-            adj_orfs = []
-
-        score.score_TA_list(genes, score_dict)
-
-        # Write stat
-        if info_contig_stat:
-            out.contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs)
-
-        # write output
-        if dict_output['is_output']:
-            out.write_result(fct.get_linked_genes(genes), dict_output, contig)
-
-    # Total Stat information about the Metagenome
-    if info_contig_stat:
-        writer_stat.writerow(total_stat)
-        fl_stat.close()
-
-    for kfl in dict_output:
-        try:
-            dict_output[kfl].close()
-        except AttributeError:
-            pass
+    # return
+    #
+    # if contig_name:
+    #     if contig_name in contigs:
+    #         contigs = [contig_name]
+    #     else:
+    #         raise Exception(f'The contig name {contig_name} is incorrect or no hit have been found by hmmsearch on this contig')
+    #
+    # logging.info(f'number of contigs to analysed {len(contigs)}')
+    #
+    # # Loop : each contig is treated independntly here
+    # for contig in contigs:
+    #
+    #     logging.info(f"Analysing {contig}")
+    #
+    #     genes = fct.get_hmm_genes(contig, table_hmm, gff_file)
+    #     if resize:
+    #         fct.get_start_po(fna_seq_dict, genes)  # resize and calculate start position
+    #     else:
+    #         # eliminate ta genes that have a length > threshold
+    #         fct.check_size(genes)
+    #
+    #     # STEP : GENE PAIR ORGANISATION CHECKING
+    #     fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
+    #
+    #     initial_nb_lonely = len(genes) - len(list(fct.get_linked_genes(genes)))
+    #
+    #     if initial_nb_lonely and rescue:
+    #         adj_orfs = orf.get_adjacent_orfs(orf_dict, gff_dict, contig, genes)
+    #         ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, outdir)
+    #     else:
+    #         ta_orfs = []
+    #         adj_orfs = []
+    #
+    #     score.score_TA_list(genes, score_dict)
+    #
+    #     # Write stat
+    #     if info_contig_stat:
+    #         out.contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs)
+    #
+    #     # write output
+    #     if dict_output['is_output']:
+    #         out.write_result(fct.get_linked_genes(genes), dict_output, contig)
+    #
+    # # Total Stat information about the Metagenome
+    # if info_contig_stat:
+    #     writer_stat.writerow(total_stat)
+    #     fl_stat.close()
+    #
+    # for kfl in dict_output:
+    #     try:
+    #         dict_output[kfl].close()
+    #     except AttributeError:
+    #         pass
 
 
 if __name__ == '__main__':

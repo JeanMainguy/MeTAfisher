@@ -17,7 +17,7 @@ class Gene:
 
     # Allowance of integrity loss of domain (5%) arbitrary number
     allowance = 0.05
-    scaffold = None  # contig name
+    # scaffold = None  # contig name
     metaG_stat = {}
 
     def __init__(self):
@@ -28,6 +28,7 @@ class Gene:
         self.feature = None
         self.dict_score = {}
         self.protein_id = None
+        self.contig = None
 
     def __str__(self):
         presentation = 'length: {}\tfrom {} to {}\tstrand: {}\tfeature: {}\n'.format(
@@ -153,7 +154,7 @@ class TA_gene(Gene):
         start_codon = dico["codon_start"]
 
         # we have to build this because of fast_fasta function
-        scaffold_gnb = self.scaffold + '|' + str(self.gene_number)
+        scaffold_gnb = self.contig + '|' + str(self.gene_number)
         # use of get fast fasta as before.
         seq, dico[line_name] = fct.get_fast_fasta(dico[fl_name], dico[line_name], scaffold_gnb)
         # print seq['description']
@@ -192,17 +193,18 @@ class TA_gene(Gene):
 
 class Orf(Gene):
     # dict with seq, header of the fasta
-    seq = {'data': 'ADCBD'}  # scaffold name
+    seq = {'data': None}  # scaffold name
     # adj_orf = {}
     # adj_orf_index = 0
     # hmm_orf = {}
 
-    def __init__(self, frame, possible_start_orf, end_orf, complet=True, border=False):
+    def __init__(self, frame, contig, possible_start_orf, end_orf, complet=True, border=False):
         """
         end_orf and possible_start_orf in the context of the orf
         meaning position on the personal strand of the gene and the sequence start with 0
         """
         # possible start in the context of the orf
+        self.contig = contig
         self.end_orf = end_orf
         self.start_orf = possible_start_orf[0]  # should be start
         self.frame = frame
@@ -247,7 +249,7 @@ class Orf(Gene):
             Orf.seq = orf.complement_reverse(Orf.seq)
             # print 'Need to be reverse comp... seq is rev?', Orf.seq["rev"], ' strand :', self.strand
         # print 'seq is rev? ', Orf.seq["rev"], 'self is ', self.strand
-        fl.write('>{}|{}\n'.format(self.scaffold, index))
+        fl.write('>{}|{}\n'.format(self.contig, index))
         fl.write(re.sub("(.{60})", "\\1\n", self.protein(), 0, re.DOTALL) + '\n')
 
     def data_nt(self):

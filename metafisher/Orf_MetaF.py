@@ -43,21 +43,25 @@ def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
     obj.Orf.seq = contig_seq
     # retrieve the end position of the predicted gene to then skip the related ORF:
     gff_ends = get_gff_ends(gff_dict, contig)
+    # print(len(gff_ends), "gff ends found" )
     adj_orfs = []
     # TEST IF THERE ARE LONELY GENE IN STRAND plus
     if lonely_genes_on_strand_plus:
-        orf_generator = findORF(contig, contig_seq, rev=1)
+        orf_generator = find_orfs(contig_seq, rev=1)
         # read the orfs: check if the orf is a predicted gene
         # then check if the orf is adjacent with a TA_gene
         # If so then the faa ORF file is written...
         # orf manager will do everything !!
+        orf_generator = list(orf_generator)
 
         adj_orfs += get_adjacent_orfs_by_strand(orf_generator, '+', genes_plus, gff_ends)
+
     # TEST IF THERE ARE LONELY GENES IN STRAND minus
     if lonely_genes_on_strand_minus:
-        orf_generator = findORF(contig, contig_seq, rev=-1)
+        orf_generator = find_orfs(contig_seq, rev=-1)
 
         adj_orfs += get_adjacent_orfs_by_strand(orf_generator, '-', genes_minus, gff_ends)
+
     return adj_orfs
 
 def identify_ta_orfs(adj_orfs, genes, outdir):
@@ -76,7 +80,7 @@ def identify_ta_orfs(adj_orfs, genes, outdir):
     hmm_result_file = os.path.join(outdir , 'output_HMM_table_adj_orf.txt')
     table_hmm = fct.HMM_launcher(adjorf_faa_file, hmm_result_file)
     # parsing result and store it in obj.Orf.hmm_orf
-    ta_orfs = adjOrf_HMM(table_hmm, adj_orf_dict)
+    ta_orfs = adjOrf_hmm(table_hmm, adj_orf_dict)
     logging.info(f'{len(ta_orfs)} have TA domains')
     # taking into account the domain in the possible start of the ORF
     # give gene number to hmm orf that fit with genes from gff file
@@ -193,17 +197,11 @@ def get_adjacent_orfs_by_strand(orfs, strand, lonelyGenes, gff_ends):
             adj_orfs.append(orf)
 
     if gff_ends[strand]:
-        logging.warning(orf.scaffold)
-        logging.warning(strand)
-        logging.warning(f"len du saffold {len(orf.seq['data'])}")
-        logging.warning("THERE ARE SOME PEDICTED GENE THAt DIDNT FOUND THEIR ORF :-(")
+        logging.info(f"{orf.contig}: {len(gff_ends[strand])} CDS on strand {strand} found in the gff file did not match predicted ORFs. CDS ends {gff_ends[strand]}.")
 
-        logging.warning("scaffold " + orf.scaffold + ' strand :' + strand + '\n' + str(gff_ends[strand]))
-        for g in gff_ends[strand]:
-            logging.warning(str(g) + '\n')
     return adj_orfs
 
-def adjOrf_HMM(table_hmm, adj_orf_dict):
+def adjOrf_hmm(table_hmm, adj_orf_dict):
     """Do something."""
     hmm_orfs = []
     with open(table_hmm, 'r') as fl:
@@ -224,7 +222,7 @@ def adjOrf_HMM(table_hmm, adj_orf_dict):
                 hmm_orfs.append(hmm_orf)
     return hmm_orfs
 
-def get_gff_ends(gff_dict, scaffold):
+def get_gff_ends(gff_dict, contig):
     """
     Get gff ends.
 
@@ -236,13 +234,13 @@ def get_gff_ends(gff_dict, scaffold):
     gff_ends = {'+': [], '-': []}
     line = gff_dict["line"]
     fl = gff_dict["csv"]
-    while line and line[0] != scaffold:
+    while line and line[0] != contig:
         line = next(fl)
 
-    while line and line[0] == scaffold:
-        if line[0] != scaffold:
+    while line and line[0] == contig:
+        if line[0] != contig:
             break
-        if line[2] not in ['CDS', 'gene']:
+        if line[2] not in ['CDS']:
             try:
                 line = next(fl)
                 continue
@@ -264,7 +262,7 @@ def get_gff_ends(gff_dict, scaffold):
     return gff_ends
 
 
-def findORF(scaffold, seq, rev):
+def find_orfs(seq, rev):
     """Determine the orf of a nucleic sequence.
 
     This function call the orf_by_frame() function  for each frame and give it to it different parameter
@@ -333,7 +331,7 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
                 distance = length_seq - pos_start[-1]
                 # -3 is -1 to get index of the last nt because here we start counting at 0 and -2 because we need the first nt of the last codon
                 stop = length_seq - 3 - (distance % 3)
-                yield obj.Orf(frame=frame * rev, possible_start_orf=pos_start, end_orf=stop + 2, complet=False, border=True)
+                yield obj.Orf(frame=frame * rev, contig=seq['id'], possible_start_orf=pos_start, end_orf=stop + 2, complet=False, border=True)
         return
 
     # research of potential orf between 0 position and the first stop -->  the program doesn't manage circular DNA
@@ -348,7 +346,7 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
         if add_to_inf == 0:
             pos_start = [frame - 1] + pos_start
         if pos_start:
-            yield obj.Orf(frame=frame * rev, possible_start_orf=pos_start, end_orf=pos_stop[0] + 2, complet=True, border=True)
+            yield obj.Orf(frame=frame * rev, contig=seq['id'],  possible_start_orf=pos_start, end_orf=pos_stop[0] + 2, complet=True, border=True)
 
     for i in range(len(pos_stop) - 1):  # search between stop i and stop i+1. Stop before the end.
 
@@ -363,7 +361,7 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
                 starts, seq['data'], inf=pos_stop[i] + 3 + add_to_inf, sup=(pos_stop[i + 1] + 3 - threshold))
 
             if pos_start:
-                yield obj.Orf(frame=frame * rev, possible_start_orf=pos_start, end_orf=pos_stop[i + 1] + 2, complet=True, border=False)
+                yield obj.Orf(frame=frame * rev, contig=seq['id'],  possible_start_orf=pos_start, end_orf=pos_stop[i + 1] + 2, complet=True, border=False)
 
     # Search of orf from the last stop codon to the end of the seq
     if length_seq - pos_stop[-1] + 3 > threshold:
@@ -384,7 +382,7 @@ def orf_by_frame(seq, threshold, starts, stops, frame, rev):
             # -3 is -1 to get index of the last nt because here we start counting at 0 and -2 because we need the first nt of the last codon
             stop = length_seq - 3 - (distance % 3)
 
-            yield obj.Orf(frame=frame * rev, possible_start_orf=pos_start, end_orf=stop + 2, complet=False, border=True)
+            yield obj.Orf(frame=frame * rev, contig=seq['id'],  possible_start_orf=pos_start, end_orf=stop + 2, complet=False, border=True)
 
     return
 
@@ -404,7 +402,6 @@ def to_fit_len_max(twoStopLen):
 
 def complement_reverse(seq):
     """Complement reverse sequence."""
-    compl_rev_seq = {}
     compl_rev_seq = reverse(seq)
     compl_rev_seq = complement(compl_rev_seq)
     compl_rev_seq['rev'] = not seq['rev']
@@ -413,7 +410,7 @@ def complement_reverse(seq):
 
 def reverse(seq):
     """Reverse sequence."""
-    rev_seq = {}
+    rev_seq = seq.copy()
     rev_seq['data'] = seq['data'][::-1]
     return rev_seq
 
@@ -421,7 +418,7 @@ def reverse(seq):
 def complement(seq):
     """Complement sequence."""
     result = ''
-    complement = {}
+    complement = seq.copy()
     for i in seq['data']:
         if i == 'A':
             result = result + 'T'
