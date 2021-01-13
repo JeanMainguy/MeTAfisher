@@ -23,7 +23,7 @@ class Gene:
     def __init__(self):
         self.start = None
         self.end = None
-        self.possible_start = []
+        self.possible_starts = []
         self.strand = None
         self.feature = None
         self.dict_score = {}
@@ -174,9 +174,8 @@ class TA_gene(Gene):
                 sup = min((len_seq - Gene.length_min), self.domain_Ct_border)
                 # print 'self.domain_Ct_border', self.domain_Ct_border
             else:
-                print(len_seq, len_seq - Gene.length_min)
-                print('the length of the gene is smaller than the minimal length threshold ')
-                return []  # if the length of the gene is smaller than the minimal length threshold then no start are compatible and then the fct return an empty fct
+                logging.warning('The length of the gene is smaller than the min length threshold ')
+                return []  # if the length of the gene is smaller than the minimal length threshold then no start are compatible and then the fct return an empty list
         else:
             inf = 0
             sup = len(seq['data'])
@@ -209,7 +208,7 @@ class Orf(Gene):
         self.start_orf = possible_start_orf[0]  # should be start
         self.frame = frame
         self.possible_start_orf = possible_start_orf
-        self.possible_start = [s - self.start_orf for s in possible_start_orf]
+        self.possible_starts = [s - self.start_orf for s in possible_start_orf]
         # self.id = str(end_orf) if self.frame > 0 else f'-{end_orf}'
         # Conversion to get start and stop found with official orf finder
         # and to match with predicted gene

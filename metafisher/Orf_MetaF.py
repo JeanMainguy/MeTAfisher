@@ -134,8 +134,8 @@ def adjust_orf_attribut(orfs, gene_index):
     Give gene number to hmm orf that fit with genes from gff file.
     """
     for orf in orfs:
-        orf.possible_start = [s for s in orf.possible_start if s <= orf.domain_Ct_border]
-        orf.distanceMin = obj.Gene.distanceMin - abs(orf.possible_start[-1] - orf.possible_start[0])
+        orf.possible_starts = [s for s in orf.possible_starts if s <= orf.domain_Ct_border]
+        orf.distanceMin = obj.Gene.distanceMin - abs(orf.possible_starts[-1] - orf.possible_starts[0])
 
         # WARNING absolute value of distance min should not be greater than the length of the gene !!
         # because it would allow overlap of more than the length of the gene
@@ -185,7 +185,7 @@ def get_adjacent_orfs_by_strand(orfs, strand, lonelyGenes, gff_ends):
             gff_ends[strand].remove(orf.real_end())
             continue
         # EDIT now orfinder size max and min correctly...
-        orf.distanceMin = obj.Gene.distanceMin - (orf.possible_start[-1] - orf.possible_start[0])
+        orf.distanceMin = obj.Gene.distanceMin - (orf.possible_starts[-1] - orf.possible_starts[0])
         # WARNING absolute value of distance min should not be greater than the length of the gene !!
         # because it would allow overlap of more than the length of the gene
         # and then could give a post gene before a pre gene so a non sense

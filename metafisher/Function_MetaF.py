@@ -243,7 +243,7 @@ def get_start_po(fna_seq_dict, genes):
             # start_po = [gene.end - x for x in start_po]
             gene.end -= start_po[0]
 
-        gene.possible_start = start_po
+        gene.possible_starts = start_po
 
     for gene in non_valides:
         genes.remove(gene)
@@ -323,7 +323,7 @@ def check_size(genes):
     invalide_genes = []
     for gene in genes:
         if obj.Gene.length_min <= len(gene) <= obj.Gene.length_max:
-            gene.possible_start = [0]
+            gene.possible_starts = [0]
 
             # WARNING absolute value of distance min should not be greater than the length of the gene !!
             # because it would allow overlap of more than the length of the gene

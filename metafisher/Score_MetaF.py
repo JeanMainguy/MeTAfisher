@@ -88,8 +88,6 @@ def domain_association_prct(do1, do2, association, domain_types):
 
 def score_do_association(post, pre, dict_domain_association, dict_domain_gene_type):
 
-    # print dict_domain_association
-    # print dict_domain_gene_type
     asso = []
     for pre_do in pre.domain:
 
@@ -109,16 +107,18 @@ def score_pair(pre, post, score_dict):  # post is a gene located upstream of pre
     strand - : ---<===post==---<===self==---
     """
 
-    # get the distancebetween the two gene
+    # get the distance between the two genes
     initial_dist = post.real_start() - pre.real_end()
     if pre.strand == "-":
         initial_dist *= -1
-    compatible_starts = [s for s in post.possible_start if
+    # possible_starts attribute is 0 when we have TA gene and resize flag is false
+    #
+    compatible_starts = [s for s in post.possible_starts if
                          obj.Gene.distanceMin < initial_dist + s < obj.Gene.distanceMax]
 
     score_post = get_score(post, compatible_starts, distance=initial_dist,
                     length_proba=score_dict['length_proba'], distance_proba=score_dict['distance_proba'])
-    score = get_score(pre, pre.possible_start,
+    score = get_score(pre, pre.possible_starts,
                     length_proba=score_dict['length_proba'], distance_proba=score_dict['distance_proba'])
 
     score_do_asso = score_do_association(post, pre, score_dict['domain_association'],
@@ -127,25 +127,22 @@ def score_pair(pre, post, score_dict):  # post is a gene located upstream of pre
     for s in score_post:  # don't manage alternative start.. !!
         s['domain_association_score'] = score_do_asso
 
-    # print(score_post)
     pre.dict_score[post.gene_number] = score
     post.dict_score[pre.gene_number] = score_post
 
 
 def get_score(gene, starts, length_proba, distance_proba, distance=None):
     """
-    Return a double dico with first start as a key and another dico
+    Return a double dict with first start as a key and another dico
     with score of domain and length and when pre_end isn't Noneth distance score
     """
-    score = []
+    scores = []
     gene.domain = sorted(gene.domain, key=attrgetter('score'), reverse=True)
     # print([d.score for d in gene.domain])
     domains = iter(gene.domain)
     d = next(domains)
 
     for start in starts:
-        # valid_domains = [d for d in gene.domain if d.ali_from*3 >= start]
-        # print([d.ali_from for d in gene.domain])
         while d.ali_from * 3 < start:  # to not take into account domain that would be before of the current start investiagted
             try:
                 d = next(domains)
@@ -159,12 +156,12 @@ def get_score(gene, starts, length_proba, distance_proba, distance=None):
 
 
         dico_score = {"start": start, "domain": d.score, "len_score": proba_len,
-                      'length': length, "score": proba_len}  # Ajout de distance:None? ? ?
+                      'length': length, "score": proba_len}
         if distance is not None:
             dico_score['dist_score'] = distance_proba[distance + start]
             dico_score['distance'] = distance + start
             dico_score['score'] = conflaction_proba(dico_score['dist_score'], proba_len)
 
-        score.append(dico_score)
-    score = sorted(score, key=itemgetter('score'), reverse=True)
-    return score
+        scores.append(dico_score)
+    scores = sorted(scores, key=itemgetter('score'), reverse=True)
+    return scores
