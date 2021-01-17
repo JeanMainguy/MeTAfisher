@@ -117,7 +117,7 @@ def main():
 
     tadb_stat_dir = args.tadb_stat_dir
 
-    HMM_db = args.hmm_db
+    hmm_db = args.hmm_db
 
     # Name of a specific contig or False by default if False all contig will be analysed
     contig_name = args.contig_name
@@ -140,7 +140,7 @@ def main():
         logging.info('Rescue mode is on.')
         genomic_seq_file = args.genomic_seq
 
-    table_hmm = outdir + '/output_HMM_table_' + metaG_name + '.txt'
+    table_hmm = os.path.join(outdir, f'output_HMM_table_{metaG_name}.txt')
 
     info_contig_stat = True
     output_human = True
@@ -149,17 +149,7 @@ def main():
     dict_output = {'result_H': output_human, "result_S": output_human,
                    'result_T': output_table, 'result_GFF': output_gff}
 
-    # Storing information as Gene class attribut to be use when we launch hmmsearch
-    obj.Gene.hmmdb = HMM_db
-    force = True
-    if not os.path.isfile(table_hmm) or force:
-        logging.info('Running hmmsearch to identify TA genes.')
-
-        table_hmm = fct.HMM_launcher(faa_file, table_hmm)
-    else:
-        logging.info(f'Hmmresult file {table_hmm} exists already. We use it.')
-
-    # DISTANCE AND LENGTH DICO :
+    # DISTANCE AND LENGTH DICT :
     # Dist and length of TA from TADB to mmake a proba
     file_len = os.path.join(tadb_stat_dir, "length_TA.csv")
     file_dist = os.path.join(tadb_stat_dir, "distance.csv")
@@ -187,7 +177,7 @@ def main():
     obj.Gene.length_min = lenMin
     obj.Gene.length_max = lenMax
 
-    # threshold distance for tandem
+    # threshold distance for tandem in nucleotides
     distanceMin = -100
     distanceMax = 300
 
@@ -198,15 +188,6 @@ def main():
     thresholds = {"lenMin": lenMin, "lenMax": lenMax,
                   "distanceMin": distanceMin, "distanceMax": distanceMax}
 
-    """
-    # OUTPUT
-    #  dict_output is a dictionnary with the file handler of each kind of output
-    # key : name of the output | value : fl or False if not wanted
-    # extra key is "is_output" is True when there is at least one output required
-    # dico output is update so no need to return it
-    # writer stat is a csv file handler or it is False when the flag info_contig_stat is False as well
-    total stat is a dictionnary with the sum of all the colonne. It is written at the end
-    """
     writer_stat, total_stat, fl_stat = out.output_manager(
         outdir, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize)
 
@@ -256,10 +237,15 @@ def main():
                   "domain_association":dict_domain_association,
                   "domain_gene_type":dict_domain_gene_type}
 
-    # Take every contig present in the HMM output and sort them in order to
-    # be able to retrieve their sequence correctly in the input file
-    # contigs = sorted(fct.get_contig_from_hmmsearch_result(table_hmm))
 
+    obj.Gene.hmmdb = hmm_db
+    force = True
+    if not os.path.isfile(table_hmm) or force:
+        logging.info('Running hmmsearch to identify TA genes.')
+
+        table_hmm = fct.HMM_launcher(faa_file, table_hmm)
+    else:
+        logging.info(f'Hmmresult file {table_hmm} exists already. We use it.')
 
     gene_to_domains = fct.get_ta_genes_from_hmmsearch(table_hmm)
 
