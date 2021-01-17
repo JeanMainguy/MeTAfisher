@@ -64,7 +64,7 @@ def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
 
     return adj_orfs
 
-def identify_ta_orfs(adj_orfs, genes, outdir):
+def identify_ta_orfs(adj_orfs, genes, outdir, hmm_db):
     adj_orf_dict = {}
     gene_index = max([gene.gene_number for gene in genes])
 
@@ -78,9 +78,9 @@ def identify_ta_orfs(adj_orfs, genes, outdir):
 
     # launch hmmsearch
     hmm_result_file = os.path.join(outdir , 'output_HMM_table_adj_orf.txt')
-    table_hmm = fct.HMM_launcher(adjorf_faa_file, hmm_result_file)
+    fct.hmmsearch(adjorf_faa_file, hmm_db, hmm_result_file)
     # parsing result and store it in obj.Orf.hmm_orf
-    ta_orfs = adjOrf_hmm(table_hmm, adj_orf_dict)
+    ta_orfs = adjOrf_hmm(hmm_result_file, adj_orf_dict)
     logging.info(f'{len(ta_orfs)} have TA domains')
     # taking into account the domain in the possible start of the ORF
     # give gene number to hmm orf that fit with genes from gff file

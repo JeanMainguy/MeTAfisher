@@ -40,6 +40,26 @@ conda activate metafisher
 This program is released as open source software under the terms of [MIT License](https://raw.githubusercontent.com/bionitio-team/bionitio/master/LICENSE).
 
 
+## Generate TA database files
+
+### Diamond:
+
+1. Download protein sequences of the TADB
+
+2. Generate file stats
+
+3. concat fasta files and build diamond db
+
+```bash
+
+wget https://bioinfo-mml.sjtu.edu.cn/TADB2/download/TADB2/20171013/protein/type_II_pro_T.fas
+wget https://bioinfo-mml.sjtu.edu.cn/TADB2/download/TADB2/20171013/protein/type_II_pro_AT.fas
+
+cat type_II_pro_T.fas type_II_pro_AT.fas > type_II_TA.fasta
+
+diamond makedb --in type_II_TA.fasta -d type_II_TA
+
+```
 
 
 ==========================
@@ -204,7 +224,7 @@ In the output folder that you gave to the program you will find the hmmsearch ta
 
  -->
 
-<!-- 
+<!--
 ## Scoring method
 
 

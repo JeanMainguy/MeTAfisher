@@ -21,29 +21,46 @@ import logging
 from collections import defaultdict, namedtuple
 import gzip
 
-def HMM_launcher(faa_file, outfile):
-    hmm_db = obj.Gene.hmmdb
 
-    if faa_file.endswith('.gz'):
-        logging.info(f'Protein sequence file {faa_file} ends with gz. It will be unzipped first to be used in hmmsearch.')
-        zipped_faa_file = faa_file
-        faa_file = os.path.join(os.path.dirname(outfile), os.path.basename(faa_file)[:-3])
-        zcat_command =  f"zcat {zipped_faa_file} > {faa_file}"
-        exit_code = os.system(zcat_command)
-        if exit_code != 0:
-            raise ValueError(f"Unzipping protein file has failed. command:'{zcat_command}'  exit_code:{exit_code} ")
+def run_command(command, outfile):
+    cmd_name = command.split()[0]
+    logging.info(f"{cmd_name} command: {command}")
+    exit_code = os.system(command)
 
-    hmmsearch_command = f"hmmsearch -E 0.5 --domtblout {outfile} {hmm_db} {faa_file} > /dev/null"
-    logging.info(f"Hmmsearch command: {hmmsearch_command}")
-    exit_code = os.system(hmmsearch_command)
     if exit_code != 0:
-        raise ValueError(f"Hmmsearch has failed. exit_code={exit_code} ")
+        raise ValueError(f"{cmd_name} has failed. exit_code={exit_code} ")
     # call(hmmsearch_command, shell=True)
     if not os.path.isfile(outfile):
         # logging.warning(f'hmmsearch has failed.')
-        raise FileNotFoundError(f'hmmsearch command failed to create the file {outfile}')
+        raise FileNotFoundError(f'{cmd_name} command has failed to create the file {outfile}')
 
-    return outfile
+    return exit_code
+
+def hmmsearch(faa_file, hmm_db, outfile, force=False):
+
+    if os.path.isfile(outfile) and not force:
+        logging.info(f'Hmmresult file {outfile} exists already. We use it.')
+        return
+
+    else:
+        logging.info('Running hmmsearch to identify TA genes.')
+
+    if faa_file.endswith('.gz'):
+        logging.info(f'Protein sequence file {faa_file} ends with gz. It will be unzipped first to be used in hmmsearch.')
+
+        zipped_faa_file = faa_file
+        faa_file = os.path.join(os.path.dirname(outfile), os.path.basename(faa_file)[:-3])
+        zcat_command =  f"zcat {zipped_faa_file} > {faa_file}"
+        run_command(zcat_command, faa_file)
+
+    hmmsearch_command = f"hmmsearch -E 0.5 --domtblout {outfile} {hmm_db} {faa_file} > /dev/null"
+    run_command(hmmsearch_command, outfile)
+
+
+def diamond_blastp(faa_file, diamond_db, outfile):
+    fields = 'qseqid sseqid qstart qend sstart send pident qcovhsp evalue bitscore stitle'
+    hmmsearch_command = f"diamond blastp -q {faa_file} -d {diamond_db} -o {outfile} --outfmt 6 {fields} > /dev/null"
+    run_command(hmmsearch_command, outfile)
 
 
 def get_fast_fasta(fl, line, contig):
@@ -62,8 +79,36 @@ def get_fast_fasta(fl, line, contig):
     else:
         raise ValueError(f"seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence of {contig}")
 
+def get_ta_genes_from_diamond(diamond_result,  gene_to_hits= defaultdict(list), min_coverage=90, min_pident=90):
 
-def get_ta_genes_from_hmmsearch(hmm_result):
+    fields = 'qseqid sseqid qstart qend sstart send pident qcovhsp evalue bitscore stitle'.split()
+
+    DiamondLineParser = namedtuple('DiamondLineParser', fields)
+
+    with open(diamond_result) as fl:
+        for line in fl:
+
+            diamondhit = DiamondLineParser._make(line.strip().split('\t'))
+
+            if float(diamondhit.qcovhsp) < min_coverage and float(diamondhit.pident) < min_pident:
+                continue
+
+            gene_id = diamondhit.qseqid
+
+            domain = obj.Domain(
+                ali_from=diamondhit.qstart,
+                ali_to=diamondhit.qend,
+                domain_name=diamondhit.sseqid,
+                domain_acc=' '.join(diamondhit.stitle.split(' ')[1:]),
+                e_value=diamondhit.evalue,
+                score=diamondhit.bitscore,
+                line=line)
+
+            gene_to_hits[gene_id].append(domain)
+
+    return gene_to_hits
+
+def get_ta_genes_from_hmmsearch(hmm_result, gene_to_hits= defaultdict(list)):
 
     domtblout_headers = ("target_name", "target_accession",
                         "tlen", "query_name", "query_accession",
@@ -75,7 +120,8 @@ def get_ta_genes_from_hmmsearch(hmm_result):
 
     HmmLineParser = namedtuple('HmmLineParser', domtblout_headers)
 
-    gene_to_hits = defaultdict(list)  # keys : gene numbers, value: liste of the domain objet !!
+    # gene_to_hits = defaultdict(list)  # keys : gene numbers, value: liste of the domain objet !!
+
     with open(hmm_result) as fl:
         for line in fl:
             if line.startswith('#'):
@@ -86,11 +132,8 @@ def get_ta_genes_from_hmmsearch(hmm_result):
             gene_id = hmmhit.target_name
 
             domain = obj.Domain(
-                domain_number=hmmhit.domain_count,
                 ali_from=hmmhit.ali_coord_from,
                 ali_to=hmmhit.ali_coord_to,
-                env_from=hmmhit.env_coord_from,
-                env_to=hmmhit.env_coord_to,
                 domain_name=hmmhit.query_name,
                 domain_acc=hmmhit.query_accession,
                 e_value=hmmhit.seq_e_value,

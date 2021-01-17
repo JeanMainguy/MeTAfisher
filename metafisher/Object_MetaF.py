@@ -263,12 +263,10 @@ class Domain:
     # Threshold overlap !!
     threshold = 0.1  # 10% of overlaping after that  the domains are considered as overlaping
 
-    def __init__(self, domain_number, ali_from, ali_to, env_from, env_to, domain_name, domain_acc, e_value, score, line):
-        self.domain_number = int(domain_number)
+    def __init__(self, ali_from, ali_to, domain_name, domain_acc, e_value, score, line):
+
         self.ali_from = int(ali_from)
         self.ali_to = int(ali_to)
-        self.env_from = int(env_from)
-        self.env_from = int(env_from)
         self.domain_name = domain_name
         self.domain_acc = domain_acc
         self.e_value = float(e_value)

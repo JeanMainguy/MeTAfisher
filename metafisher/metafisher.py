@@ -118,6 +118,7 @@ def main():
     tadb_stat_dir = args.tadb_stat_dir
 
     hmm_db = args.hmm_db
+    diamond_db = 'TA_data/TA_data.dmnd'
 
     # Name of a specific contig or False by default if False all contig will be analysed
     contig_name = args.contig_name
@@ -140,7 +141,7 @@ def main():
         logging.info('Rescue mode is on.')
         genomic_seq_file = args.genomic_seq
 
-    table_hmm = os.path.join(outdir, f'output_HMM_table_{metaG_name}.txt')
+
 
     info_contig_stat = True
     output_human = True
@@ -237,21 +238,21 @@ def main():
                   "domain_association":dict_domain_association,
                   "domain_gene_type":dict_domain_gene_type}
 
+    element_to_rm = -2 if faa_file.endswith('.gz') else -1
+    simple_faa_name = '.'.join(os.path.basename(faa_file).split('.')[:-element_to_rm])
+    hmmsearch_result_file = os.path.join(outdir, f"{simple_faa_name}.hmmsearch")
+    fct.hmmsearch(faa_file, hmm_db, hmmsearch_result_file)
 
-    obj.Gene.hmmdb = hmm_db
-    force = True
-    if not os.path.isfile(table_hmm) or force:
-        logging.info('Running hmmsearch to identify TA genes.')
+    diamond_result_file = os.path.join(outdir, f"{simple_faa_name}.diamond")
+    fct.diamond_blastp(faa_file, diamond_db, diamond_result_file)
 
-        table_hmm = fct.HMM_launcher(faa_file, table_hmm)
-    else:
-        logging.info(f'Hmmresult file {table_hmm} exists already. We use it.')
+    gene_to_hits = fct.get_ta_genes_from_hmmsearch(hmmsearch_result_file)
+    gene_to_hits = fct.get_ta_genes_from_diamond(diamond_result_file, gene_to_hits)
 
-    gene_to_domains = fct.get_ta_genes_from_hmmsearch(table_hmm)
+    fct.annotate_domains(gene_to_hits.values(), info_domains, dict_domain_gene_type)
 
-    fct.annotate_domains(gene_to_domains.values(), info_domains, dict_domain_gene_type)
 
-    contig_to_genes = fct.get_genes_by_contigs(gene_to_domains, gff_file)
+    contig_to_genes = fct.get_genes_by_contigs(gene_to_hits, gff_file)
 
     for contig, genes in contig_to_genes:
         if contig_name and contig != contig_name:
@@ -267,7 +268,7 @@ def main():
 
         if initial_nb_lonely and rescue:
             adj_orfs = orf.get_adjacent_orfs(orf_dict, gff_dict, contig, genes)
-            ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, outdir)
+            ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, outdir, hmm_db)
             ta_domains = [orf.domain for orf in ta_orfs]
             fct.annotate_domains(ta_domains, info_domains, dict_domain_gene_type)
         else:
