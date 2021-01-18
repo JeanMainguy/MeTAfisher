@@ -74,7 +74,7 @@ def identify_ta_orfs(adj_orfs, genes, outdir, hmm_db):
     with open(adjorf_faa_file, 'w') as fl:
         for i, orf in enumerate(adj_orfs):
             orf.write_faa(fl, i)
-            adj_orf_dict[i] = orf
+            adj_orf_dict[f'{orf.contig}|{i}'] = orf
 
     # launch hmmsearch
     hmm_result_file = os.path.join(outdir , 'output_HMM_table_adj_orf.txt')
@@ -202,15 +202,15 @@ def get_adjacent_orfs_by_strand(orfs, strand, lonelyGenes, gff_ends):
     return adj_orfs
 
 def adjOrf_hmm(table_hmm, adj_orf_dict):
-    """Do something."""
-    hmm_orfs = []
-    with open(table_hmm, 'r') as fl:
-        for line in fl:
-            if line.startswith("#"):
-                continue
-            gene_number, domain = fct.hmmtable_parser(line)
-            hmm_orf = adj_orf_dict[gene_number]
 
+    hmm_orfs = []
+    gene_to_domains = fct.get_ta_genes_from_hmmsearch(table_hmm)
+    print(gene_to_domains)
+    for gene_id, domains in gene_to_domains.items():
+        print(table_hmm, gene_id, domains[0].line)
+        hmm_orf = adj_orf_dict[gene_id]
+
+        for domain in domains:
             try:
                 hmm_orf.domain.append(domain)
                 hmm_orf.domain_Ct_border = max(hmm_orf.domain_Ct_border, domain.ali_from * 3)
@@ -218,9 +218,10 @@ def adjOrf_hmm(table_hmm, adj_orf_dict):
                 hmm_orf.domain_Ct_border = domain.ali_from * 3
                 hmm_orf.domain = [domain]
 
-                # obj.Orf.hmm_orf.setdefault(hmm_orf.strand, []).append(hmm_orf)
                 hmm_orfs.append(hmm_orf)
+
     return hmm_orfs
+
 
 def get_gff_ends(gff_dict, contig):
     """

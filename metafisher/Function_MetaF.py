@@ -108,7 +108,7 @@ def get_ta_genes_from_diamond(diamond_result,  gene_to_hits= defaultdict(list), 
 
     return gene_to_hits
 
-def get_ta_genes_from_hmmsearch(hmm_result, gene_to_hits= defaultdict(list)):
+def hmm_result_parser(hmm_result):
 
     domtblout_headers = ("target_name", "target_accession",
                         "tlen", "query_name", "query_accession",
@@ -118,29 +118,35 @@ def get_ta_genes_from_hmmsearch(hmm_result, gene_to_hits= defaultdict(list)):
                         "ali_coord_from", "ali_coord_to", "env_coord_from",
                         "env_coord_to", "acc", "description_of_target")
 
-    HmmLineParser = namedtuple('HmmLineParser', domtblout_headers)
-
-    # gene_to_hits = defaultdict(list)  # keys : gene numbers, value: liste of the domain objet !!
+    HmmLineParser =  namedtuple('HmmLineParser', domtblout_headers)
 
     with open(hmm_result) as fl:
         for line in fl:
             if line.startswith('#'):
                 continue
 
-            hmmhit = HmmLineParser._make(line.split()[:23])
+            yield HmmLineParser._make(line.split()[:23])
 
-            gene_id = hmmhit.target_name
 
-            domain = obj.Domain(
-                ali_from=hmmhit.ali_coord_from,
-                ali_to=hmmhit.ali_coord_to,
-                domain_name=hmmhit.query_name,
-                domain_acc=hmmhit.query_accession,
-                e_value=hmmhit.seq_e_value,
-                score=hmmhit.seq_score,
-                line=line)
+def get_ta_genes_from_hmmsearch(hmm_result, gene_to_hits= None):
 
-            gene_to_hits[gene_id].append(domain)
+    if gene_to_hits is None:
+        gene_to_hits = defaultdict(list)
+
+    for hmmhit in hmm_result_parser(hmm_result):
+
+        gene_id = hmmhit.target_name
+
+        domain = obj.Domain(
+            ali_from=hmmhit.ali_coord_from,
+            ali_to=hmmhit.ali_coord_to,
+            domain_name=hmmhit.query_name,
+            domain_acc=hmmhit.query_accession,
+            e_value=hmmhit.seq_e_value,
+            score=hmmhit.seq_score,
+            line=hmmhit)
+
+        gene_to_hits[gene_id].append(domain)
 
     return gene_to_hits
 

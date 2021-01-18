@@ -243,11 +243,12 @@ def main():
     hmmsearch_result_file = os.path.join(outdir, f"{simple_faa_name}.hmmsearch")
     fct.hmmsearch(faa_file, hmm_db, hmmsearch_result_file)
 
-    diamond_result_file = os.path.join(outdir, f"{simple_faa_name}.diamond")
-    fct.diamond_blastp(faa_file, diamond_db, diamond_result_file)
-
     gene_to_hits = fct.get_ta_genes_from_hmmsearch(hmmsearch_result_file)
-    gene_to_hits = fct.get_ta_genes_from_diamond(diamond_result_file, gene_to_hits)
+
+    if diamond_db and False:
+        diamond_result_file = os.path.join(outdir, f"{simple_faa_name}.diamond")
+        fct.diamond_blastp(faa_file, diamond_db, diamond_result_file)
+        gene_to_hits = fct.get_ta_genes_from_diamond(diamond_result_file, gene_to_hits)
 
     fct.annotate_domains(gene_to_hits.values(), info_domains, dict_domain_gene_type)
 
