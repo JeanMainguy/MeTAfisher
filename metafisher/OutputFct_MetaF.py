@@ -5,7 +5,8 @@ from operator import attrgetter
 import Score_MetaF as score
 import os
 
-def output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize):
+
+def output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue=False, resize=False):
     headinfo, complement = output_headinfo_creation(metaG_name, thresholds, rescue, resize)
     # Output H, T and S initialization
     # dico output is update no need to give it back
@@ -85,7 +86,7 @@ def stat_file_creation(output_way, metaG_name, info_contig_stat, headinfo, compl
     return False, False, False
 
 
-def contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs=[] ):
+def contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs=[]):
     contig_stat = {}
     contig_stat['contig'] = contig
     contig_stat['gene with TA domain'] = len(genes)
@@ -191,7 +192,8 @@ def write_short_result(g, post, fl, i):
     tag_g = give_id(g)
     tag_p = give_id(post)
 
-    system_score = score.confl(g_score[0]['score'], post_score[0]['score'], post_score[0]['domain_association_score'])
+    system_score = score.confl(g_score[0]['score'], post_score[0]
+                               ['score'], post_score[0]['domain_association_score'])
 
     fl.write("{}. Genes {} & {}\tstrand {}\tscore {}\n".format(
         i, tag_g, tag_p, g.strand, system_score))
@@ -202,7 +204,8 @@ def write_human_result(g, post, fl, i):
     g_score = g.dict_score[post.gene_number]
     post_score = post.dict_score[g.gene_number]
     domain_asso = round(post_score[0]['domain_association_score'], npc)
-    system_score = score.confl(g_score[0]['score'], post_score[0]['score'], post_score[0]['domain_association_score'])
+    system_score = score.confl(g_score[0]['score'], post_score[0]
+                               ['score'], post_score[0]['domain_association_score'])
     dist_score = round(post_score[0]['dist_score'], npc)
 
     fl.write("\nPRE GENE\n" + write_line(g, g_score))

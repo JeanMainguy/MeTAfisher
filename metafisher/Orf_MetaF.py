@@ -32,8 +32,10 @@ def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
         tmp_adjorf_faa: name of the file where adj orf will be write
     """
 
-    lonely_genes_on_strand_plus = [gene for gene in fct.get_lonely_genes(genes) if gene.strand == "+"]
-    lonely_genes_on_strand_minus = [gene for gene in fct.get_lonely_genes(genes) if gene.strand == "-"]
+    lonely_genes_on_strand_plus = [
+        gene for gene in fct.get_lonely_genes(genes) if gene.strand == "+"]
+    lonely_genes_on_strand_minus = [
+        gene for gene in fct.get_lonely_genes(genes) if gene.strand == "-"]
 
     genes_plus = [gene for gene in genes if gene.strand == '+']
     genes_minus = [gene for gene in genes if gene.strand == '-']
@@ -64,20 +66,21 @@ def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
 
     return adj_orfs
 
+
 def identify_ta_orfs(adj_orfs, genes, outdir, hmm_db):
     adj_orf_dict = {}
     gene_index = max([gene.gene_number for gene in genes])
 
     logging.info(f'{len(adj_orfs)} adjacent orfs have been found! ')
 
-    adjorf_faa_file = os.path.join(outdir , 'temporary_adjOrf.faa')
+    adjorf_faa_file = os.path.join(outdir, 'temporary_adjOrf.faa')
     with open(adjorf_faa_file, 'w') as fl:
         for i, orf in enumerate(adj_orfs):
             orf.write_faa(fl, i)
             adj_orf_dict[f'{orf.contig}|{i}'] = orf
 
     # launch hmmsearch
-    hmm_result_file = os.path.join(outdir , 'output_HMM_table_adj_orf.txt')
+    hmm_result_file = os.path.join(outdir, 'output_HMM_table_adj_orf.txt')
     fct.hmmsearch(adjorf_faa_file, hmm_db, hmm_result_file)
     # parsing result and store it in obj.Orf.hmm_orf
     ta_orfs = adjOrf_hmm(hmm_result_file, adj_orf_dict)
@@ -113,7 +116,6 @@ def hmm_orf_get_adj(hmm_orfs, genes):
         genes.append(orf)
 
 
-
 def add_post_pre_attr(strand, g_post, g_prev):
     """Add post and pre gene to gene object."""
     # obj.TA_gene.linked.add(g_post)
@@ -135,7 +137,8 @@ def adjust_orf_attribut(orfs, gene_index):
     """
     for orf in orfs:
         orf.possible_starts = [s for s in orf.possible_starts if s <= orf.domain_Ct_border]
-        orf.distanceMin = obj.Gene.distanceMin - abs(orf.possible_starts[-1] - orf.possible_starts[0])
+        orf.distanceMin = obj.Gene.distanceMin - \
+            abs(orf.possible_starts[-1] - orf.possible_starts[0])
 
         # WARNING absolute value of distance min should not be greater than the length of the gene !!
         # because it would allow overlap of more than the length of the gene
@@ -172,6 +175,7 @@ def codon_finder(liste, seq, frame=1, inf=0, sup='Not defined'):
             position.append(i)
     return position
 
+
 def get_adjacent_orfs_by_strand(orfs, strand, lonelyGenes, gff_ends):
     """
     Manage ORF.
@@ -197,9 +201,11 @@ def get_adjacent_orfs_by_strand(orfs, strand, lonelyGenes, gff_ends):
             adj_orfs.append(orf)
 
     if gff_ends[strand]:
-        logging.info(f"{orf.contig}: {len(gff_ends[strand])} CDS on strand {strand} found in the gff file did not match predicted ORFs. CDS ends {gff_ends[strand]}.")
+        logging.info(
+            f"{orf.contig}: {len(gff_ends[strand])} CDS on strand {strand} found in the gff file did not match predicted ORFs. CDS ends {gff_ends[strand]}.")
 
     return adj_orfs
+
 
 def adjOrf_hmm(table_hmm, adj_orf_dict):
 
@@ -460,6 +466,7 @@ def getGeneticCode(ncbi_genetic_code_id):
     else:
         raise ValueError(f'The given ncbi id {ncbi_genetic_code_id} is not managed yet.')
         return
+
     table = {}
     codonstart = []
     codonstop = []

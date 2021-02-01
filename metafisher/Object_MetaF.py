@@ -275,7 +275,6 @@ class Domain:
 
         self.domain_info = {}
 
-
     def annotate_domain(self, info_domains, gene_type_domains):
         try:
             self.domain_info = info_domains[self.domain_name]

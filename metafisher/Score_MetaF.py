@@ -117,9 +117,9 @@ def score_pair(pre, post, score_dict):  # post is a gene located upstream of pre
                          obj.Gene.distanceMin < initial_dist + s < obj.Gene.distanceMax]
 
     score_post = get_score(post, compatible_starts, distance=initial_dist,
-                    length_proba=score_dict['length_proba'], distance_proba=score_dict['distance_proba'])
+                           length_proba=score_dict['length_proba'], distance_proba=score_dict['distance_proba'])
     score = get_score(pre, pre.possible_starts,
-                    length_proba=score_dict['length_proba'], distance_proba=score_dict['distance_proba'])
+                      length_proba=score_dict['length_proba'], distance_proba=score_dict['distance_proba'])
 
     score_do_asso = score_do_association(post, pre, score_dict['domain_association'],
                                          score_dict['domain_gene_type'])
@@ -153,7 +153,6 @@ def get_score(gene, starts, length_proba, distance_proba, distance=None):
         assert length % 3 == 0
 
         proba_len = length_proba[int(length / 3)]
-
 
         dico_score = {"start": start, "domain": d.score, "len_score": proba_len,
                       'length': length, "score": proba_len}

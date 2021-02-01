@@ -28,13 +28,14 @@ def run_command(command, outfile):
     exit_code = os.system(command)
 
     if exit_code != 0:
-        raise ValueError(f"{cmd_name} has failed. exit_code={exit_code} ")
+        raise ValueError(f"{cmd_name} has failed. exit_code={exit_code}.")
     # call(hmmsearch_command, shell=True)
     if not os.path.isfile(outfile):
         # logging.warning(f'hmmsearch has failed.')
         raise FileNotFoundError(f'{cmd_name} command has failed to create the file {outfile}')
 
     return exit_code
+
 
 def hmmsearch(faa_file, hmm_db, outfile, force=False):
 
@@ -46,14 +47,15 @@ def hmmsearch(faa_file, hmm_db, outfile, force=False):
         logging.info('Running hmmsearch to identify TA genes.')
 
     if faa_file.endswith('.gz'):
-        logging.info(f'Protein sequence file {faa_file} ends with gz. It will be unzipped first to be used in hmmsearch.')
+        logging.info(
+            f'Protein sequence file {faa_file} ends with gz. It will be unzipped first to be used in hmmsearch.')
 
         zipped_faa_file = faa_file
         faa_file = os.path.join(os.path.dirname(outfile), os.path.basename(faa_file)[:-3])
-        zcat_command =  f"zcat {zipped_faa_file} > {faa_file}"
+        zcat_command = f"zcat {zipped_faa_file} > {faa_file}"
         run_command(zcat_command, faa_file)
 
-    hmmsearch_command = f"hmmsearch -E 0.5 --domtblout {outfile} {hmm_db} {faa_file} > /dev/null"
+    hmmsearch_command = f"hmmsearch -E 0.5 --domtblout {outfile} {hmm_db} {faa_file} > {outfile}.LOG"
     run_command(hmmsearch_command, outfile)
 
 
@@ -77,9 +79,11 @@ def get_fast_fasta(fl, line, contig):
     if seq['data']:
         return seq, line
     else:
-        raise ValueError(f"seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence of {contig}")
+        raise ValueError(
+            f"seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence of {contig}")
 
-def get_ta_genes_from_diamond(diamond_result,  gene_to_hits= defaultdict(list), min_coverage=90, min_pident=90):
+
+def get_ta_genes_from_diamond(diamond_result,  gene_to_hits=defaultdict(list), min_coverage=90, min_pident=90):
 
     fields = 'qseqid sseqid qstart qend sstart send pident qcovhsp evalue bitscore stitle'.split()
 
@@ -108,27 +112,27 @@ def get_ta_genes_from_diamond(diamond_result,  gene_to_hits= defaultdict(list), 
 
     return gene_to_hits
 
+
 def hmm_result_parser(hmm_result):
 
     domtblout_headers = ("target_name", "target_accession",
-                        "tlen", "query_name", "query_accession",
-                        "qlen", "seq_e_value", "seq_score", "seq_bias",
-                        "domain_count", "domain_of", "domain_c_Evalue", "domain_i_Evalue",
-                        "domain_score", "domain_bias", "hmm_coord_from", "hmm_coord_to",
-                        "ali_coord_from", "ali_coord_to", "env_coord_from",
-                        "env_coord_to", "acc", "description_of_target")
+                         "tlen", "query_name", "query_accession",
+                         "qlen", "seq_e_value", "seq_score", "seq_bias",
+                         "domain_count", "domain_of", "domain_c_Evalue", "domain_i_Evalue",
+                         "domain_score", "domain_bias", "hmm_coord_from", "hmm_coord_to",
+                         "ali_coord_from", "ali_coord_to", "env_coord_from",
+                         "env_coord_to", "acc", "description_of_target")
 
-    HmmLineParser =  namedtuple('HmmLineParser', domtblout_headers)
+    HmmLineParser = namedtuple('HmmLineParser', domtblout_headers)
 
     with open(hmm_result) as fl:
         for line in fl:
             if line.startswith('#'):
                 continue
-
             yield HmmLineParser._make(line.split()[:23])
 
 
-def get_ta_genes_from_hmmsearch(hmm_result, gene_to_hits= None):
+def get_ta_genes_from_hmmsearch(hmm_result, gene_to_hits=None):
 
     if gene_to_hits is None:
         gene_to_hits = defaultdict(list)
@@ -165,7 +169,7 @@ def get_hmm_genes(contig, table_hmm, gff_file):
                 gene_number, domain = hmmtable_parser(line)
 
                 domains_dict.setdefault(gene_number, []).append(domain)
-    gff_headers = ("seqname", "_3", "feature", "start", "end", "_2", "strand", "_1","attribute")
+    gff_headers = ("seqname", "_3", "feature", "start", "end", "_2", "strand", "_1", "attribute")
     with open(gff_file, 'r') as gff_fl:
         gff_tsv_dict_reader = csv.DictReader(gff_fl, delimiter='\t', fieldnames=gff_headers)
 
@@ -184,6 +188,7 @@ def get_hmm_genes(contig, table_hmm, gff_file):
                 genes.append(gene)
 
     return genes
+
 
 def build_ta_gene_from_gff_line(gff_line):
     gene = obj.TA_gene()
@@ -320,8 +325,10 @@ def compute_gene_adjacency(genes):
     call tandem gene function to check if the gene fit the distance threshold
     """
 
-    genes_strand_plus = sorted((gene for gene in genes if gene.strand == '+' ), key=attrgetter('end'))
-    genes_strand_minus =  sorted((gene for gene in genes if gene.strand == '-' ), key=attrgetter('start'))
+    genes_strand_plus = sorted(
+        (gene for gene in genes if gene.strand == '+'), key=attrgetter('end'))
+    genes_strand_minus = sorted(
+        (gene for gene in genes if gene.strand == '-'), key=attrgetter('start'))
 
     # adj_by_strand(obj.TA_gene.genes_plus)
     # adj_by_strand(obj.TA_gene.genes_minus)
@@ -365,6 +372,7 @@ def adj_by_strand(genes):
                 linked_genes.add(gpost)
     return linked_genes
 
+
 def check_size(genes):
     """
     Remove genes with a length that does not fit the length thresholds.
@@ -391,11 +399,13 @@ def check_size(genes):
 def get_linked_genes(genes):
     return (gene for gene in genes if gene.post or gene.prev)
 
+
 def get_lonely_genes(genes):
     """
     Retrieve gene that are not linked to any other genes.
     """
     return (gene for gene in genes if not gene.post and not gene.prev)
+
 
 def delete_files(listeFiles):
     for outfile in listeFiles:
@@ -403,6 +413,7 @@ def delete_files(listeFiles):
             os.remove(outfile)
         except OSError as e:  # if failed, report it back to the user ##
             print(f"Error: {e.filename} - {e.strerror}.")
+
 
 def annotate_domains(domains, info_domains, dict_domain_gene_type):
     for domains in domains:
@@ -432,7 +443,6 @@ def get_genes_by_contigs(gene_to_domains, gff_file):
                     genes = []
                 current_seqname = line_dict["seqname"]
 
-
             if line_dict["feature"] not in ['CDS', 'ORF']:
                 continue
             gene_count_by_contig += 1
@@ -444,7 +454,8 @@ def get_genes_by_contigs(gene_to_domains, gff_file):
             try:
                 gene_id = id_search.group(1)
             except AttributeError as err:
-                logging.critical(f'Attribute of gff line has no protein_id or ID: {line_dict["attribute"]}')
+                logging.critical(
+                    f'Attribute of gff line has no protein_id or ID: {line_dict["attribute"]}')
                 raise err
 
             if gene_id in gene_to_domains:
@@ -454,6 +465,5 @@ def get_genes_by_contigs(gene_to_domains, gff_file):
                 gene.domain_Ct_border = max((d.ali_from * 3 for d in gene_to_domains[gene_id]))
                 genes.append(gene)
 
-
-        if  genes:
+        if genes:
             yield (line_dict["seqname"], genes)
