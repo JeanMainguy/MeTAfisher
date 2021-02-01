@@ -1,12 +1,12 @@
 ## result_H
 ## Name of the sequence analysed: metafisher
+
 ## Rescue lonely gene : False
 ## Resize gene : False
 ## Distance threshold from -100nt to 300nt
-## Length threshold from 30aa to 1500aa
+## Length threshold from 10aa to 500aa
 
 ====NC_010645.1====
-
 
 PRE GENE
 CDS 256	from 262607 to 262197	137aa (0.404)	start 0

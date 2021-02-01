@@ -1,8 +1,0 @@
-## Name of the sequence analysed: metafisher
-## Rescue lonely gene : False
-## Resize gene : False
-## Distance threshold from -100nt to 300nt
-## Length threshold from 30aa to 1500aa
-contig	gene with TA domain	lonely gene	linked gene
-NC_010645.1	102	90	12
-NC_010645.1	102	90	12
