@@ -46,7 +46,7 @@ def parse_arguments():
 
     parser = argparse.ArgumentParser(
         prog='MeTAfisher',
-        description='Identification of Toxin Antitoxin Systems')
+        description='Identification of Toxin Antitoxin Systems', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--gff',
                         help="Path to the gff file.", required=True)
@@ -66,13 +66,13 @@ def parse_arguments():
                         help="Pathway of the tadb dtat dir. default is in the TADB_stat dir of the tool",
                         default=default_tadb_stat_dir)
 
-    help_resize = "Resize the genes if they are too big for the thresholds by taking into account the possible starts along the sequence."
-    help_resize += "To do only if the gene prediction is not trustable. This option requires the argument --fna."
-    parser.add_argument('--resize', action='store_true',
-                        help=help_resize)
-    parser.add_argument('--fna',
-                        help="Path to the fna file, which is a fasta file of annotated genes dna sequences. This file is required when the option --resize is given.",
-                        required=False)
+    # help_resize = "Resize the genes if they are too big for the thresholds by taking into account the possible starts along the sequence."
+    # help_resize += "To do only if the gene prediction is not trustable. This option requires the argument --fna."
+    # parser.add_argument('--resize', action='store_true',
+    #                     help=help_resize)
+    # parser.add_argument('--fna',
+    #                     help="Path to the fna file, which is a fasta file of annotated genes dna sequences. This file is required when the option --resize is given.",
+    #                     required=False)
 
     rescue_help = "Applying the rescue step on lonely genes."
     rescue_help += "When a gene has TA domain but no other annotated gene around have one,"
@@ -91,6 +91,9 @@ def parse_arguments():
     parser.add_argument("--hmm_db", default=default_hmm_db,
                         help="path of the HMM database.")
 
+    parser.add_argument("--diamond_db",
+                        help="path of the diamond database.")
+
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                         action="store_true")
 
@@ -99,8 +102,8 @@ def parse_arguments():
     if args.rescue and args.genomic_seq is None:
         parser.error('argument --genomic_seq is required when rescue mode is on.')
 
-    if args.resize and args.fna is None:
-        parser.error('argument --fna is required when resize mode is on.')
+    # if args.resize and args.fna is None:
+    #     parser.error('argument --fna is required when resize mode is on.')
 
     return args
 
@@ -118,13 +121,13 @@ def main():
     tadb_stat_dir = args.tadb_stat_dir
 
     hmm_db = args.hmm_db
-    diamond_db = 'TA_data/TA_data.dmnd'
+    diamond_db = args.diamond_db
 
     # Name of a specific contig or False by default if False all contig will be analysed
     contig_name = args.contig_name
 
     # Flag
-    resize = args.resize
+    # resize = args.resize
     rescue = args.rescue
 
     if not os.path.isdir(outdir):
@@ -133,15 +136,13 @@ def main():
     gff_file = args.gff
     faa_file = args.faa
 
-    if resize:
-        logging.info('Resize mode is on.')
-        fna_file = args.fna
+    # if resize:
+    #     logging.info('Resize mode is on.')
+    #     fna_file = args.fna
 
     if rescue:
         logging.info('Rescue mode is on.')
         genomic_seq_file = args.genomic_seq
-
-
 
     info_contig_stat = True
     output_human = True
@@ -190,7 +191,7 @@ def main():
                   "distanceMin": distanceMin, "distanceMax": distanceMax}
 
     writer_stat, total_stat, fl_stat = out.output_manager(
-        outdir, metaG_name, thresholds, dict_output, info_contig_stat, rescue, resize)
+        outdir, metaG_name, thresholds, dict_output, info_contig_stat, rescue)
 
     # Set the stops and starts codon as an atribut of the class Gene
     # Parameter for the orfinder
@@ -216,15 +217,15 @@ def main():
         gff_dict['csv'] = csv.reader(fl_csv, delimiter='\t')
         gff_dict['line'] = next(gff_dict['csv'])
 
-    if resize:
-        # Open file fna to retrieve sequence of the predicted gene
-        # variable are stored in a dico to not have to retourned it every time !!
-        fna_seq_dict = {}
-        fna_seq_dict["fl"] = open(fna_file, 'r')
-
-        fna_seq_dict["line"] = fna_seq_dict["fl"].readline()
-        # PUT info in a dico to not have to retourned it every time !! dico is used in check_size
-        fna_seq_dict["codon_start"] = table['start']
+    # if resize:
+    #     # Open file fna to retrieve sequence of the predicted gene
+    #     # variable are stored in a dico to not have to retourned it every time !!
+    #     fna_seq_dict = {}
+    #     fna_seq_dict["fl"] = open(fna_file, 'r')
+    #
+    #     fna_seq_dict["line"] = fna_seq_dict["fl"].readline()
+    #     # PUT info in a dico to not have to retourned it every time !! dico is used in check_size
+    #     fna_seq_dict["codon_start"] = table['start']
 
     # Score preparation
     k = 20
@@ -233,10 +234,10 @@ def main():
     dict_domain_association = score.decoder(file_domain_association)
     dict_domain_gene_type = score.decoder(file_domain_gene_type)
 
-    score_dict = {"length_proba":length_proba,
-                  "distance_proba":distance_proba,
-                  "domain_association":dict_domain_association,
-                  "domain_gene_type":dict_domain_gene_type}
+    score_dict = {"length_proba": length_proba,
+                  "distance_proba": distance_proba,
+                  "domain_association": dict_domain_association,
+                  "domain_gene_type": dict_domain_gene_type}
 
     element_to_rm = -2 if faa_file.endswith('.gz') else -1
     simple_faa_name = '.'.join(os.path.basename(faa_file).split('.')[:-element_to_rm])
@@ -245,26 +246,25 @@ def main():
 
     gene_to_hits = fct.get_ta_genes_from_hmmsearch(hmmsearch_result_file)
 
-    if diamond_db and False:
+    if diamond_db:
         diamond_result_file = os.path.join(outdir, f"{simple_faa_name}.diamond")
         fct.diamond_blastp(faa_file, diamond_db, diamond_result_file)
         gene_to_hits = fct.get_ta_genes_from_diamond(diamond_result_file, gene_to_hits)
 
     fct.annotate_domains(gene_to_hits.values(), info_domains, dict_domain_gene_type)
 
-
     contig_to_genes = fct.get_genes_by_contigs(gene_to_hits, gff_file)
 
     for contig, genes in contig_to_genes:
         if contig_name and contig != contig_name:
-
             continue
 
         logging.info(f'{contig}: {len(genes)} TA genes.')
 
         fct.check_size(genes)
 
-        fct.compute_gene_adjacency(genes)   # set the adj gene for each gene which has
+        fct.compute_gene_adjacency(genes)
+
         initial_nb_lonely = len(genes) - len(list(fct.get_linked_genes(genes)))
 
         if initial_nb_lonely and rescue:
@@ -279,7 +279,8 @@ def main():
         score.score_TA_list(genes, score_dict)
         # Write stat
         if info_contig_stat:
-            out.contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_stat, genes, adj_orfs)
+            out.contig_stat_manager(writer_stat, contig, initial_nb_lonely,
+                                    rescue, total_stat, genes, adj_orfs)
             logging.info(total_stat)
 
         # write output
@@ -296,6 +297,7 @@ def main():
             dict_output[kfl].close()
         except AttributeError:
             pass
+
 
 if __name__ == '__main__':
     main()
