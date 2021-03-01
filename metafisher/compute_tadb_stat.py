@@ -25,6 +25,7 @@ import gzip
 import re
 import json
 
+
 def encoder(filename, dict):
     logging.info(f'writing json file {filename}')
     with open(filename, 'w') as file:
@@ -43,6 +44,7 @@ def write_table(filename, domain_domain_dict):
                     domain_domain_dict[d][d_n])
                 line.append(nb_pairs_in_common)
             fl.write('\t'.join(line)+'\n')
+
 
 def init_logging(verbose_flag):
     """Initialise logging."""
@@ -114,6 +116,7 @@ def domain_domain_pair_association(opposite_type_dict, domain_type_dict):
 
     return domain_domain_dict
 
+
 def extract_db_and_gene_number(gene_id):
     gene_number_pattern = re.compile(r'[^\d]+(\d+)$')
 
@@ -124,6 +127,7 @@ def extract_db_and_gene_number(gene_id):
 
     db_name = gene_id.split('|')[0]
     return db_name, gene_number
+
 
 def parse_tadb_ids(seq_file):
     gene_number_to_id = {}
@@ -143,38 +147,37 @@ def parse_tadb_ids(seq_file):
     # assert i == len(gene_number_to_id), "Same gene number is used at least twice. Check consistency of sequence id of {seq_file}"
     return gene_number_to_id
 
+
 def get_genes_association(toxin_file, antitoxin_file):
     toxin_id_to_number = parse_tadb_ids(toxin_file)
     antitoxin_id_to_number = parse_tadb_ids(antitoxin_file)
 
-
     if len(toxin_id_to_number) != len(antitoxin_id_to_number):
-        logging.critical(f"Not the same number of toxin genes ({len(toxin_id_to_number)}) and antitoxin genes ({len(antitoxin_id_to_number)}). check files: {toxin_file} and {antitoxin_file}")
-
+        logging.critical(
+            f"Not the same number of toxin genes ({len(toxin_id_to_number)}) and antitoxin genes ({len(antitoxin_id_to_number)}). check files: {toxin_file} and {antitoxin_file}")
 
     gene_numbers = set(toxin_id_to_number) | set(antitoxin_id_to_number)
     genes_association = {}
     genes_type = {}
 
-    for db_name,gene_number in gene_numbers:
+    for db_name, gene_number in gene_numbers:
 
         try:
-            antitoxin_id = antitoxin_id_to_number[(db_name,gene_number)]
-            genes_type[antitoxin_id] = {'AT':1, 'T':0}
+            antitoxin_id = antitoxin_id_to_number[(db_name, gene_number)]
+            genes_type[antitoxin_id] = {'AT': 1, 'T': 0}
 
         except KeyError:
 
             logging.critical(f'No antitoxin gene with id {db_name}|AT{gene_number}')
-            continue
         try:
-            toxin_id = toxin_id_to_number[(db_name,gene_number)]
-            genes_type[toxin_id] = {'AT':0, 'T':1}
+            toxin_id = toxin_id_to_number[(db_name, gene_number)]
+            genes_type[toxin_id] = {'AT': 0, 'T': 1}
         except KeyError:
             logging.critical(f'No toxin with id {db_name}|T{gene_number}')
-            continue
 
-        genes_association[antitoxin_id] = {toxin_id:1}
-        genes_association[toxin_id] = {antitoxin_id:1}
+        if toxin_id and antitoxin_id:
+            genes_association[antitoxin_id] = {toxin_id: 1}
+            genes_association[toxin_id] = {antitoxin_id: 1}
 
     return genes_association, genes_type
 
@@ -189,7 +192,7 @@ def domains_genes_association(hmm_result, domain_type_dict):
 
         domain = hmmhit.query_name
         re_result = gene_id_parser.match(hmmhit.target_name)
-        type = re_result.group("type") # T or AT
+        type = re_result.group("type")  # T or AT
         gene_number = re_result.group("gene_number")
 
         domain_type_dict.setdefault(domain, {}).setdefault(type, []).append(gene_number)
@@ -210,13 +213,14 @@ def run_hmmsearch(faa_file, hmm_db, outdir):
 
     return hmm_result
 
+
 def main():
     """Orchestrate the execution of the program"""
     args = parse_arguments()
 
     init_logging(args.verbose)
 
-    toxin_seq_file =  args.toxin_faa
+    toxin_seq_file = args.toxin_faa
     antitoxin_seq_file = args.antitoxin_faa
 
     outdir = args.outdir
@@ -242,20 +246,17 @@ def main():
     for d, d_n in domain_domain_dict.items():
         domain_domain_count_asso[d] = {k: len(v) for k, v in d_n.items()}
 
-
-
     table_file = os.path.join(outdir, 'domain_domain_association.tsv')
     write_table(table_file, domain_domain_count_asso)
-    
 
     domain_domain_count_asso.update(genes_association)
 
     json_d_d_file = os.path.join(outdir, 'domain_domain_association.json')
     encoder(json_d_d_file, domain_domain_count_asso)
 
-
     for domain, type_dict in domain_type_dict.items():
-        domain_type_dict[domain] = {type_gene: len(set(gene_ids)) for type_gene, gene_ids  in type_dict.items()}
+        domain_type_dict[domain] = {type_gene: len(set(gene_ids))
+                                    for type_gene, gene_ids in type_dict.items()}
 
     domain_type_dict.update(genes_type)
 
