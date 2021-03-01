@@ -3,6 +3,7 @@ import csv
 import Object_MetaF as obj
 from operator import attrgetter, itemgetter
 import json
+import logging
 
 
 def decoder(filename):
@@ -75,6 +76,7 @@ def domain_association_prct(do1, do2, association, domain_types):
         number_of_association = float(association[do1][do2])
     except KeyError:
         number_of_association = 0.0
+
     nb_do1_found = domain_types[do1]['AT'] + domain_types[do1]['T']
     nb_do2_found = domain_types[do2]['AT'] + domain_types[do2]['T']
 
@@ -93,7 +95,7 @@ def score_do_association(post, pre, dict_domain_association, dict_domain_gene_ty
 
         for post_do in post.domain:
             perct_asso = domain_association_prct(
-                pre_do.domain_name, post_do.domain_name, dict_domain_association, dict_domain_gene_type)
+                pre_do.name, post_do.name, dict_domain_association, dict_domain_gene_type)
             asso.append(perct_asso)
     return max(asso)
 

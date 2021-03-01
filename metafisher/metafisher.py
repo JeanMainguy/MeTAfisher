@@ -63,7 +63,7 @@ def parse_arguments():
                         default='metafisher_results')
 
     parser.add_argument("--tadb_stat_dir",
-                        help="Pathway of the tadb dtat dir. default is in the TADB_stat dir of the tool",
+                        help="Pathway of the tadb stat dir",
                         default=default_tadb_stat_dir)
 
     # help_resize = "Resize the genes if they are too big for the thresholds by taking into account the possible starts along the sequence."
@@ -75,8 +75,8 @@ def parse_arguments():
     #                     required=False)
 
     rescue_help = "Applying the rescue step on lonely genes."
-    rescue_help += "When a gene has TA domain but no other annotated gene around have one,"
-    rescue_help += "or around are identified and searched for potential TA domain."
+    rescue_help += "When a gene has a TA domain but no other annotated gene around have one,"
+    rescue_help += "Adjacent ORF around are identified and searched for potential TA domain."
     rescue_help += "This option requires the argument --genomic_seq."
     parser.add_argument('--rescue', action='store_true',
                         help=rescue_help)
@@ -162,7 +162,7 @@ def main():
     file_domain_gene_type = os.path.join(tadb_stat_dir, "domain_gene_type.json")
 
     # CSV FILE DOMAINS
-    csv_domain = os.path.join(tadb_stat_dir, 'domaines_METAfisher.csv')
+    csv_domain = os.path.join(tadb_stat_dir, 'TA_domains_info.csv')
     info_domains = {}
     with open(csv_domain, 'r') as csvdo:
         reader = csv.DictReader(csvdo)
@@ -251,7 +251,7 @@ def main():
         fct.diamond_blastp(faa_file, diamond_db, diamond_result_file)
         gene_to_hits = fct.get_ta_genes_from_diamond(diamond_result_file, gene_to_hits)
 
-    fct.annotate_domains(gene_to_hits.values(), info_domains, dict_domain_gene_type)
+    fct.annotate_ta_hits(gene_to_hits.values(), info_domains, dict_domain_gene_type)
 
     contig_to_genes = fct.get_genes_by_contigs(gene_to_hits, gff_file)
 
@@ -259,7 +259,7 @@ def main():
         if contig_name and contig != contig_name:
             continue
 
-        logging.info(f'{contig}: {len(genes)} TA genes.')
+        #logging.info(f'{contig}: {len(genes)} TA genes.')
 
         fct.check_size(genes)
 
@@ -271,7 +271,7 @@ def main():
             adj_orfs = orf.get_adjacent_orfs(orf_dict, gff_dict, contig, genes)
             ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, outdir, hmm_db)
             ta_domains = [orf.domain for orf in ta_orfs]
-            fct.annotate_domains(ta_domains, info_domains, dict_domain_gene_type)
+            fct.annotate_ta_hits(ta_domains, info_domains, dict_domain_gene_type)
         else:
             ta_orfs = []
             adj_orfs = []
@@ -281,7 +281,6 @@ def main():
         if info_contig_stat:
             out.contig_stat_manager(writer_stat, contig, initial_nb_lonely,
                                     rescue, total_stat, genes, adj_orfs)
-            logging.info(total_stat)
 
         # write output
         if dict_output['is_output']:
@@ -289,6 +288,8 @@ def main():
 
     # Total Stat information about the Metagenome
     if info_contig_stat:
+        logging.info(
+            f'MeTAfisher have identified {total_stat["linked gene"]} genes in a TA system.')
         writer_stat.writerow(total_stat)
         fl_stat.close()
 

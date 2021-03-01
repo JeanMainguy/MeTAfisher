@@ -168,12 +168,8 @@ def write_adj_gene(gene, neighbours, position):
     npc = 3
     info = ''
     for n in neighbours:
-        # print gene.dict_score
         gene_score = gene.dict_score[n.gene_number]
         n_score = n.dict_score[gene.gene_number]
-        # print n_score
-        # print gene_score
-        # print gene_score[0]['distance']
         distance = gene_score[0]["distance"] if 'distance' in gene_score[0] else n_score[0]["distance"]
         dist_score = gene_score[0]["dist_score"] if 'dist_score' in gene_score[0] else n_score[0]["dist_score"]
 

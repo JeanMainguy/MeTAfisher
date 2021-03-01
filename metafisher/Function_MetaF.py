@@ -83,7 +83,7 @@ def get_fast_fasta(fl, line, contig):
             f"seq['data'] is empty.. get_fast_fasta has failed to retreive the sequence of {contig}")
 
 
-def get_ta_genes_from_diamond(diamond_result,  gene_to_hits=defaultdict(list), min_coverage=90, min_pident=90):
+def get_ta_genes_from_diamond(diamond_result,  gene_to_hits=defaultdict(list), min_coverage=95, min_pident=95):
 
     fields = 'qseqid sseqid qstart qend sstart send pident qcovhsp evalue bitscore stitle'.split()
 
@@ -99,14 +99,15 @@ def get_ta_genes_from_diamond(diamond_result,  gene_to_hits=defaultdict(list), m
 
             gene_id = diamondhit.qseqid
 
-            domain = obj.Domain(
+            domain = obj.TaHit(
                 ali_from=diamondhit.qstart,
                 ali_to=diamondhit.qend,
-                domain_name=diamondhit.sseqid,
-                domain_acc=' '.join(diamondhit.stitle.split(' ')[1:]),
+                name=diamondhit.sseqid,
+                accession=' '.join(diamondhit.stitle.split(' ')[1:]),
                 e_value=diamondhit.evalue,
                 score=diamondhit.bitscore,
-                line=line)
+                line=line,
+                source='diamond')
 
             gene_to_hits[gene_id].append(domain)
 
@@ -141,14 +142,15 @@ def get_ta_genes_from_hmmsearch(hmm_result, gene_to_hits=None):
 
         gene_id = hmmhit.target_name
 
-        domain = obj.Domain(
+        domain = obj.TaHit(
             ali_from=hmmhit.ali_coord_from,
             ali_to=hmmhit.ali_coord_to,
-            domain_name=hmmhit.query_name,
-            domain_acc=hmmhit.query_accession,
+            name=hmmhit.query_name,
+            accession=hmmhit.query_accession,
             e_value=hmmhit.seq_e_value,
             score=hmmhit.seq_score,
-            line=hmmhit)
+            line=hmmhit,
+            source='hmmsearch')
 
         gene_to_hits[gene_id].append(domain)
 
@@ -165,7 +167,7 @@ def get_hmm_genes(contig, table_hmm, gff_file):
     with open(table_hmm) as fl:
         for line in fl:
             if line[:len(contig)] == contig:
-                #  domain is an OBJECT of class Domain. It gather info about the domain found.
+                #  domain is an OBJECT of class TaHit. It gather info about the domain found.
                 gene_number, domain = hmmtable_parser(line)
 
                 domains_dict.setdefault(gene_number, []).append(domain)
@@ -208,7 +210,7 @@ def build_ta_gene_from_gff_line(gff_line):
 
 def hmmtable_parser(line):
     """
-    Parse a line of the hmmtable and return a object from Domain class with all the info of the line.
+    Parse a line of the hmmtable and return a object from TaHit class with all the info of the line.
     """
     pattern = re.compile(r"""
     (?P<scaffold>[^|]+)\|(?P<gene_number>\d{1,4}) #scaffold name and gene_number separated by a |
@@ -254,11 +256,12 @@ def hmmtable_parser(line):
     if not result:
         raise Exception(
             'The parser of HMM table has failed... you may check the HMM table output ---> hmmtable line with a problem', line)
-    domain = obj.Domain(
+
+    domain = obj.TaHit(
         domain_number=result.group("domain_number"),
         ali_from=result.group("ali_from"), ali_to=result.group("ali_to"), env_from=result.group("env_from"),
-        env_to=result.group("env_to"), domain_name=result.group("domain"),
-        domain_acc=result.group("domain_acc"), e_value=result.group("evalue"), score=result.group("score"), line=line)
+        env_to=result.group("env_to"), name=result.group("domain"),
+        accession=result.group("domain_acc"), e_value=result.group("evalue"), score=result.group("score"), line=line)
     gene_number = int(result.group("gene_number"))
     return gene_number, domain
 
@@ -415,10 +418,10 @@ def delete_files(listeFiles):
             print(f"Error: {e.filename} - {e.strerror}.")
 
 
-def annotate_domains(domains, info_domains, dict_domain_gene_type):
-    for domains in domains:
-        for domain in domains:
-            domain.annotate_domain(info_domains, dict_domain_gene_type)
+def annotate_ta_hits(domains, info_domains, dict_domain_gene_type):
+    for domains_grp in domains:
+        for domain in domains_grp:
+            domain.annotate_ta_hit(info_domains, dict_domain_gene_type)
 
 
 def get_genes_by_contigs(gene_to_domains, gff_file):

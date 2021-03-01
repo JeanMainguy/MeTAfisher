@@ -3,6 +3,7 @@ import re
 import Orf_MetaF as orf
 from math import log
 import Function_MetaF as fct
+import logging
 
 
 class Gene:
@@ -83,25 +84,16 @@ class Gene:
         return False  # Plus simple il me semble qu'avant
 
     def valid_domain(self, start):
-        # Test if the domain is integre avec le start donné en argument !!
-        # retourne la liste des domaines qui ne sont pas integre.
 
         start = start / 3  # transformation en start aa
-        valid = []
+        valid_domains = []
         for do in self.domain:
-            # print 'Domain',do.ali_from,'-->',do.ali_to
             if start <= do.ali_from + (do.ali_to - do.ali_from) * Gene.allowance:
-                # print 'domain discard'
-                valid.append(do)
-        return valid
+                valid_domains.append(do)
+        return valid_domains
 
 
 class TA_gene(Gene):
-    # genes = []
-    # genes_strand = {'+': [], '-': []}
-    # linked = set()
-    # lonely = None  # {'+': [], '-': []}
-    # counter = 0
 
     def __init__(self):
         # TA_gene.counter += 1
@@ -112,7 +104,7 @@ class TA_gene(Gene):
         # info of hmm lines
         self.domain = []
         self.best_domain = []
-        # self.rasta_domain = []
+
         # border of the last domain in C terminal! In order to use alternative
         # start that doesn't affect at least one domain.
         self.domain_Ct_border = 0
@@ -121,7 +113,7 @@ class TA_gene(Gene):
         # self.len_val = None
         self.post = []
         self.prev = []
-        # N'est pas hyper utile pour le moment....
+
         self.statue = None
         # score:
         self.dict_score = {}
@@ -259,30 +251,41 @@ class Orf(Gene):
         return 'M' + orf.translate(seq)['data']  # ATTENTION every prot seq start with a M...
 
 
-class Domain:
+class TaHit:
     # Threshold overlap !!
     threshold = 0.1  # 10% of overlaping after that  the domains are considered as overlaping
 
-    def __init__(self, ali_from, ali_to, domain_name, domain_acc, e_value, score, line):
+    def __init__(self, ali_from, ali_to, name, accession, e_value, score, line, source):
 
         self.ali_from = int(ali_from)
         self.ali_to = int(ali_to)
-        self.domain_name = domain_name
-        self.domain_acc = domain_acc
+        self.name = name
+        self.accession = accession
         self.e_value = float(e_value)
         self.score = float(score)
         self.line = line
+        self.source = source  # diamond or hmmsearch
 
         self.domain_info = {}
 
-    def annotate_domain(self, info_domains, gene_type_domains):
-        try:
-            self.domain_info = info_domains[self.domain_name]
-        except KeyError:
-            self.domain_info = {"acc": 'NA', 'type': 'NA', 'family': 'NA'}
+    def annotate_ta_hit(self, info_domains, gene_type_domains):
 
         try:
-            self.domain_info['type_prct'] = gene_type_domains[self.domain_name]
+            self.domain_info = info_domains[self.name]
+        except KeyError:
+
+            self.domain_info = {"acc": 'NA', 'type': 'NA', 'family': 'NA'}
+
+        if self.source == "diamond":
+            self.domain_info['acc'] = self.name
+            self.domain_info['family'] = ""
+            if self.name.split('|')[1].startswith('T'):
+                self.domain_info['type'] = "Toxin"
+            elif self.name.split('|')[1].startswith('AT'):
+                self.domain_info['type'] = 'Antitoxin'
+
+        try:
+            self.domain_info['type_prct'] = gene_type_domains[self.name]
         except KeyError:
             self.domain_info['type_prct'] = "NA"
 
@@ -294,7 +297,7 @@ class Domain:
         try:
             return 'domain={};domain_score={};type={};family={}'.format(self.domain_info['acc'], self.score, self.domain_info['type'], self.domain_info['family'])
         except KeyError:
-            return 'domain={};domain_score={};type={};familly={}'.format(self.domain_name, self.score, "domainNotFoundInDB", "domainNotFoundInDB")
+            return 'domain={};domain_score={};type={};familly={}'.format(self.name, self.score, "domainNotFoundInDB", "domainNotFoundInDB")
 
     def score_transformed(self):
         # log transformation
@@ -302,12 +305,12 @@ class Domain:
 
     def overlap(self, d):
         if self.ali_from <= d.ali_from <= self.ali_to:  # overlap
-            if self.ali_to - d.ali_from > (self.ali_to - self.ali_from) * Domain.threshold:
+            if self.ali_to - d.ali_from > (self.ali_to - self.ali_from) * TaHit.threshold:
                 return True
             else:
                 return False
         elif self.ali_from <= d.ali_to <= self.ali_to:  # overlap
-            if d.ali_to - self.ali_from > (self.ali_to - self.ali_from) * Domain.threshold:
+            if d.ali_to - self.ali_from > (self.ali_to - self.ali_from) * TaHit.threshold:
                 return True
             else:
                 return False
