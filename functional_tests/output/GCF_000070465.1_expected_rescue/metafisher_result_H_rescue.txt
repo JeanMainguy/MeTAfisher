@@ -1,7 +1,7 @@
 ## result_H
 ## Name of the sequence analysed: metafisher
 
-## Rescue lonely gene : False
+## Rescue lonely gene : True
 ## Resize gene : False
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 10aa to 500aa
@@ -117,6 +117,54 @@ DISTANCE -3 (0.87)	Domain-Domain ASSOCIATION: 0.322	SYSTEM score: 0.917
                      =======107.0aa=======>
                     / \
                   -3nt
+
+PRE GENE
+ORF 3320	from 1885290 to 1885427	46aa (0.105)	start 0
+DOMAIN:
+pfam08843	mosAT	AT:0% | T:100%
+
+POST GENE
+CDS 1757	from 1885580 to 1886446	289aa (0.0171)	start 0
+DOMAIN:
+COG0758	psyrAT	AT:100% | T:0%
+
+DISTANCE 153 (0.017)	Domain-Domain ASSOCIATION: 0.0	SYSTEM score: 0.0
+===46.0aa===>
+                   ==================289.0aa==================>
+            /      \
+            153nt
+
+PRE GENE
+ORF 3320	from 1885290 to 1885427	46aa (0.105)	start 0
+DOMAIN:
+pfam08843	mosAT	AT:0% | T:100%
+
+POST GENE
+ORF 3321	from 1885409 to 1885465	19aa (0.00594)	start 0
+DOMAIN:
+pfam08843	mosAT	AT:0% | T:100%
+
+DISTANCE -18 (0.825)	Domain-Domain ASSOCIATION: 0.0	SYSTEM score: 0.0
+===46.0aa===>
+            ==19.0aa==>
+           / \
+         -18nt
+
+PRE GENE
+ORF 3321	from 1885409 to 1885465	19aa (0.00594)	start 0
+DOMAIN:
+pfam08843	mosAT	AT:0% | T:100%
+
+POST GENE
+CDS 1757	from 1885580 to 1886446	289aa (0.0171)	start 0
+DOMAIN:
+COG0758	psyrAT	AT:100% | T:0%
+
+DISTANCE 115 (0.027)	Domain-Domain ASSOCIATION: 0.0	SYSTEM score: 0.0
+==19.0aa==>
+               ==================289.0aa==================>
+          /    \
+         115nt
 
 PRE GENE
 CDS 2007	from 2196741 to 2197211	157aa (0.257)	start 0

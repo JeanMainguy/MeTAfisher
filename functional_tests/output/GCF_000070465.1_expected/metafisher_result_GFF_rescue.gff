@@ -1,7 +1,7 @@
 ## result_GFF
 ## Name of the sequence analysed: metafisher
 
-## Rescue lonely gene : False
+## Rescue lonely gene : True
 ## Resize gene : False
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 10aa to 500aa
@@ -15,5 +15,8 @@ NC_010645.1	metaF	CDS	1515064	1515342	.	-	.	NC_010645.1|1419;protein_id=WP_01241
 NC_010645.1	metaF	CDS	1515329	1515595	.	-	.	NC_010645.1|1420;protein_id=WP_012417133.1;best_domain=COG2929;domain_score=101.1;type=NA;family=RHH;possible_partners=WP_012417132.1
 NC_010645.1	metaF	CDS	1538731	1539051	.	-	.	NC_010645.1|1449;protein_id=WP_012417163.1;best_domain=COG2944;domain_score=55.5;type=Antitoxin;family=HTH|relBE;possible_partners=WP_012417164.1
 NC_010645.1	metaF	CDS	1539048	1539347	.	-	.	NC_010645.1|1450;protein_id=WP_012417164.1;best_domain=COG2026;domain_score=49.4;type=Toxin;family=relBE relBE|paaR-paaA-parE;possible_partners=WP_012417163.1
+NC_010645.1	metaF	ORF	1885290	1885427	.	+	.	NC_010645.1|3320;protein_id=ORF3320;best_domain=pfam08843;domain_score=21.6;type=Toxin;family=mosAT;possible_partners=WP_012417468.1,ORF3321
+NC_010645.1	metaF	ORF	1885409	1885465	.	+	.	NC_010645.1|3321;protein_id=ORF3321;best_domain=pfam08843;domain_score=18.5;type=Toxin;family=mosAT;possible_partners=ORF3320,WP_012417468.1
+NC_010645.1	metaF	CDS	1885580	1886446	.	+	.	NC_010645.1|1757;protein_id=WP_012417468.1;best_domain=COG0758;domain_score=11.2;type=Antitoxin;family=psyrAT;possible_partners=ORF3320,ORF3321
 NC_010645.1	metaF	CDS	2196741	2197211	.	+	.	NC_010645.1|2007;protein_id=WP_012417720.1;best_domain=COG0640;domain_score=15.9;type=Antitoxin;family=ArsR family HTH;possible_partners=WP_012417721.1
 NC_010645.1	metaF	CDS	2197260	2197538	.	+	.	NC_010645.1|2008;protein_id=WP_012417721.1;best_domain=PF09957.7;domain_score=11.9;type=NA;family=NA;possible_partners=WP_012417720.1

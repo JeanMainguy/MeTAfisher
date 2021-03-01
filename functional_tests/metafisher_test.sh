@@ -112,7 +112,7 @@ cmd="./metafisher/metafisher.py \
 --rescue --genomic_seq $data_dir/GCF_000070465.1_ASM7046v1_genomic.fna.gz \
  > ${outdir}/cmd.out"
 
-# compare_result_dir "$cmd" $outdir $expdir 0
+compare_result_dir "$cmd" $outdir $expdir 0
 
 # 3. End of testing - check if any errors occurrred
 if [ "$num_errors" -gt 0 ]; then

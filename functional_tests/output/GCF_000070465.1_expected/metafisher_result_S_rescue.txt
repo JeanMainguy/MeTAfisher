@@ -1,7 +1,7 @@
 ## result_S
 ## Name of the sequence analysed: metafisher
 
-## Rescue lonely gene : False
+## Rescue lonely gene : True
 ## Resize gene : False
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 10aa to 500aa
@@ -12,4 +12,7 @@
 3. Genes WP_012416992.1 & WP_012416991.1	strand -	score 0.9800666255866418
 4. Genes WP_012417133.1 & WP_012417132.1	strand -	score 0.9963787105312109
 5. Genes WP_012417164.1 & WP_012417163.1	strand -	score 0.9173138344012118
-6. Genes WP_012417720.1 & WP_012417721.1	strand +	score 0.0
+6. Genes ORF3320 & WP_012417468.1	strand +	score 0.0
+7. Genes ORF3320 & ORF3321	strand +	score 0.0
+8. Genes ORF3321 & WP_012417468.1	strand +	score 0.0
+9. Genes WP_012417720.1 & WP_012417721.1	strand +	score 0.0

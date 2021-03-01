@@ -1,0 +1,15 @@
+#                                                                                --- full sequence --- -------------- this domain -------------   hmm coord   ali coord   env coord
+# target name        accession   tlen query name               accession   qlen   E-value  score  bias   #  of  c-Evalue  i-Evalue  score  bias  from    to  from    to  from    to  acc description of target
+#------------------- ---------- -----     -------------------- ---------- ----- --------- ------ ----- --- --- --------- --------- ------ ----- ----- ----- ----- ----- ----- ----- ---- ---------------------
+None|401             -             46 AbiEii               PF08843.10   239   1.1e-05   21.6   0.0   1   1   2.6e-08   1.4e-05   21.2   0.0     2    27    22    44    21    45 0.87 -
+None|243             -             19 AbiEii               PF08843.10   239   9.1e-05   18.5   0.1   1   1   1.7e-07   9.3e-05   18.5   0.1    27    41     4    18     2    18 0.92 -
+#
+# Program:         hmmsearch
+# Version:         3.3.1 (Jul 2020)
+# Pipeline mode:   SEARCH
+# Query file:      /home/jean/Documents/MeTAfisher/TADB_stat/ALL_plus_MET_curatted.hmm
+# Target file:     functional_tests/output/fresh_output_GCF_000070465.1/temporary_adjOrf.faa
+# Option settings: hmmsearch --domtblout functional_tests/output/fresh_output_GCF_000070465.1/output_HMM_table_adj_orf.txt -E 0.5 /home/jean/Documents/MeTAfisher/TADB_stat/ALL_plus_MET_curatted.hmm functional_tests/output/fresh_output_GCF_000070465.1/temporary_adjOrf.faa 
+# Current dir:     /home/jean/Documents/MeTAfisher
+# Date:            Sun Jan  3 19:28:19 2021
+# [ok]
