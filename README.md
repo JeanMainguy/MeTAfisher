@@ -8,7 +8,7 @@
 
 
 # Metafisher
-Program to retrieve toxin antitoxin (TA) systems in genomes and metagenomes.
+Metafisher is a tool to retrieve toxin antitoxin (TA) systems of type II in genomic sequences.
 
 
 ## Quick start
@@ -40,20 +40,26 @@ conda activate metafisher
 This program is released as open source software under the terms of [MIT License](https://raw.githubusercontent.com/bionitio-team/bionitio/master/LICENSE).
 
 
-## Generate TA database files
+## Identification of TA genes
 
-### Diamond:
+To identify potentila Toxin Antitoxin genes metAfisher uses a list of domains known to be specific of TA systems. These domains are identified by the hmmsearch.
+On top of the domain search, potential genes can be identified by diamond search based on all TADB sequences.
 
-1. Download protein sequences of the TADB
+## Create diamond database
 
-2. Generate file stats
+To use diamond search strategy, a dimond database with the TADB sequences need to be created.
 
-3. concat fasta files and build diamond db
+
+The protein sequences of Toxin and Antitoxin can be downloaded on the TADB website: https://bioinfo-mml.sjtu.edu.cn/TADB2/download.html
 
 ```bash
-
 wget https://bioinfo-mml.sjtu.edu.cn/TADB2/download/TADB2/20171013/protein/type_II_pro_T.fas
 wget https://bioinfo-mml.sjtu.edu.cn/TADB2/download/TADB2/20171013/protein/type_II_pro_AT.fas
+```
+
+2. concat fasta files and build diamond db
+
+```bash
 
 cat type_II_pro_T.fas type_II_pro_AT.fas > type_II_TA.fasta
 
@@ -61,72 +67,14 @@ diamond makedb --in type_II_TA.fasta -d type_II_TA
 
 ```
 
+## TA stat file
 
-==========================
+2. Generate file stats
 
-## Dependency files
-MeTAfisher requires specific files to work. These files need to be placed in the same folder and the path to this folder is given as an argument to the program.
-The dependences folder has to have:
+```bash
+python metafisher/compute_tadb_stat.py --toxin_faa TA_data/type_II_pro_T.fas --antitoxin_faa TA_data/type_II_pro_AT.fas -v
+```
 
-* `distance.csv` and `length_TA.csv`: used to build the score
-* `ALL_plus_MET_curatted` : the database of TA HMM profile.
-* `domaines_METAfisher.csv` : a table with information about the profiles of the data base (i.e TA family, description, source..)
-
-Additionally MeTAfisher needs HMMER to be installed as the program retrieve TA systems according hmmsearch output. And obviously it requires python 2.7.
-
-<a name="Files_format_requirement"/>
-
-## Files format requirement
-Metafisher takes 4 different files as an input. The files need be in the same folder and they need to have the same name with only a specific extension for each and every one of them.
-
-### Fasta files
-Metafisher requires 3 files in the fasta files format:
-
-1. The chromosome or scaffold sequences with the extension **.fasta**  
-2. The protein sequences in amino acide with the extension **.faa**
-3. The protein sequences in nucleotide with the extension **.fna**
-
-For the chromosome or scaffold sequences the headers of the sequences need to start with the name of the chromosome or scaffold followed by a space or a new line.    
-
-
- `>CP000697.1 Acidiphilium cryptum JF-5, complete genome` Here the name of the chromosome is `CP000697.1` and it is followed by a white space, the other information are ignored by the program.    ```>ICM0007MP0313_1000001```  Here the name of the metagenome is `ICM0007MP0313_1000001` and it is followed by a new line.
-
-
-
-For the protein sequences in amino acid and nucleotide (respectively .faa and .fna) the header of the sequence should have the name of the chrm/scaffold followed by an | and the gene number which is used by the program to identify the genes.\\
-
-
-<!-- One typically found on NCBI:
-
- `>lcl|CP000697.1_prot_Acry_0001_1 [gene=Acry_0001] [protein.....` with the  ```>lcl|``` followed by the name of the chromosome or scaffold  and the id name of the gene (here ```_prot_Acry_0001_1```), in this id name there is the protein number 0001 wich is used by the program to identify the genes.
- -->
-Exemple : \\
- `>ICM0007MP0313_1000001|5`
-
-<a name="gff_file"/>
-
-### GFF file
-MeTAfisher needs a gff file containing information of the genes under analysed.
-> The GFF (General Feature Format) format consists of one line per feature, each containing 9 columns of data, plus optional track definition lines.
-
-The columns used by MeTAfisher:
-* 1. **seqname** - name of the chromosome or scaffold
-* 3. **feature** - feature type name, e.g. Gene, Variation, Similarity
-* 4. **start** - Start position of the feature, with sequence numbering starting at 1.
-* 5. **end** - End position of the feature, with sequence numbering starting at 1.
-* 7. **strand** - defined as + (forward) or - (reverse).
-* 8. **frame** - One of '0', '1' or '2'. '0' indicates that the first base of the feature is the first base of a codon, '1' that the second base is the first base of a codon, and so on..
-* 9. **attribute** - A semicolon-separated list of tag-value pairs, providing additional information about each feature.   
-
-
-The program looks only at the line with feature equal to `CDS`.
- MeTAfisher needs to match the protein hit by hmmsearch with the proper gff line, and to do so the protein number should be identical in the gff file and in the header of the fasta files.
- In order to do that, the attribute section (columns 9) of the gff file should follow the following pattern:
-`ID=< chromosome or scaffold>|<protein number>`.
-
-Example of correct gff line :    ```ICM0007MP0313_1000310	GPF	CDS	13787	14128	.	-	0	ID=ICM0007MP0313_1000310|19;partial=00;sta.....```
-
-<a name="Output_file"/>
 
 ## Output files
 
@@ -191,43 +139,3 @@ Each TA gene is displayed on a line. Information are displayed within 9 columns:
 
 
 The program also provides a file gathering quantitative information about the analysis of the contigs/chromosomes analyzed.
-
-<a name="How_to_use_MeTAfisher"/>
-
-<!-- ## How to use MeTAfisher
-
-First of all you should download MeTAfisher files and folders from gitHub. -->
-
-### File format requirement
-The file format requirement of MeTAfisher are quite heavy and may require a lot of effort if you start with some files that do not follow the required pattern. However if the sequence you want to analyze is on genbank, you can use the genbank file of the sequence and process it through the script genbank_parser.py. This script takes as argument the genbank file and creates 3 files needed for the TA analysis (.faa, fna and .gff) in the same folder as the genbank file. `genbank_parser.py` is only able to parse a genbank file with all sequences. When downloading the file on the genbank web page, you should be certain that the sequence of the genes are displayed. In order to do so, you may click in the "Customize" view left panel on the option "Show sequence" and then on "Update view". Finally, to download the file, click on the upper left "Send to" button > Complete Record > Choose Destination: File > Format: Genbank > Create File.
-Then be sure to place the genbank file in a known and specific directory. Then you can launch `genbank_parser.py`:
-
-`python <path to the script>/genbank_parser.py <path and name of the genbank file>`
-
-So for example if you are at the root of MeTAfisher project and you want to parse a genbank file placed in `./data/Desulfovibrio_vulgaris_DP4/` you should enter the following command:
-
-`python program/genbank_parser.py data/Desulfovibrio_vulgaris_DP4/sequence.gb`
-
-<!-- ### Launching metafisher
-Once you have all the files required and correctly shaped you may want to launch MeTAfisher.
-To launch MeTAfisher you can either launch it directly with the script `metafisher/metafisher.py` and provide correctly all the required argument in the command line - or you may also use the MetaF_launcher.sh bash script as a template.
-You need to provide different information in the script:
-* general_output_pathway: the folder where the result folder of the sequence analyzed will be created.
-* dependency_pathway: the pathway of the dependence folder where the dependences of MeTAfisher are stored.
-* Sequence_name: corresponds to the name of the Metagenome or Genome analyzed
-* data_pathway: Path to the data folder where fasta and gff files are stored.
-* data_name: the common name without the extension of the data files. the 3 fasta files and the gff file should be in the same folder and with a unique name, only the file's extension are different.  
-
-Then, the script takes care of the rest: it creates a folder named after the Sequence name given in the general output folder provided. Then, it launches hmmsearch which searches TA domains in the amino acid sequence. If the hmmsearch table output already exists, it skips this step in order not to launch twice the same thing. And finally it launches the python script `metafisher/metafisher.py` with the required arguments. If you want to activate the "Resize" and/or the "Rescue" step, you can then add the flag --Resize or --Rescue in the command line.
-
-In the output folder that you gave to the program you will find the hmmsearch table result and the different output files.
-
- -->
-
-<!--
-## Scoring method
-
-
-
-REF
-http://www.ensembl.org/info/website/upload/gff.html -->
