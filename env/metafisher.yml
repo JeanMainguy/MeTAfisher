@@ -3,5 +3,7 @@ channels:
   - bioconda
   - defaults
 dependencies:
+  - diamond
+  - hmmer
   - python=3
-  - HMMER
+prefix: /home/jean/anaconda3/envs/metafisher_env
