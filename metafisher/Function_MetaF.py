@@ -37,7 +37,7 @@ def run_command(command, outfile):
     return exit_code
 
 
-def hmmsearch(faa_file, hmm_db, outfile, force=False):
+def hmmsearch(faa_file, hmm_db, outfile, force=True):
 
     if os.path.isfile(outfile) and not force:
         logging.info(f'Hmmresult file {outfile} exists already. We use it.')
