@@ -42,15 +42,16 @@ This program is released as open source software under the terms of [MIT License
 
 ## Identification of TA genes
 
-To identify potentila Toxin Antitoxin genes metAfisher uses a list of domains known to be specific of TA systems. These domains are identified by the hmmsearch.
+To identify potential Toxin and Antitoxin genes, metAfisher uses a list of domains known to be specific of TA systems. These domains are searched in the protein sequences by the tool HHMER.
 On top of the domain search, potential genes can be identified by diamond search based on all TADB sequences.
 
 ## Create diamond database
 
 To use diamond search strategy, a dimond database with the TADB sequences need to be created.
 
-
 The protein sequences of Toxin and Antitoxin can be downloaded on the TADB website: https://bioinfo-mml.sjtu.edu.cn/TADB2/download.html
+
+1. Download TADB protein sequences
 
 ```bash
 wget https://bioinfo-mml.sjtu.edu.cn/TADB2/download/TADB2/20171013/protein/type_II_pro_T.fas
@@ -67,29 +68,27 @@ diamond makedb --in type_II_TA.fasta -d type_II_TA
 
 ```
 
-## TA stat file
+3. Generate stat files
 
-2. Generate file stats
+These file are useful to score the potential TA systems. It computes how often a domain is associated with another one in a TA system of TADB.   
 
 ```bash
 python metafisher/compute_tadb_stat.py --toxin_faa TA_data/type_II_pro_T.fas --antitoxin_faa TA_data/type_II_pro_AT.fas -v
 ```
 
-
 ## Output files
 
-MeTAfisher provides different output file: 4 result files showing TA systems found and a csv file gathering statistique information of the analysis is also provided.
+MeTAfisher provides different output file: 4 result files showing TA systems found and a csv file gathering statistics information of the analysis is also provided.
 All the output files start with 5 lines starting with `##`.
 
 ```
 ## result_S
 ## Rescue lonely gene : False
-## Resize gene : True
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 30aa to 1500aa
 ```
 
-The first line tell us the kind of output file it is. Then the two following lines tell if the Rescue and Resize have been used and finnally the last two lines tell which distance and length threshold have been used during the analysis.
+The first line tell us the kind of output file it is. Then the next line indicates if the `rescue` mode have been used and finnally the last two lines tell which distance and length threshold have been used during the analysis.
 
 The name of the output file follow a regular pattern, they all start with the name of the metagenome or genome provided when launching the program follow by the name of the output file and the appropriate extension.
 
