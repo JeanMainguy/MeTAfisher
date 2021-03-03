@@ -1,4 +1,4 @@
-name: metafisher_env
+name: metafisher
 channels:
   - bioconda
   - defaults
@@ -6,4 +6,4 @@ dependencies:
   - diamond
   - hmmer
   - python=3
-prefix: /home/jean/anaconda3/envs/metafisher_env
+prefix: /home/jean/anaconda3/envs/metafisher

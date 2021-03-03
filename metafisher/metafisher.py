@@ -289,7 +289,7 @@ def main():
     # Total Stat information about the Metagenome
     if info_contig_stat:
         logging.info(
-            f'MeTAfisher have identified {total_stat["linked gene"]} genes in a TA system.')
+            f'MeTAfisher have identified {total_stat["linked gene"]} genes belonging to putative TA systems.')
         writer_stat.writerow(total_stat)
         fl_stat.close()
 
