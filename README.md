@@ -29,9 +29,9 @@ conda activate metafisher
 3. Run metafisher on the genome of Desulfovibrio vulgaris:
 
 ```bash
-./metafisher/metafisher.py --gff data_test/Desulfovibrio_vulgaris_DP4/sequence.gff \
-                          --faa data_test/Desulfovibrio_vulgaris_DP4/sequence.faa \
-                          --outdir metafisher_results
+./metafisher/metafisher.py --gff data_test/GCF_000070465.1/GCF_000070465.1_ASM7046v1_genomic.gff.gz \
+                          --faa data_test/GCF_000070465.1/GCF_000070465.1_ASM7046v1_protein.faa.gz \
+                          --outdir metafisher_results -v
 
 ```
 
@@ -45,7 +45,7 @@ This program is released as open source software under the terms of [MIT License
 To identify potential Toxin and Antitoxin genes, metAfisher uses a list of domains known to be specific of TA systems. These domains are searched in the protein sequences by the tool HHMER.
 On top of the domain search, potential genes can be identified by diamond search based on all TADB sequences.
 
-## Create diamond database
+### Create diamond database
 
 To use diamond search strategy, a dimond database with the TADB sequences need to be created.
 
@@ -62,9 +62,10 @@ wget https://bioinfo-mml.sjtu.edu.cn/TADB2/download/TADB2/20171013/protein/type_
 
 ```bash
 
-cat type_II_pro_T.fas type_II_pro_AT.fas > type_II_TA.fasta
+mkdir TA_data
+cat type_II_pro_T.fas type_II_pro_AT.fas > TA_data/type_II_TA.fasta
 
-diamond makedb --in type_II_TA.fasta -d type_II_TA
+diamond makedb --in type_II_TA.fasta -d TA_data/type_II_TA
 
 ```
 
@@ -75,6 +76,19 @@ These file are useful to score the potential TA systems. It computes how often a
 ```bash
 python metafisher/compute_tadb_stat.py --toxin_faa TA_data/type_II_pro_T.fas --antitoxin_faa TA_data/type_II_pro_AT.fas -v
 ```
+### Launch MeTAfisher with diamond search
+
+```bash
+
+./metafisher/metafisher.py --gff data_test/GCF_000070465.1/GCF_000070465.1_ASM7046v1_genomic.gff.gz \
+                         --faa data_test/GCF_000070465.1/GCF_000070465.1_ASM7046v1_protein.faa.gz\
+                         --outdir metafisher_results \
+                         --diamond_db TA_data/type_II_TA.dmnd -v
+
+```
+
+
+
 
 ## Output files
 
