@@ -1,4 +1,17 @@
-# coding: utf-8
+#!/usr/bin/env python3
+
+"""
+Module      : Main
+Description : The main entry point for the program.
+Copyright   : (c) Jean Mainguy, 27 nov. 2020
+License     : MIT
+Maintainer  : jean.mainguy@outlook.fr
+
+
+Program to retrieve toxin antitoxin (TA) systems in genomes or metagenomes.
+"""
+
+
 import csv
 import Object_MetaF as obj
 from operator import attrgetter, itemgetter

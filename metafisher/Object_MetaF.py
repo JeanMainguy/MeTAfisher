@@ -1,4 +1,16 @@
 #!/usr/bin/env python3
+
+"""
+Module      : Main
+Description : The main entry point for the program.
+Copyright   : (c) Jean Mainguy, 27 nov. 2020
+License     : MIT
+Maintainer  : jean.mainguy@outlook.fr
+
+
+Program to retrieve toxin antitoxin (TA) systems in genomes or metagenomes.
+"""
+
 import re
 import Orf_MetaF as orf
 from math import log

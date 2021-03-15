@@ -1,4 +1,16 @@
-# coding: utf-8
+#!/usr/bin/env python3
+
+"""
+Module      : Main
+Description : The main entry point for the program.
+Copyright   : (c) Jean Mainguy, 27 nov. 2020
+License     : MIT
+Maintainer  : jean.mainguy@outlook.fr
+
+
+Program to retrieve toxin antitoxin (TA) systems in genomes or metagenomes.
+"""
+
 import csv
 import Function_MetaF as fct
 from operator import attrgetter
@@ -214,7 +226,7 @@ def write_human_result(g, post, fl, i):
 def write_line(g, score):
     line = f"{g.feature} {g.gene_number}\tfrom {g.real_start()} to {g.real_end()}"
     line += f"\t{int(score[0]['length']/3)}aa ({score[0]['len_score']:.3})"
-    line += f"\tstart {score[0]['start']}"
+    # line += f"\tstart {score[0]['start']}"
 
     domain_va = g.valid_domain(score[0]['start'])
     domain_va = write_domain_lines(domain_va)
@@ -259,9 +271,9 @@ def visualisation_genes(pre, post, distance):
     final_str += position_g2 * ' ' + post_str + '\n'
     positions = [position_g2, len(pre_str)]
     final_str += (min(positions) - 1) * ' ' + '/' + abs(positions[0] - positions[1]) * ' ' + '\\\n'
-    final_str += int(-1 + min(positions) +
+    final_str += int(min(positions) +
                      (abs(positions[0] - positions[1]) - len(dist_str))/2) * ' ' + dist_str
-    # print final_str
+
     return final_str
 
 
