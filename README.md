@@ -43,11 +43,11 @@ This program is released as open source software under the terms of [MIT License
 ## Identification of TA genes
 
 To identify potential Toxin and Antitoxin genes, metAfisher uses a list of domains known to be specific of TA systems. These domains are searched in the protein sequences by the tool HHMER.
-On top of the domain search, potential genes can be identified by diamond search based on all TADB sequences.
+On top of the domain search, potential TA genes can be identified by diamond search based on all sequences of TADB (https://bioinfo-mml.sjtu.edu.cn/TADB2).
 
 ### Create diamond database
 
-To use diamond search strategy, a dimond database with the TADB sequences need to be created.
+To use diamond search strategy, a diamond database with the TADB sequences need to be created.
 
 The protein sequences of Toxin and Antitoxin can be downloaded on the TADB website: https://bioinfo-mml.sjtu.edu.cn/TADB2/download.html
 
@@ -71,11 +71,12 @@ diamond makedb --in type_II_TA.fasta -d TA_data/type_II_TA
 
 3. Generate stat files
 
-These file are useful to score the potential TA systems. It computes how often a domain is associated with another one in a TA system of TADB.   
+These file are needed to score the potential TA systems. It computes how often a domain is associated with another one in a TA system of TADB.   
 
 ```bash
 python metafisher/compute_tadb_stat.py --toxin_faa TA_data/type_II_pro_T.fas --antitoxin_faa TA_data/type_II_pro_AT.fas -v
 ```
+
 ### Launch MeTAfisher with diamond search
 
 ```bash
@@ -87,6 +88,7 @@ python metafisher/compute_tadb_stat.py --toxin_faa TA_data/type_II_pro_T.fas --a
 
 ```
 
+## Scoring of TA systems
 
 
 
@@ -96,6 +98,7 @@ MeTAfisher provides different output file: 4 result files showing TA systems fou
 All the output files start with 5 lines starting with `##`.
 
 ```
+
 ## result_S
 ## Rescue lonely gene : False
 ## Distance threshold from -100nt to 300nt
