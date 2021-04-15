@@ -73,8 +73,8 @@ def output_file_creation(output_way, metaG_name, dict_output, headinfo, compleme
 
             file_out = os.path.join(output_way, f"{metaG_name}_{out_name}{complement}.{extension}")
             flout = open(file_out, "w")
-            flout.write("## {}\n".format(out_name))
-            flout.write(headinfo)
+            # flout.write("## {}\n".format(out_name))
+            # flout.write(headinfo)
             dict_output[out_name] = flout
             is_output = True
     dict_output['is_output'] = is_output
@@ -160,7 +160,7 @@ def write_table_result(gene, tsvfl):
     # line["length_score"] = score[0]["length"]
     line["strand"] = gene.strand  # + gene.frame
     line["feature"] = gene.feature
-    line["domain"] = writeDomain(gene)
+    line["domain"] = str(writeDomain(gene)).replace('\t', '')
     line["Neighbor gene"] = write_adj_gene(gene, gene.prev, 'Down:')
     line["Neighbor gene"] += write_adj_gene(gene, gene.post, 'Up:  ')
     tsvfl.writerow(line)
@@ -185,7 +185,7 @@ def write_adj_gene(gene, neighbours, position):
         distance = gene_score[0]["distance"] if 'distance' in gene_score[0] else n_score[0]["distance"]
         dist_score = gene_score[0]["dist_score"] if 'dist_score' in gene_score[0] else n_score[0]["dist_score"]
 
-        info += '{}\t{}\t distance {} (score {})\tsystem score {}|'.format(position, give_id(
+        info += '{} {} distance {} (score {}) system score {}|'.format(position, give_id(
             n), distance, round(dist_score, npc), round(score.confl(n_score[0]['score'], gene_score[0]['score']), npc))
 
     return info[:-1]
@@ -230,7 +230,7 @@ def write_line(g, score):
 
     domain_va = g.valid_domain(score[0]['start'])
     domain_va = write_domain_lines(domain_va)
-    line += "\nDOMAIN:\n{}".format(domain_va)
+    line += "\nTA HIT:\n{}".format(domain_va)
     return line
 
 
