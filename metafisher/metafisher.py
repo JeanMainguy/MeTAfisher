@@ -249,7 +249,8 @@ def main():
     if diamond_db:
         diamond_result_file = os.path.join(outdir, f"{simple_faa_name}.diamond")
         fct.diamond_blastp(faa_file, diamond_db, diamond_result_file)
-        gene_to_hits = fct.get_ta_genes_from_diamond(diamond_result_file, gene_to_hits)
+        gene_to_hits = fct.get_ta_genes_from_diamond(
+            diamond_result_file, gene_to_hits, min_coverage=95, min_pident=95)
 
     fct.annotate_ta_hits(gene_to_hits.values(), info_domains, dict_domain_gene_type)
 
