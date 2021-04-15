@@ -50,8 +50,8 @@ def result_table_config(fl):
     if not fl:
         return False  # fl is False
     # Chnage the regular file writer into a csv file writer with header
-    header = ["Contig", "Gene number", "Gene id", "start", "end", "length",
-              "length_score", "strand", "feature", "domain", "Neighbor gene"]
+    header = ["Contig", "Gene number", "Gene id", "start", "end",
+              "length", "strand", "feature", "domain", "Neighbor gene"]
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
     return writer_table
