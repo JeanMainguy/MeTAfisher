@@ -246,5 +246,5 @@ WP_012417721.1       -             92 VapB_antitoxin       PF09957.7     47     
 # Target file:     functional_tests/output/fresh_output_GCF_000070465.1/GCF_000070465.1_ASM7046v1_protein.faa
 # Option settings: hmmsearch --domtblout functional_tests/output/fresh_output_GCF_000070465.1/GCF_000070465.1_ASM7046v1_protein.hmmsearch -E 0.5 /home/jean/Documents/MeTAfisher/TADB_stat/ALL_plus_MET_curatted.hmm functional_tests/output/fresh_output_GCF_000070465.1/GCF_000070465.1_ASM7046v1_protein.faa 
 # Current dir:     /home/jean/Documents/MeTAfisher
-# Date:            Sun Jan 17 22:56:36 2021
+# Date:            Mon Apr 19 01:37:26 2021
 # [ok]

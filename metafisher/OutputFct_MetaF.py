@@ -50,8 +50,8 @@ def result_table_config(fl):
     if not fl:
         return False  # fl is False
     # Chnage the regular file writer into a csv file writer with header
-    header = ["Contig", "Gene number", "Gene id", "start", "end",
-              "length", "strand", "feature", "domain", "Neighbor gene"]
+    header = ["contig", "gene_id", "start", "end",
+              "length", "strand", "feature", "possible_partners", 'TA_domains', 'TADB_hits']
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
     return writer_table
@@ -151,29 +151,19 @@ def write_gff(gene, fl):
 
 def write_table_result(gene, tsvfl):
     line = {}
-    line["Contig"] = gene.contig
-    line["Gene number"] = gene.gene_number
-    line["Gene id"] = give_id(gene)
+    line["contig"] = gene.contig
+    # line["gene_number"] = gene.gene_number
+    line["gene_id"] = give_id(gene)
     line["start"] = gene.start
     line["end"] = gene.end
     line["length"] = len(gene)
     # line["length_score"] = score[0]["length"]
     line["strand"] = gene.strand  # + gene.frame
     line["feature"] = gene.feature
-    line["domain"] = str(writeDomain(gene)).replace('\t', '')
-    line["Neighbor gene"] = write_adj_gene(gene, gene.prev, 'Down:')
-    line["Neighbor gene"] += write_adj_gene(gene, gene.post, 'Up:  ')
+    line["possible_partners"] = ';'.join([give_id(g) for g in gene.prev + gene.post])
+    line["TA_domains"] = ';'.join([d.name for d in gene.domain if d.source == "hmmsearch"])
+    line["TADB_hits"] = ';'.join([d.name for d in gene.domain if d.source == "diamond"])
     tsvfl.writerow(line)
-
-
-def writeDomain(gene):
-    """
-    return only best domain
-    the attribut domain is a sorted list according the score. Then the first domain is the best domain
-    """
-
-    # print gene.valid_domain(gene.start)
-    return gene.domain[0]
 
 
 def write_adj_gene(gene, neighbours, position):

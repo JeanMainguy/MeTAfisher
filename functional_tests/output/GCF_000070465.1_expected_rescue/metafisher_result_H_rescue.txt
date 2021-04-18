@@ -2,7 +2,7 @@
 ====NC_010645.1====
 
 PRE GENE
-CDS 256	from 262607 to 262197	137aa (0.404)
+cds-WP_082011714.1	from 262607 to 262197	137aa (0.404)
 TA HIT:
 pfam01381	relBE higBA|vapBC	AT:99% | T:1%
 COG1396  	hipBA            	AT:99% | T:1%
@@ -12,7 +12,7 @@ COG3093  	vapBC            	AT:98% | T:2%
 COG2944  	HTH|relBE        	AT:99% | T:1%
 
 POST GENE
-CDS 255	from 262050 to 261655	132aa (0.446)
+cds-WP_082011715.1	from 262050 to 261655	132aa (0.446)
 TA HIT:
 pfam01381	relBE higBA|vapBC	AT:99% | T:1%
 cd00093  	relBE higBA|vapBC	AT:99% | T:1%
@@ -28,13 +28,13 @@ DISTANCE 147 (0.017)	Domain-Domain ASSOCIATION: 0.281	SYSTEM score: 0.004
                           147nt
 
 PRE GENE
-CDS 930	from 1015050 to 1014817	78aa (0.508)
+cds-WP_012416632.1	from 1015050 to 1014817	78aa (0.508)
 TA HIT:
 COG2929   	RHH   	AT:0% | T:100%
 PF04365.12	BernTA	AT:0% | T:100%
 
 POST GENE
-CDS 929	from 1014836 to 1014558	93aa (0.619)
+cds-WP_039051605.1	from 1014836 to 1014558	93aa (0.619)
 TA HIT:
 PF14384.5	BernTA	AT:100% | T:0%
 COG3514  	NA    	AT:100% | T:0%
@@ -46,7 +46,7 @@ DISTANCE -19 (0.818)	Domain-Domain ASSOCIATION: 0.95	SYSTEM score: 0.993
               -19nt
 
 PRE GENE
-CDS 1288	from 1391033 to 1390779	85aa (0.571)
+cds-WP_012416992.1	from 1391033 to 1390779	85aa (0.571)
 TA HIT:
 COG2026   	relBE relBE|paaR-paaA-parE       	AT:5% | T:95%
 pfam05016 	relBE relBE|paaR-paaA-parE|pasABC	AT:0% | T:100%
@@ -54,7 +54,7 @@ PF05973.13	HigB                             	AT:1% | T:99%
 COG4679   	relBE                            	AT:23% | T:77%
 
 POST GENE
-CDS 1287	from 1390795 to 1390469	109aa (0.652)
+cds-WP_012416991.1	from 1390795 to 1390469	109aa (0.652)
 TA HIT:
 COG1396  	hipBA            	AT:99% | T:1%
 pfam01381	relBE higBA|vapBC	AT:99% | T:1%
@@ -71,13 +71,13 @@ DISTANCE -16 (0.844)	Domain-Domain ASSOCIATION: 0.785	SYSTEM score: 0.98
                 -16nt
 
 PRE GENE
-CDS 1420	from 1515595 to 1515329	89aa (0.599)
+cds-WP_012417133.1	from 1515595 to 1515329	89aa (0.599)
 TA HIT:
 COG2929   	RHH   	AT:0% | T:100%
 PF04365.12	BernTA	AT:0% | T:100%
 
 POST GENE
-CDS 1419	from 1515342 to 1515064	93aa (0.619)
+cds-WP_012417132.1	from 1515342 to 1515064	93aa (0.619)
 TA HIT:
 COG3514  	NA    	AT:100% | T:0%
 PF14384.5	BernTA	AT:100% | T:0%
@@ -90,12 +90,12 @@ DISTANCE -13 (0.855)	Domain-Domain ASSOCIATION: 0.95	SYSTEM score: 0.996
                 -13nt
 
 PRE GENE
-CDS 1450	from 1539347 to 1539048	100aa (0.647)
+cds-WP_012417164.1	from 1539347 to 1539048	100aa (0.647)
 TA HIT:
 COG2026	relBE relBE|paaR-paaA-parE	AT:5% | T:95%
 
 POST GENE
-CDS 1449	from 1539051 to 1538731	107aa (0.655)
+cds-WP_012417163.1	from 1539051 to 1538731	107aa (0.655)
 TA HIT:
 COG2944    	HTH|relBE        	AT:99% | T:1%
 cd00093    	relBE higBA|vapBC	AT:99% | T:1%
@@ -112,12 +112,12 @@ DISTANCE -3 (0.87)	Domain-Domain ASSOCIATION: 0.322	SYSTEM score: 0.917
                    -3nt
 
 PRE GENE
-ORF 3320	from 1885290 to 1885427	46aa (0.105)
+ORF3320	from 1885290 to 1885427	46aa (0.105)
 TA HIT:
 pfam08843	mosAT	AT:0% | T:100%
 
 POST GENE
-CDS 1757	from 1885580 to 1886446	289aa (0.0171)
+cds-WP_012417468.1	from 1885580 to 1886446	289aa (0.0171)
 TA HIT:
 COG0758	psyrAT	AT:100% | T:0%
 
@@ -128,12 +128,12 @@ DISTANCE 153 (0.017)	Domain-Domain ASSOCIATION: 0.0	SYSTEM score: 0.0
              153nt
 
 PRE GENE
-ORF 3320	from 1885290 to 1885427	46aa (0.105)
+ORF3320	from 1885290 to 1885427	46aa (0.105)
 TA HIT:
 pfam08843	mosAT	AT:0% | T:100%
 
 POST GENE
-ORF 3321	from 1885409 to 1885465	19aa (0.00594)
+ORF3321	from 1885409 to 1885465	19aa (0.00594)
 TA HIT:
 pfam08843	mosAT	AT:0% | T:100%
 
@@ -144,12 +144,12 @@ DISTANCE -18 (0.825)	Domain-Domain ASSOCIATION: 0.0	SYSTEM score: 0.0
           -18nt
 
 PRE GENE
-ORF 3321	from 1885409 to 1885465	19aa (0.00594)
+ORF3321	from 1885409 to 1885465	19aa (0.00594)
 TA HIT:
 pfam08843	mosAT	AT:0% | T:100%
 
 POST GENE
-CDS 1757	from 1885580 to 1886446	289aa (0.0171)
+cds-WP_012417468.1	from 1885580 to 1886446	289aa (0.0171)
 TA HIT:
 COG0758	psyrAT	AT:100% | T:0%
 
@@ -160,13 +160,13 @@ DISTANCE 115 (0.027)	Domain-Domain ASSOCIATION: 0.0	SYSTEM score: 0.0
           115nt
 
 PRE GENE
-CDS 2007	from 2196741 to 2197211	157aa (0.257)
+cds-WP_012417720.1	from 2196741 to 2197211	157aa (0.257)
 TA HIT:
 COG0640	ArsR family HTH	AT:92% | T:8%
 COG1396	hipBA          	AT:99% | T:1%
 
 POST GENE
-CDS 2008	from 2197260 to 2197538	93aa (0.619)
+cds-WP_012417721.1	from 2197260 to 2197538	93aa (0.619)
 TA HIT:
 PF09957.7	NA	AT:100% | T:0%
 PF09957.7	NA	AT:100% | T:0%
