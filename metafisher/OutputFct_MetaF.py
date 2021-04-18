@@ -141,7 +141,7 @@ def write_result(set_linked, dict_output, contig):
 
 def write_gff(gene, fl):
     neighbors = "possible_partners="+','.join([give_id(n) for n in gene.prev+gene.post])
-    list_attrib = ["protein_id="+give_id(gene), 'best_'+gene.domain[0].writeGffLike(), neighbors]
+    list_attrib = ["ID="+give_id(gene), 'best_'+gene.domain[0].writeGffLike(), neighbors]
     attributes = '{}|{};'.format(gene.contig, gene.gene_number)
     attributes += ';'.join(list_attrib)
     list_gff = [gene.contig, 'metaF', gene.feature, str(
@@ -224,7 +224,7 @@ def write_human_result(g, post, fl, i):
 
 
 def write_line(g, score):
-    line = f"{g.feature} {g.gene_number}\tfrom {g.real_start()} to {g.real_end()}"
+    line = f"{give_id(g)}\tfrom {g.real_start()} to {g.real_end()}"  # ({g.feature}_{g.gene_number})
     line += f"\t{int(score[0]['length']/3)}aa ({score[0]['len_score']:.3})"
     # line += f"\tstart {score[0]['start']}"
 
@@ -287,7 +287,7 @@ def visual_str(size):
 
 
 def give_id(g):
-    if hasattr(g, 'protein_id'):
-        return g.protein_id  # + ':' + str(g.gene_number)
+    if hasattr(g, 'gene_id'):
+        return g.gene_id  # + ':' + str(g.gene_number)
     else:
         return g.feature+str(g.gene_number)

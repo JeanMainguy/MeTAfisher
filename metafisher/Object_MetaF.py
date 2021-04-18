@@ -41,6 +41,7 @@ class Gene:
         self.feature = None
         self.dict_score = {}
         self.protein_id = None
+        self.gene_id = None
         self.contig = None
 
     def __str__(self):
@@ -134,7 +135,7 @@ class TA_gene(Gene):
         presentation = 'nb: {}\tlength: {}\tfrom {} to {}\tstrand: {}\tfeature: {}\n'.format(
             self.gene_number, self.length(), self.start, self.end, self.strand, self.feature)
         presentation += 'nb_domain: {}\tbest: {}\t Possible post_partner: {} pre partner {}'.format(
-            len(self.domain), len(self.best_domain), [p.gene_number for p in self.post], [p.gene_number for p in self.prev])
+            len(self.domain), len(self.best_domain), [p.genprotein_id_searche_number for p in self.post], [p.gene_number for p in self.prev])
         return presentation
 
     def give_start_po(self, dico, min_max_intervall=False):

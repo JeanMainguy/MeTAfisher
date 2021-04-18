@@ -201,8 +201,8 @@ def build_ta_gene_from_gff_line(gff_line):
     gene.end = int(gff_line['end'])
     gene.strand = gff_line['strand']
     # gene.gene_number = cds_number
-    # gene_id_search = re.search('ID=([^;\n]+)', gff_line['attribute'])
-    # gene.gene_id = protein_id_search.group(1)
+    gene_id_search = re.search('ID=([^;\n]+)', gff_line['attribute'])
+    gene.gene_id = gene_id_search.group(1)
 
     protein_id_search = re.search('protein_id=([^;\n]+)', gff_line['attribute'])
     if protein_id_search:
