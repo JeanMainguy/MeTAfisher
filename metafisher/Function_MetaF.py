@@ -194,12 +194,15 @@ def get_hmm_genes(contig, table_hmm, gff_file):
 
 def build_ta_gene_from_gff_line(gff_line):
     gene = obj.TA_gene()
+
     gene.contig = gff_line["seqname"]
     gene.feature = gff_line["feature"]
     gene.start = int(gff_line['start'])
     gene.end = int(gff_line['end'])
     gene.strand = gff_line['strand']
     # gene.gene_number = cds_number
+    # gene_id_search = re.search('ID=([^;\n]+)', gff_line['attribute'])
+    # gene.gene_id = protein_id_search.group(1)
 
     protein_id_search = re.search('protein_id=([^;\n]+)', gff_line['attribute'])
     if protein_id_search:
@@ -424,21 +427,44 @@ def annotate_ta_hits(domains, info_domains, dict_domain_gene_type):
             domain.annotate_ta_hit(info_domains, dict_domain_gene_type)
 
 
+def check_protein_ids(gene_to_domains):
+    """
+    Some ncbi protein files have protein id as follow: lcl|<seqname>_prot_<prot_id>_<prot_rank_in_seqname>
+    ie:lcl|NC_010645.1_prot_WP_012415714.1_3
+    Let's identify these ids and keep only the protein id.
+    """
+    gene_to_domains_cleaned = {}
+    pattern = re.compile("lcl\|[A-Z]{2}_\d+\.\d+_prot_([A-Z]{2}_\d+\.\d+)_\d+")
+    for gene_id, domains in gene_to_domains.items():
+        if pattern.match(gene_id):
+            id = pattern.match(gene_id).group(1)
+        else:
+            id = gene_id
+        gene_to_domains_cleaned[id] = domains
+
+    return gene_to_domains_cleaned
+
+
 def get_genes_by_contigs(gene_to_domains, gff_file):
+
+    gene_id_retrieved = []
     genes = []
+
     current_seqname = ""
     gene_count_by_contig = 0
+
     gff_headers = ("seqname", "_3", "feature", "start", "end", "_2", "strand", "_1", "attribute")
     gene_id_pattern = re.compile('ID=([^;\n]+)')
     protein_id_pattern = re.compile('protein_id=([^;\n]+)')
 
+    gene_to_domains = check_protein_ids(gene_to_domains)
     proper_open = gzip.open if gff_file.endswith('.gz') else open
 
     with proper_open(gff_file, 'rt') as gff_fl:
         gff_tsv_dict_reader = csv.DictReader(gff_fl, delimiter='\t', fieldnames=gff_headers)
 
         for line_dict in gff_tsv_dict_reader:
-
+            seqname = line_dict["seqname"]
             if line_dict["seqname"] != current_seqname:
                 gene_count_by_contig = 0
                 if genes:
@@ -461,7 +487,15 @@ def get_genes_by_contigs(gene_to_domains, gff_file):
                     f'Attribute of gff line has no protein_id or ID: {line_dict["attribute"]}')
                 raise err
 
+            # check for lcl protein id from ncbi faa file ie >lcl|NC_010645.1_prot_WP_012415716.1_5
+
+            lcl_prot_id = f"lcl|{seqname}_prot_{gene_id}_{gene_count_by_contig}"
+
+            if lcl_prot_id in gene_to_domains:
+                gene_id = lcl_prot_id
             if gene_id in gene_to_domains:
+                gene_id_retrieved.append(gene_id)
+
                 gene = build_ta_gene_from_gff_line(line_dict)
                 gene.gene_number = gene_count_by_contig
                 gene.domain = gene_to_domains[gene_id]
@@ -470,3 +504,9 @@ def get_genes_by_contigs(gene_to_domains, gff_file):
 
         if genes:
             yield (line_dict["seqname"], genes)
+
+    if len(gene_id_retrieved) < len(gene_to_domains):
+        missing_prot = set(gene_to_domains) - set(gene_id_retrieved)
+
+        raise ValueError(
+            f"Only {len(gene_id_retrieved)}/{len(gene_to_domains)} proteins identified by hmmsearch or diamond have been found in the gff file ({gff_file}). Missing proteins: {missing_prot}")
