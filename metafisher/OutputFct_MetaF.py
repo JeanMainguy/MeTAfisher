@@ -24,7 +24,8 @@ def output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_
     # dico output is update no need to give it back
     output_file_creation(output_way, metaG_name, dict_output, headinfo, complement)
     # Output T as a csv file initialization
-    dict_output["result_T"] = result_table_config(dict_output["result_T"])
+    dict_output["result_TA_genes"] = result_ta_genes_config(dict_output["result_TA_genes"])
+    dict_output["result_TA_pairs"] = result_ta_pairs_config(dict_output["result_TA_pairs"])
     # Stat file initialisation
     writer_stat, total_stat, fl_stat = stat_file_creation(
         output_way, metaG_name, info_contig_stat, headinfo, complement, rescue)
@@ -46,12 +47,26 @@ def output_headinfo_creation(metaG_name, thresholds, rescue, resize):
     return headinfo, complement
 
 
-def result_table_config(fl):
+def result_ta_genes_config(fl):
     if not fl:
         return False  # fl is False
     # Chnage the regular file writer into a csv file writer with header
     header = ["contig", "gene_id", "start", "end",
               "length", "strand", "feature", "possible_partners", 'TA_domains', 'TADB_hits']
+    writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
+    writer_table.writeheader()
+    return writer_table
+
+
+def result_ta_pairs_config(fl):
+    if not fl:
+        return False  # fl is False
+    # Chnage the regular file writer into a csv file writer with header
+    header = ["contig",  "strand",
+              "gene1_id", "gene1_start", "gene1_end", "gene1_length", "gene1_length_score",
+              "gene2_id", "gene2_start", "gene2_end", "gene2_length", "gene2_length_score",
+              "distance", "distance_score", "TA_association_score", "system_score",
+              'gene1_TA_domains', 'gene1_TADB_hits', 'gene2_TA_domains', 'gene2_TADB_hits']
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
     return writer_table
@@ -65,7 +80,7 @@ def output_file_creation(output_way, metaG_name, dict_output, headinfo, compleme
     for out_name in dict_output:
         if out_name:  # if the flag is not False
             extension = 'txt'
-            if out_name == 'result_T':
+            if out_name.startswith('result_TA_'):
                 extension = 'tsv'
             elif out_name == 'result_GFF':
                 extension = 'gff'
@@ -132,11 +147,49 @@ def write_result(set_linked, dict_output, contig):
                 write_human_result(gene, g_post, dict_output['result_H'], i)
             if dict_output['result_S']:
                 write_short_result(gene, g_post, dict_output['result_S'], i)
-        if dict_output['result_T']:
-            write_table_result(gene, dict_output['result_T'])
+            if dict_output['result_TA_pairs']:
+                write_table_pairs_result(gene, g_post, dict_output['result_TA_pairs'])
+        if dict_output['result_TA_genes']:
+            write_table_genes_result(gene, dict_output['result_TA_genes'])
 
         if dict_output['result_GFF']:
             write_gff(gene, dict_output['result_GFF'])
+
+
+def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
+    line = {}
+
+    line["contig"] = gene_prev.contig
+    line["strand"] = gene_prev.strand
+    assert gene_prev.strand == gene_post.strand and gene_prev.contig == gene_post.contig
+
+    for i, gene in [(1, gene_prev), (2, gene_post)]:
+        line[f"gene{i}_id"] = give_id(gene)
+        line[f"gene{i}_start"] = gene.start
+        line[f"gene{i}_end"] = gene.end
+        line[f"gene{i}_length"] = len(gene)
+        line[f"gene{i}_TA_domains"] = ';'.join(
+            [d.name for d in gene.domain if d.source == "hmmsearch"])
+        line[f"gene{i}_TADB_hits"] = ';'.join(
+            [d.name for d in gene.domain if d.source == "diamond"])
+
+    gene_prev_score = gene_prev.dict_score[gene_post.gene_number]
+    gene_post_score = gene_post.dict_score[gene_prev.gene_number]
+
+    npc = 3
+    domain_asso = round(gene_post_score[0]['domain_association_score'], npc)
+    dist_score = round(gene_post_score[0]['dist_score'], npc)
+    system_score = score.confl(gene_prev_score[0]["len_score"], gene_post_score[0]
+                               ["len_score"], gene_post_score[0]['dist_score'], gene_post_score[0]['domain_association_score'])
+
+    line[f"gene1_length_score"] = round(gene_prev_score[0]["len_score"], npc)
+    line[f"gene2_length_score"] = round(gene_post_score[0]["len_score"], npc)
+    line["distance"] = gene_post_score[0]['distance']
+    line["distance_score"] = dist_score
+    line["TA_association_score"] = domain_asso
+    line["system_score"] = system_score
+
+    out_tsv_fl.writerow(line)
 
 
 def write_gff(gene, fl):
@@ -149,7 +202,7 @@ def write_gff(gene, fl):
     fl.write('\t'.join(list_gff))
 
 
-def write_table_result(gene, tsvfl):
+def write_table_genes_result(gene, tsvfl):
     line = {}
     line["contig"] = gene.contig
     # line["gene_number"] = gene.gene_number
@@ -178,7 +231,7 @@ def write_adj_gene(gene, neighbours, position):
         info += '{} {} distance {} (score {}) system score {}|'.format(position, give_id(
             n), distance, round(dist_score, npc), round(score.confl(n_score[0]['score'], gene_score[0]['score']), npc))
 
-    return info[:-1]
+    return info[: -1]
 
 
 def write_short_result(g, post, fl, i):
