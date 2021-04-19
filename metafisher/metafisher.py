@@ -295,6 +295,8 @@ def main():
         writer_stat.writerow(total_stat)
         fl_stat.close()
 
+    logging.info(f"Results have been written in {args.outdir}")
+
     for kfl in dict_output:
         try:
             dict_output[kfl].close()
