@@ -163,10 +163,10 @@ def main():
     file_domain_gene_type = os.path.join(tadb_stat_dir, "domain_gene_type.json")
 
     # CSV FILE DOMAINS
-    csv_domain = os.path.join(tadb_stat_dir, 'TA_domains_info.csv')
+    csv_domain = os.path.join(tadb_stat_dir, 'TA_domains_info.tsv')
     info_domains = {}
     with open(csv_domain, 'r') as csvdo:
-        reader = csv.DictReader(csvdo)
+        reader = csv.DictReader(csvdo, delimiter='\t')
         for row in reader:
             info_domains[row['hmm_name']] = {
                 k: v for k, v in row.items() if k in ['acc', 'family', 'type']}
