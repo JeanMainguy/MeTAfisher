@@ -161,7 +161,7 @@ def simplify_families_field(families_str):
     families = [family.strip() for family in families_str.split(';')]
     families_count = {family: families.count(family) for family in set(families)}
     simplified_family_str = ';'.join([family for family, count in sorted(
-        families_count.items(), key=lambda item: item[1])][::-1])
+        families_count.items(), key=lambda item: str(item[1])+item[0], reverse=True)])
     return simplified_family_str
 
 
@@ -189,8 +189,9 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
 
     line[f"gene1_TA_families"] = simplify_families_field(line[f"gene1_TA_families"])
     line[f"gene2_TA_families"] = simplify_families_field(line[f"gene2_TA_families"])
-    line['shared_family'] = ';'.join(set(line[f"gene1_TA_families"].split(
-        ';')) & set(line[f"gene2_TA_families"].split(';')))
+
+    line['shared_family'] = ';'.join(sorted(set(line[f"gene1_TA_families"].split(
+        ';')) & set(line[f"gene2_TA_families"].split(';'))))
     # print(line[f"gene1_TA_families"])
     # print(line[f"gene2_TA_families"])
     # print('SHARED', line['shared_family'])
@@ -237,7 +238,7 @@ def write_table_genes_result(gene, tsvfl):
     line["TADB_hits"] = ';'.join([d.name for d in gene.domain if d.source == "diamond"])
 
     line[f"TA_families"] = ';'.join(
-        [d.domain_info['family'].replace('|', ';') for d in gene.domain if d.source == "hmmsearch"])
+        [d.domain_info['family'].replace('|', ';').strip() for d in gene.domain if d.source == "hmmsearch"])
 
     line[f"TA_families"] = simplify_families_field(line[f"TA_families"])
 
