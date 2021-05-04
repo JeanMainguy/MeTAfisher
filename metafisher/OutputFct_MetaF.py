@@ -52,7 +52,7 @@ def result_ta_genes_config(fl):
         return False  # fl is False
     # Chnage the regular file writer into a csv file writer with header
     header = ["contig", "gene_id", "start", "end",
-              "length", "strand", "feature", "possible_partners", 'TA_domains', 'TADB_hits']
+              "length", "strand", "feature", "possible_partners", 'TA_domains', 'TA_families', 'TADB_hits']
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
     return writer_table
@@ -66,7 +66,7 @@ def result_ta_pairs_config(fl):
               "gene1_id", "gene1_start", "gene1_end", "gene1_length", "gene1_length_score",
               "gene2_id", "gene2_start", "gene2_end", "gene2_length", "gene2_length_score",
               "distance", "distance_score", "TA_association_score", "system_score",
-              'gene1_TA_domains', 'gene1_TADB_hits', 'gene2_TA_domains', 'gene2_TADB_hits']
+              'gene1_TA_domains', "gene1_TA_families", 'gene1_TADB_hits', 'gene2_TA_domains', "gene2_TA_families", 'gene2_TADB_hits', 'shared_family']
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
     return writer_table
@@ -156,6 +156,15 @@ def write_result(set_linked, dict_output, contig):
             write_gff(gene, dict_output['result_GFF'])
 
 
+def simplify_families_field(families_str):
+    families_str = families_str.replace('|', ';')
+    families = [family.strip() for family in families_str.split(';')]
+    families_count = {family: families.count(family) for family in set(families)}
+    simplified_family_str = ';'.join([family for family, count in sorted(
+        families_count.items(), key=lambda item: item[1])][::-1])
+    return simplified_family_str
+
+
 def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
     line = {}
 
@@ -169,13 +178,22 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
         line[f"gene{i}_end"] = gene.end
         line[f"gene{i}_length"] = len(gene)
         line[f"gene{i}_TA_domains"] = ';'.join(
-            [d.name for d in gene.domain if d.source == "hmmsearch"])
+            [d.domain_info['acc'] for d in gene.domain if d.source == "hmmsearch"])
+        line[f"gene{i}_TA_families"] = ';'.join(
+            [d.domain_info['family'].replace('|', ';') for d in gene.domain if d.source == "hmmsearch"])
         line[f"gene{i}_TADB_hits"] = ';'.join(
             [d.name for d in gene.domain if d.source == "diamond"])
 
     gene_prev_score = gene_prev.dict_score[gene_post.gene_number]
     gene_post_score = gene_post.dict_score[gene_prev.gene_number]
 
+    line[f"gene1_TA_families"] = simplify_families_field(line[f"gene1_TA_families"])
+    line[f"gene2_TA_families"] = simplify_families_field(line[f"gene2_TA_families"])
+    line['shared_family'] = ';'.join(set(line[f"gene1_TA_families"].split(
+        ';')) & set(line[f"gene2_TA_families"].split(';')))
+    # print(line[f"gene1_TA_families"])
+    # print(line[f"gene2_TA_families"])
+    # print('SHARED', line['shared_family'])
     npc = 3
     domain_asso = round(gene_post_score[0]['domain_association_score'], npc)
     dist_score = round(gene_post_score[0]['dist_score'], npc)
@@ -214,8 +232,15 @@ def write_table_genes_result(gene, tsvfl):
     line["strand"] = gene.strand  # + gene.frame
     line["feature"] = gene.feature
     line["possible_partners"] = ';'.join([give_id(g) for g in gene.prev + gene.post])
-    line["TA_domains"] = ';'.join([d.name for d in gene.domain if d.source == "hmmsearch"])
+    line["TA_domains"] = ';'.join([d.domain_info['acc']
+                                   for d in gene.domain if d.source == "hmmsearch"])
     line["TADB_hits"] = ';'.join([d.name for d in gene.domain if d.source == "diamond"])
+
+    line[f"TA_families"] = ';'.join(
+        [d.domain_info['family'].replace('|', ';') for d in gene.domain if d.source == "hmmsearch"])
+
+    line[f"TA_families"] = simplify_families_field(line[f"TA_families"])
+
     tsvfl.writerow(line)
 
 
