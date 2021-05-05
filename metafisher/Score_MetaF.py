@@ -104,9 +104,9 @@ def domain_association_prct(do1, do2, association, domain_types):
 def score_do_association(post, pre, dict_domain_association, dict_domain_gene_type):
 
     asso = []
-    for pre_do in pre.domain:
+    for pre_do in pre.domains:
 
-        for post_do in post.domain:
+        for post_do in post.domains:
             perct_asso = domain_association_prct(
                 pre_do.name, post_do.name, dict_domain_association, dict_domain_gene_type)
             asso.append(perct_asso)
@@ -152,9 +152,9 @@ def get_score(gene, starts, length_proba, distance_proba, distance=None):
     with score of domain and length and when pre_end isn't Noneth distance score
     """
     scores = []
-    gene.domain = sorted(gene.domain, key=attrgetter('score'), reverse=True)
+    gene.domains = sorted(gene.domains, key=attrgetter('score'), reverse=True)
     # print([d.score for d in gene.domain])
-    domains = iter(gene.domain)
+    domains = iter(gene.domains)
     d = next(domains)
 
     for start in starts:

@@ -157,7 +157,7 @@ def get_ta_genes_from_hmmsearch(hmm_result, gene_to_hits=None):
     return gene_to_hits
 
 
-def get_hmm_genes(contig, table_hmm, gff_file):
+def get_hmm_genes_old(contig, table_hmm, gff_file):
     """ """
     genes = []
 
@@ -211,7 +211,7 @@ def build_ta_gene_from_gff_line(gff_line):
     return gene
 
 
-def hmmtable_parser(line):
+def hmmtable_parser_old(line):
     """
     Parse a line of the hmmtable and return a object from TaHit class with all the info of the line.
     """
@@ -498,8 +498,7 @@ def get_genes_by_contigs(gene_to_domains, gff_file):
 
                 gene = build_ta_gene_from_gff_line(line_dict)
                 gene.gene_number = gene_count_by_contig
-                gene.domain = gene_to_domains[gene_id]
-                gene.domain_Ct_border = max((d.ali_from * 3 for d in gene_to_domains[gene_id]))
+                gene.add_domain_info(gene_to_domains[gene_id])
                 genes.append(gene)
 
         if genes:

@@ -84,7 +84,7 @@ def identify_ta_orfs(adj_orfs, genes, outdir, hmm_db):
     fct.hmmsearch(adjorf_faa_file, hmm_db, hmm_result_file)
     # parsing result and store it in obj.Orf.hmm_orf
     ta_orfs = adjOrf_hmm(hmm_result_file, adj_orf_dict)
-    logging.info(f'{len(ta_orfs)} have TA domains')
+    logging.info(f'{len(ta_orfs)} adjacent orfs have TA domains')
     # taking into account the domain in the possible start of the ORF
     # give gene number to hmm orf that fit with genes from gff file
     adjust_orf_attribut(ta_orfs, gene_index)
@@ -218,11 +218,11 @@ def adjOrf_hmm(table_hmm, adj_orf_dict):
 
         for domain in domains:
             try:
-                hmm_orf.domain.append(domain)
+                hmm_orf.domains.append(domain)
                 hmm_orf.domain_Ct_border = max(hmm_orf.domain_Ct_border, domain.ali_from * 3)
             except AttributeError:
                 hmm_orf.domain_Ct_border = domain.ali_from * 3
-                hmm_orf.domain = [domain]
+                hmm_orf.domains = [domain]
 
                 hmm_orfs.append(hmm_orf)
 

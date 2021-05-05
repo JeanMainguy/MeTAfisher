@@ -100,7 +100,7 @@ class Gene:
 
         start = start / 3  # transformation en start aa
         valid_domains = []
-        for do in self.domain:
+        for do in self.domains:
             if start <= do.ali_from + (do.ali_to - do.ali_from) * Gene.allowance:
                 valid_domains.append(do)
         return valid_domains
@@ -115,7 +115,7 @@ class TA_gene(Gene):
         self.feature = None
 
         # info of hmm lines
-        self.domain = []
+        self.domains = []
         self.best_domain = []
 
         # border of the last domain in C terminal! In order to use alternative
@@ -135,8 +135,12 @@ class TA_gene(Gene):
         presentation = 'nb: {}\tlength: {}\tfrom {} to {}\tstrand: {}\tfeature: {}\n'.format(
             self.gene_number, self.length(), self.start, self.end, self.strand, self.feature)
         presentation += 'nb_domain: {}\tbest: {}\t Possible post_partner: {} pre partner {}'.format(
-            len(self.domain), len(self.best_domain), [p.genprotein_id_searche_number for p in self.post], [p.gene_number for p in self.prev])
+            len(self.domains), len(self.best_domain), [p.genprotein_id_searche_number for p in self.post], [p.gene_number for p in self.prev])
         return presentation
+
+    def add_domain_info(self, domains):
+        self.domains = domains
+        self.domain_Ct_border = max((d.ali_from * 3 for d in domains))
 
     def give_start_po(self, dico, min_max_intervall=False):
         """

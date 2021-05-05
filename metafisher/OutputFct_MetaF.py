@@ -178,11 +178,11 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
         line[f"gene{i}_end"] = gene.end
         line[f"gene{i}_length"] = len(gene)
         line[f"gene{i}_TA_domains"] = ';'.join(
-            [d.domain_info['acc'] for d in gene.domain if d.source == "hmmsearch"])
+            [d.domain_info['acc'] for d in gene.domains if d.source == "hmmsearch"])
         line[f"gene{i}_TA_families"] = ';'.join(
-            [d.domain_info['family'].replace('|', ';') for d in gene.domain if d.source == "hmmsearch"])
+            [d.domain_info['family'].replace('|', ';') for d in gene.domains if d.source == "hmmsearch"])
         line[f"gene{i}_TADB_hits"] = ';'.join(
-            [d.name for d in gene.domain if d.source == "diamond"])
+            [d.name for d in gene.domains if d.source == "diamond"])
 
     gene_prev_score = gene_prev.dict_score[gene_post.gene_number]
     gene_post_score = gene_post.dict_score[gene_prev.gene_number]
@@ -213,7 +213,7 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
 
 def write_gff(gene, fl):
     neighbors = "possible_partners="+','.join([give_id(n) for n in gene.prev+gene.post])
-    list_attrib = ["ID="+give_id(gene), 'best_'+gene.domain[0].writeGffLike(), neighbors]
+    list_attrib = ["ID="+give_id(gene), 'best_'+gene.domains[0].writeGffLike(), neighbors]
     attributes = '{}|{};'.format(gene.contig, gene.gene_number)
     attributes += ';'.join(list_attrib)
     list_gff = [gene.contig, 'metaF', gene.feature, str(
@@ -234,11 +234,11 @@ def write_table_genes_result(gene, tsvfl):
     line["feature"] = gene.feature
     line["possible_partners"] = ';'.join([give_id(g) for g in gene.prev + gene.post])
     line["TA_domains"] = ';'.join([d.domain_info['acc']
-                                   for d in gene.domain if d.source == "hmmsearch"])
-    line["TADB_hits"] = ';'.join([d.name for d in gene.domain if d.source == "diamond"])
+                                   for d in gene.domains if d.source == "hmmsearch"])
+    line["TADB_hits"] = ';'.join([d.name for d in gene.domains if d.source == "diamond"])
 
     line[f"TA_families"] = ';'.join(
-        [d.domain_info['family'].replace('|', ';').strip() for d in gene.domain if d.source == "hmmsearch"])
+        [d.domain_info['family'].replace('|', ';').strip() for d in gene.domains if d.source == "hmmsearch"])
 
     line[f"TA_families"] = simplify_families_field(line[f"TA_families"])
 
