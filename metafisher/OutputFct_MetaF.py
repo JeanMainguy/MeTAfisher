@@ -179,16 +179,12 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
         line[f"gene{i}_length"] = len(gene)
         line[f"gene{i}_TA_domains"] = ';'.join(
             [d.domain_info['acc'] for d in gene.domains if d.source == "hmmsearch"])
-        line[f"gene{i}_TA_families"] = ';'.join(
-            [d.domain_info['family'].replace('|', ';') for d in gene.domains if d.source == "hmmsearch"])
+        line[f"gene{i}_TA_families"] = ';'.join(gene.ta_families)
         line[f"gene{i}_TADB_hits"] = ';'.join(
             [d.name for d in gene.domains if d.source == "diamond"])
 
     gene_prev_score = gene_prev.dict_score[gene_post.gene_number]
     gene_post_score = gene_post.dict_score[gene_prev.gene_number]
-
-    line[f"gene1_TA_families"] = simplify_families_field(line[f"gene1_TA_families"])
-    line[f"gene2_TA_families"] = simplify_families_field(line[f"gene2_TA_families"])
 
     line['shared_family'] = ';'.join(sorted(set(line[f"gene1_TA_families"].split(
         ';')) & set(line[f"gene2_TA_families"].split(';'))))
@@ -237,10 +233,7 @@ def write_table_genes_result(gene, tsvfl):
                                    for d in gene.domains if d.source == "hmmsearch"])
     line["TADB_hits"] = ';'.join([d.name for d in gene.domains if d.source == "diamond"])
 
-    line[f"TA_families"] = ';'.join(
-        [d.domain_info['family'].replace('|', ';').strip() for d in gene.domains if d.source == "hmmsearch"])
-
-    line[f"TA_families"] = simplify_families_field(line[f"TA_families"])
+    line[f"TA_families"] = ';'.join(gene.ta_families)
 
     tsvfl.writerow(line)
 

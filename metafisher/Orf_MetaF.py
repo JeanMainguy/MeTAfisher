@@ -67,7 +67,7 @@ def get_adjacent_orfs(orf_dict, gff_dict, contig, genes):
     return adj_orfs
 
 
-def identify_ta_orfs(adj_orfs, genes, outdir, hmm_db):
+def identify_ta_orfs(adj_orfs, genes, outdir, hmm_db, info_domains, dict_domain_gene_type):
     adj_orf_dict = {}
     gene_index = max([gene.gene_number for gene in genes])
 
@@ -82,8 +82,13 @@ def identify_ta_orfs(adj_orfs, genes, outdir, hmm_db):
     # launch hmmsearch
     hmm_result_file = os.path.join(outdir, 'output_HMM_table_adj_orf.txt')
     fct.hmmsearch(adjorf_faa_file, hmm_db, hmm_result_file)
+
     # parsing result and store it in obj.Orf.hmm_orf
-    ta_orfs = adjOrf_hmm(hmm_result_file, adj_orf_dict)
+
+    gene_to_domains = fct.get_ta_genes_from_hmmsearch(hmm_result_file)
+    fct.annotate_ta_hits(gene_to_domains.values(), info_domains, dict_domain_gene_type)
+
+    ta_orfs = associate_orf_to_domains(gene_to_domains, adj_orf_dict)
     logging.info(f'{len(ta_orfs)} adjacent orfs have TA domains')
     # taking into account the domain in the possible start of the ORF
     # give gene number to hmm orf that fit with genes from gff file
@@ -207,24 +212,13 @@ def get_adjacent_orfs_by_strand(orfs, strand, lonelyGenes, gff_ends):
     return adj_orfs
 
 
-def adjOrf_hmm(table_hmm, adj_orf_dict):
+def associate_orf_to_domains(gene_to_domains, adj_orf_dict):
 
     hmm_orfs = []
-    gene_to_domains = fct.get_ta_genes_from_hmmsearch(table_hmm)
-    print(gene_to_domains)
     for gene_id, domains in gene_to_domains.items():
-        print(table_hmm, gene_id, domains[0].line)
         hmm_orf = adj_orf_dict[gene_id]
-
-        for domain in domains:
-            try:
-                hmm_orf.domains.append(domain)
-                hmm_orf.domain_Ct_border = max(hmm_orf.domain_Ct_border, domain.ali_from * 3)
-            except AttributeError:
-                hmm_orf.domain_Ct_border = domain.ali_from * 3
-                hmm_orf.domains = [domain]
-
-                hmm_orfs.append(hmm_orf)
+        hmm_orf.add_domain_info(domains)
+        hmm_orfs.append(hmm_orf)
 
     return hmm_orfs
 

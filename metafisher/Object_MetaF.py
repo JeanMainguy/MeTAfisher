@@ -105,6 +105,20 @@ class Gene:
                 valid_domains.append(do)
         return valid_domains
 
+    def add_domain_info(self, domains):
+        self.domains = domains
+        families_str = ';'.join(
+            [d.domain_info['family'].strip() for d in domains if d.source == "hmmsearch"])
+
+        families_str = families_str.replace('|', ';')
+        families = [family.strip() for family in families_str.split(';')]
+        families_count = {family: families.count(family) for family in set(families)}
+        simplified_families = [family for family, count in sorted(
+            families_count.items(), key=lambda item: str(item[1])+item[0], reverse=True)]
+
+        self.ta_families = simplified_families
+        self.domain_Ct_border = max((d.ali_from * 3 for d in domains))
+
 
 class TA_gene(Gene):
 
@@ -117,6 +131,7 @@ class TA_gene(Gene):
         # info of hmm lines
         self.domains = []
         self.best_domain = []
+        self.ta_families = []
 
         # border of the last domain in C terminal! In order to use alternative
         # start that doesn't affect at least one domain.
@@ -137,10 +152,6 @@ class TA_gene(Gene):
         presentation += 'nb_domain: {}\tbest: {}\t Possible post_partner: {} pre partner {}'.format(
             len(self.domains), len(self.best_domain), [p.genprotein_id_searche_number for p in self.post], [p.gene_number for p in self.prev])
         return presentation
-
-    def add_domain_info(self, domains):
-        self.domains = domains
-        self.domain_Ct_border = max((d.ali_from * 3 for d in domains))
 
     def give_start_po(self, dico, min_max_intervall=False):
         """

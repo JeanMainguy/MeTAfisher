@@ -271,9 +271,8 @@ def main():
 
         if initial_nb_lonely and rescue:
             adj_orfs = orf.get_adjacent_orfs(orf_dict, gff_dict, contig, genes)
-            ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, outdir, hmm_db)
-            ta_domains = [orf.domains for orf in ta_orfs]
-            fct.annotate_ta_hits(ta_domains, info_domains, dict_domain_gene_type)
+            ta_orfs = orf.identify_ta_orfs(adj_orfs, genes, outdir,
+                                           hmm_db, info_domains, dict_domain_gene_type)
         else:
             ta_orfs = []
             adj_orfs = []
