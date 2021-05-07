@@ -52,7 +52,8 @@ def result_ta_genes_config(fl):
         return False  # fl is False
     # Chnage the regular file writer into a csv file writer with header
     header = ["contig", "gene_id", "start", "end",
-              "length", "strand", "feature", "possible_partners", 'TA_domains', 'TA_families', 'TADB_hits']
+              "length", "strand", "feature", "possible_partners", 'lonely_gene', 'TA_domains', 'TA_families', 'TADB_hits',
+              "toxin_score", "antitoxin_score", "type"]
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
     return writer_table
@@ -66,7 +67,10 @@ def result_ta_pairs_config(fl):
               "gene1_id", "gene1_start", "gene1_end", "gene1_length", "gene1_length_score",
               "gene2_id", "gene2_start", "gene2_end", "gene2_length", "gene2_length_score",
               "distance", "distance_score", "TA_association_score", "system_score",
-              'gene1_TA_domains', "gene1_TA_families", 'gene1_TADB_hits', 'gene2_TA_domains', "gene2_TA_families", 'gene2_TADB_hits', 'shared_family']
+              'gene1_TA_domains', "gene1_TA_families", 'gene1_TADB_hits',
+              'gene2_TA_domains', "gene2_TA_families", 'gene2_TADB_hits', 'shared_family',
+              "gene1_toxin_score", "gene1_antitoxin_score", "gene2_toxin_score", "gene2_antitoxin_score", "gene1_type", "gene2_type"]
+
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
     return writer_table
@@ -130,7 +134,7 @@ def contig_stat_manager(writer_stat, contig, initial_nb_lonely, rescue, total_st
     writer_stat.writerow(contig_stat)
 
 
-def write_result(set_linked, dict_output, contig):
+def write_result(ta_genes, dict_output, contig):
     i = 0
     contig_header = "\n" + '==' * 2 + contig + '==' * 2 + '\n'
     # if dict_output['result_T']:
@@ -140,7 +144,7 @@ def write_result(set_linked, dict_output, contig):
     if dict_output['result_S']:
         dict_output['result_S'].write(contig_header)
 
-    for gene in sorted(set_linked, key=attrgetter('start')):
+    for gene in sorted(ta_genes, key=attrgetter('start')):
         for g_post in gene.post:
             i += 1  # to give a number to each TA pair
             if dict_output['result_H']:
@@ -152,8 +156,8 @@ def write_result(set_linked, dict_output, contig):
         if dict_output['result_TA_genes']:
             write_table_genes_result(gene, dict_output['result_TA_genes'])
 
-        if dict_output['result_GFF']:
-            write_gff(gene, dict_output['result_GFF'])
+        # if dict_output['result_GFF']:
+            #write_gff(gene, dict_output['result_GFF'])
 
 
 def simplify_families_field(families_str):
@@ -182,6 +186,10 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
         line[f"gene{i}_TA_families"] = ';'.join(gene.ta_families)
         line[f"gene{i}_TADB_hits"] = ';'.join(
             [d.name for d in gene.domains if d.source == "diamond"])
+
+        line[f"gene{i}_toxin_score"] = gene.toxin_score
+        line[f"gene{i}_antitoxin_score"] = gene.antitoxin_score
+        line[f"gene{i}_type"] = gene.type
 
     gene_prev_score = gene_prev.dict_score[gene_post.gene_number]
     gene_post_score = gene_post.dict_score[gene_prev.gene_number]
@@ -229,11 +237,16 @@ def write_table_genes_result(gene, tsvfl):
     line["strand"] = gene.strand  # + gene.frame
     line["feature"] = gene.feature
     line["possible_partners"] = ';'.join([give_id(g) for g in gene.prev + gene.post])
+    line["lonely_gene"] = False if gene.prev or gene.post else True
     line["TA_domains"] = ';'.join([d.domain_info['acc']
                                    for d in gene.domains if d.source == "hmmsearch"])
     line["TADB_hits"] = ';'.join([d.name for d in gene.domains if d.source == "diamond"])
 
     line[f"TA_families"] = ';'.join(gene.ta_families)
+
+    line["toxin_score"] = gene.toxin_score
+    line["antitoxin_score"] = gene.antitoxin_score
+    line["type"] = gene.type
 
     tsvfl.writerow(line)
 

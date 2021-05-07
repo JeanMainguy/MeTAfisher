@@ -107,6 +107,9 @@ class Gene:
 
     def add_domain_info(self, domains):
         self.domains = domains
+        self.domain_Ct_border = max((d.ali_from * 3 for d in domains))
+
+        # Families
         families_str = ';'.join(
             [d.domain_info['family'].strip() for d in domains if d.source == "hmmsearch"])
 
@@ -117,7 +120,19 @@ class Gene:
             families_count.items(), key=lambda item: str(item[1])+item[0], reverse=True)]
 
         self.ta_families = simplified_families
-        self.domain_Ct_border = max((d.ali_from * 3 for d in domains))
+
+        # Type: is it a toxin or an antitoxin
+        # families_str = ';'.join(
+        #     [d.domain_info['family'].strip() for d in domains if d.source == "hmmsearch"])
+        toxin_count = [d.domain_info['type_prct']['T'] for d in domains]
+        antitoxin_count = [d.domain_info['type_prct']['AT'] for d in domains]
+        antitoxin_prct = [at/(at+t) for t, at in zip(toxin_count, antitoxin_count)]
+        toxin_prct = [t/(at+t) for t, at in zip(toxin_count, antitoxin_count)]
+        toxin_mean = sum(toxin_prct)/len(toxin_prct)
+        antitoxin_mean = sum(antitoxin_prct)/len(antitoxin_prct)
+        self.toxin_score = sum(toxin_prct)/len(toxin_prct)
+        self.antitoxin_score = sum(antitoxin_prct)/len(antitoxin_prct)
+        self.type = 'toxin' if self.toxin_score > 0.8 else 'antitoxin' if self.antitoxin_score > 0.8 else 'unknown'
 
 
 class TA_gene(Gene):

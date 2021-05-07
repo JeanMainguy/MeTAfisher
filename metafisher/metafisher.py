@@ -285,7 +285,8 @@ def main():
 
         # write output
         if dict_output['is_output']:
-            out.write_result(fct.get_linked_genes(genes), dict_output, contig)
+            #out.write_result(fct.get_linked_genes(genes), dict_output, contig)
+            out.write_result(genes, dict_output, contig)
 
     # Total Stat information about the Metagenome
     if info_contig_stat:
