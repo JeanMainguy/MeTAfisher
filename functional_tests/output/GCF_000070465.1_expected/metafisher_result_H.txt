@@ -4,22 +4,22 @@
 PRE GENE
 cds-WP_082011714.1	from 262607 to 262197	137aa (0.404)
 TA HIT:
-pfam01381	relBE higBA|vapBC	AT:99% | T:1%
-COG1396  	hipBA            	AT:99% | T:1%
-cd00093  	relBE higBA|vapBC	AT:99% | T:1%
-COG2856  	RelBE|PIN        	AT:83% | T:17%
-COG3093  	vapBC            	AT:98% | T:2%
-COG2944  	HTH|relBE        	AT:99% | T:1%
+pfam01381	relBE | higBA| vapBC	AT:99% | T:1%
+COG1396  	hipBA               	AT:99% | T:1%
+cd00093  	relBE higBA| vapBC  	AT:99% | T:1%
+COG2856  	relBE|PIN           	AT:83% | T:17%
+COG3093  	relBE | higBA       	AT:98% | T:2%
+COG2944  	HTH|relBE           	AT:99% | T:1%
 
 POST GENE
 cds-WP_082011715.1	from 262050 to 261655	132aa (0.446)
 TA HIT:
-pfam01381	relBE higBA|vapBC	AT:99% | T:1%
-cd00093  	relBE higBA|vapBC	AT:99% | T:1%
-COG1396  	hipBA            	AT:99% | T:1%
-COG2856  	RelBE|PIN        	AT:83% | T:17%
-COG2944  	HTH|relBE        	AT:99% | T:1%
-COG3620  	Xre              	AT:99% | T:1%
+pfam01381	relBE | higBA| vapBC	AT:99% | T:1%
+cd00093  	relBE higBA| vapBC  	AT:99% | T:1%
+COG1396  	hipBA               	AT:99% | T:1%
+COG2856  	relBE|PIN           	AT:83% | T:17%
+COG2944  	HTH|relBE           	AT:99% | T:1%
+COG3620  	Xre                 	AT:99% | T:1%
 
 DISTANCE 147 (0.017)	Domain-Domain ASSOCIATION: 0.281	SYSTEM score: 0.004
 =========137.0aa=========>
@@ -30,14 +30,14 @@ DISTANCE 147 (0.017)	Domain-Domain ASSOCIATION: 0.281	SYSTEM score: 0.004
 PRE GENE
 cds-WP_012416632.1	from 1015050 to 1014817	78aa (0.508)
 TA HIT:
-COG2929   	RHH   	AT:0% | T:100%
-PF04365.12	BernTA	AT:0% | T:100%
+COG2929   	RHH  	AT:0% | T:100%
+PF04365.12	brnTA	AT:0% | T:100%
 
 POST GENE
 cds-WP_039051605.1	from 1014836 to 1014558	93aa (0.619)
 TA HIT:
-PF14384.5	BernTA	AT:100% | T:0%
-COG3514  	NA    	AT:100% | T:0%
+PF14384.5	brnTA	AT:100% | T:0%
+COG3514  	RHH  	AT:100% | T:0%
 
 DISTANCE -19 (0.818)	Domain-Domain ASSOCIATION: 0.95	SYSTEM score: 0.993
 =====78.0aa=====>
@@ -48,21 +48,21 @@ DISTANCE -19 (0.818)	Domain-Domain ASSOCIATION: 0.95	SYSTEM score: 0.993
 PRE GENE
 cds-WP_012416992.1	from 1391033 to 1390779	85aa (0.571)
 TA HIT:
-COG2026   	relBE relBE|paaR-paaA-parE       	AT:5% | T:95%
-pfam05016 	relBE relBE|paaR-paaA-parE|pasABC	AT:0% | T:100%
-PF05973.13	HigB                             	AT:1% | T:99%
-COG4679   	relBE                            	AT:23% | T:77%
+COG2026   	relBE |paaR-paaA-parE |phd-doc	AT:5% | T:95%
+pfam05016 	relBE |paaR-paaA-parE|pasABC  	AT:0% | T:100%
+PF05973.13	higBA                         	AT:1% | T:99%
+COG4679   	relBE                         	AT:23% | T:77%
 
 POST GENE
 cds-WP_012416991.1	from 1390795 to 1390469	109aa (0.652)
 TA HIT:
-COG1396  	hipBA            	AT:99% | T:1%
-pfam01381	relBE higBA|vapBC	AT:99% | T:1%
-cd00093  	relBE higBA|vapBC	AT:99% | T:1%
-COG2944  	HTH|relBE        	AT:99% | T:1%
-COG2856  	RelBE|PIN        	AT:83% | T:17%
-COG5642  	NA               	AT:99% | T:1%
-COG3620  	Xre              	AT:99% | T:1%
+COG1396  	hipBA               	AT:99% | T:1%
+pfam01381	relBE | higBA| vapBC	AT:99% | T:1%
+cd00093  	relBE higBA| vapBC  	AT:99% | T:1%
+COG2944  	HTH|relBE           	AT:99% | T:1%
+COG2856  	relBE|PIN           	AT:83% | T:17%
+COG5642  	Xre                 	AT:99% | T:1%
+COG3620  	Xre                 	AT:99% | T:1%
 
 DISTANCE -16 (0.844)	Domain-Domain ASSOCIATION: 0.785	SYSTEM score: 0.98
 ======85.0aa======>
@@ -73,15 +73,15 @@ DISTANCE -16 (0.844)	Domain-Domain ASSOCIATION: 0.785	SYSTEM score: 0.98
 PRE GENE
 cds-WP_012417133.1	from 1515595 to 1515329	89aa (0.599)
 TA HIT:
-COG2929   	RHH   	AT:0% | T:100%
-PF04365.12	BernTA	AT:0% | T:100%
+COG2929   	RHH  	AT:0% | T:100%
+PF04365.12	brnTA	AT:0% | T:100%
 
 POST GENE
 cds-WP_012417132.1	from 1515342 to 1515064	93aa (0.619)
 TA HIT:
-COG3514  	NA    	AT:100% | T:0%
-PF14384.5	BernTA	AT:100% | T:0%
-PF12441.6	NA    	AT:100% | T:0%
+COG3514  	RHH  	AT:100% | T:0%
+PF14384.5	brnTA	AT:100% | T:0%
+PF12441.6	RHH  	AT:100% | T:0%
 
 DISTANCE -13 (0.855)	Domain-Domain ASSOCIATION: 0.95	SYSTEM score: 0.996
 ======89.0aa======>
@@ -92,18 +92,18 @@ DISTANCE -13 (0.855)	Domain-Domain ASSOCIATION: 0.95	SYSTEM score: 0.996
 PRE GENE
 cds-WP_012417164.1	from 1539347 to 1539048	100aa (0.647)
 TA HIT:
-COG2026	relBE relBE|paaR-paaA-parE	AT:5% | T:95%
+COG2026	relBE |paaR-paaA-parE |phd-doc	AT:5% | T:95%
 
 POST GENE
 cds-WP_012417163.1	from 1539051 to 1538731	107aa (0.655)
 TA HIT:
-COG2944    	HTH|relBE        	AT:99% | T:1%
-cd00093    	relBE higBA|vapBC	AT:99% | T:1%
-pfam01381  	relBE higBA|vapBC	AT:99% | T:1%
-pfam01381  	relBE higBA|vapBC	AT:99% | T:1%
-COG1396    	hipBA            	AT:99% | T:1%
-ENOG410ZNN6	Xre              	AT:100% | T:0%
-COG3093    	vapBC            	AT:98% | T:2%
+COG2944    	HTH|relBE           	AT:99% | T:1%
+cd00093    	relBE higBA| vapBC  	AT:99% | T:1%
+pfam01381  	relBE | higBA| vapBC	AT:99% | T:1%
+pfam01381  	relBE | higBA| vapBC	AT:99% | T:1%
+COG1396    	hipBA               	AT:99% | T:1%
+ENOG410ZNN6	Xre                 	AT:100% | T:0%
+COG3093    	relBE | higBA       	AT:98% | T:2%
 
 DISTANCE -3 (0.87)	Domain-Domain ASSOCIATION: 0.322	SYSTEM score: 0.917
 =======100.0aa=======>
@@ -120,8 +120,8 @@ COG1396	hipBA          	AT:99% | T:1%
 POST GENE
 cds-WP_012417721.1	from 2197260 to 2197538	93aa (0.619)
 TA HIT:
-PF09957.7	NA	AT:100% | T:0%
-PF09957.7	NA	AT:100% | T:0%
+PF09957.7	RHH	AT:100% | T:0%
+PF09957.7	RHH	AT:100% | T:0%
 
 DISTANCE 49 (0.083)	Domain-Domain ASSOCIATION: 0.0	SYSTEM score: 0.0
 ==========157.0aa==========>
