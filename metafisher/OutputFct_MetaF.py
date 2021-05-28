@@ -157,7 +157,7 @@ def write_result(ta_genes, dict_output, contig):
             write_table_genes_result(gene, dict_output['result_TA_genes'])
 
         # if dict_output['result_GFF']:
-            #write_gff(gene, dict_output['result_GFF'])
+            # write_gff(gene, dict_output['result_GFF'])
 
 
 def simplify_families_field(families_str):
@@ -305,13 +305,16 @@ def write_line(g, score):
 
     domain_va = g.valid_domain(score[0]['start'])
     domain_va = write_domain_lines(domain_va)
-    line += "\nTA HIT:\n{}".format(domain_va)
+    line += "\n\nTA HITs:\n{}".format(domain_va)
     return line
 
 
 def write_domain_lines(domains):
-    domain_str_list = []
     do_str = ''
+    headers = ['accession', 'family', 'TA type', 'Evalue', 'bit score']
+    dash_sep = ['-'*len(h) for h in headers]
+    domain_str_list = [headers, dash_sep]
+
     for d in domains:
         type_tot = sum([n for n in d.domain_info['type_prct'].values()])
         type_prct_type_list = ['{}:{}%'.format(t, int(round(float(n)*100/type_tot)))
@@ -319,16 +322,17 @@ def write_domain_lines(domains):
         type_prct_type = ' | '.join(sorted(type_prct_type_list))
         # print type_prct_type
         domain_str_list.append([d.domain_info["acc"],
-                                d.domain_info['family'], type_prct_type])
+                                d.domain_info['family'], type_prct_type, f"{d.e_value}", f"{d.score}"])
 
-    len_max_col0 = max([len(line[0]) for line in domain_str_list])
-    len_max_col1 = max([len(line[1]) for line in domain_str_list])
+    for col_index in range(len(headers)):
 
-    for line in domain_str_list:
+        len_max_col = max([len(line[col_index]) for line in domain_str_list])
 
-        line[0] += ' '*(len_max_col0 - len(line[0]))
-        line[1] += ' '*(len_max_col1 - len(line[1]))
-        do_str += '\t'.join(line) + '\n'
+        for line in domain_str_list:
+
+            line[col_index] += ' '*(len_max_col - len(line[col_index]))
+
+    do_str = '\n'.join(['\t'.join(line) for line in domain_str_list])+'\n'
 
     return do_str
 
