@@ -20,7 +20,7 @@ NOG.COG4118.meta_raw	COG4118	Phd	Antitoxin	COG3654	Doc	Antitoxin to translationa
 NOG.COG4226.meta_raw	COG4226	HicB	Antitoxin	COG1724	HicA	HicB of HicAB system (predicted)	PubMed:17678530	hicBA	TADB|Rasta
 NOG.COG4423.meta_raw	COG4423	COG4423	Antitoxin	COG4113 ;COG1848 ;COG3742 	PIN	Predicted antitoxin of PIN domain toxins (VapC)	PubMed:17678530	vapBC	TADB|Rasta|2009 Makarova et al.
 NOG.COG4456.meta_raw	v	VapB	Antitoxin	COG1487	VapC	Antitoxin of plasmid maintenance system	PubMed:17678530	vapBC	TADB|Rasta|2009 Makarova et al.
-NOG.COG4691.meta_raw	COG4691	StbC	Antitoxin	COG1487	VapC	Plasmid stability proteins (HigBA family)	PubMed:17678530	relBE higBA | vapBC	TADB|Rasta
+NOG.COG4691.meta_raw	COG4691	StbC	Antitoxin	COG1487	VapC	Plasmid stability proteins (HigBA family)	PubMed:17678530	relBE | higBA | vapBC	TADB|Rasta
 NOG.COG5302.meta_raw	COG5302	CcdA	Antitoxin	pfam01845	CcdB	 Antitoxin of plasmid stabilization system	PubMed:17678530	ccdAB	TADB|Rasta|2009 Makarova et al.
 NOG.COG5499.meta_raw	COG5499	XRE	Antitoxin	COG4680	RelE	Predicted transcription regulators with HTH domain	NA	HTH-Xre	Rasta
 Regulator_omega-epsilon-zeta0.5	Regulator_omega-epsilon-zeta	Regulator_omega-epsilon-zeta_0.5	Regulator			build with HMMBUILD	homemade	omega-epsilon-zeta	homemade
