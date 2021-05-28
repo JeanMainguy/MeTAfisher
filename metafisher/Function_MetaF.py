@@ -55,7 +55,7 @@ def hmmsearch(faa_file, hmm_db, outfile, force=True):
         zcat_command = f"zcat {zipped_faa_file} > {faa_file}"
         run_command(zcat_command, faa_file)
 
-    hmmsearch_command = f"hmmsearch -E 0.5 --domtblout {outfile} {hmm_db} {faa_file} > {outfile}.LOG"
+    hmmsearch_command = f"hmmsearch -E 0.0005 --domtblout {outfile} {hmm_db} {faa_file} > {outfile}.LOG"
     run_command(hmmsearch_command, outfile)
 
 
