@@ -64,7 +64,7 @@ def parse_arguments():
     """
     project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     default_tadb_stat_dir = os.path.join(project_dir, "TADB_stat")
-    default_hmm_db = os.path.join(default_tadb_stat_dir, 'ALL_plus_MET_curatted.hmm')
+    default_hmm_db = os.path.join(default_tadb_stat_dir, 'TA_domains.hmm')
 
     parser = argparse.ArgumentParser(
         prog='MeTAfisher',
@@ -92,27 +92,35 @@ def parse_arguments():
     return args
 
 
-def domain_domain_pair_association(opposite_type_dict, domain_type_dict):
+def domain_domain_pair_association(domain_type_dict, opposite_type_dict={'T': 'AT', 'AT': 'T'}):
+    """
+    Compute domain domain association.
+
+    domain_type_dict is a {domain_name:{T:[gene_ids], AT:[gene_ids]} ... }
+
+    """
+
     domain_domain_dict = {}
-    for do, types in domain_type_dict.items():
-        do_dict = domain_domain_dict.setdefault(do, {})
-        for do_n, types_n in domain_type_dict.items():
-            if do_n in do_dict:
+    for domain, type2genes in domain_type_dict.items():
+
+        domain_dict = domain_domain_dict.setdefault(domain, {})
+
+        for domain_next, type2genes_next in domain_type_dict.items():
+            if domain_next in domain_dict:
                 continue
-            do_n_dict = domain_domain_dict.setdefault(do_n, {})
+            domain_dict_next = domain_domain_dict.setdefault(domain_next, {})
 
             pairs = []
 
-            for type, genes in types.items():
-                type_n = opposite_type_dict[type]
+            for type, opposite_type in opposite_type_dict.items():
+                genes = type2genes.setdefault(type, [])
+                genes_next = type2genes_next.setdefault(opposite_type, [])
 
-                genes_n = types_n.setdefault(type_n, [])
-
-                pairs += list(set(genes_n) & set(genes))
+                pairs += list(set(genes_next) & set(genes))
 
             if len(pairs) > 0:
-                do_dict[do_n] = pairs
-                do_n_dict[do] = pairs
+                domain_dict[domain_next] = pairs
+                domain_dict_next[domain] = pairs
 
     return domain_domain_dict
 
@@ -239,7 +247,7 @@ def main():
 
     types = {type_T: type_AT, type_AT: type_T}
 
-    domain_domain_dict = domain_domain_pair_association(types, domain_type_dict)
+    domain_domain_dict = domain_domain_pair_association(domain_type_dict, types)
 
     # count
     domain_domain_count_asso = {}

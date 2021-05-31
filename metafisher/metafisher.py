@@ -42,7 +42,7 @@ def parse_arguments():
     """
     project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     default_tadb_stat_dir = os.path.join(project_dir, "TADB_stat")
-    default_hmm_db = os.path.join(default_tadb_stat_dir, 'ALL_plus_MET_curatted.hmm')
+    default_hmm_db = os.path.join(default_tadb_stat_dir, 'TA_domains.hmm')
 
     parser = argparse.ArgumentParser(
         prog='MeTAfisher',
