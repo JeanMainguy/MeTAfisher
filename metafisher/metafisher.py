@@ -278,6 +278,7 @@ def main():
             adj_orfs = []
 
         score.score_TA_list(genes, score_dict)
+
         # Write stat
         if info_contig_stat:
             out.contig_stat_manager(writer_stat, contig, initial_nb_lonely,

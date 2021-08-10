@@ -16,6 +16,7 @@ import Orf_MetaF as orf
 from math import log
 import Function_MetaF as fct
 import logging
+from collections import defaultdict
 
 
 class Gene:
@@ -118,8 +119,17 @@ class Gene:
         families_count = {family: families.count(family) for family in set(families)}
         simplified_families = [family for family, count in sorted(
             families_count.items(), key=lambda item: str(item[1])+item[0], reverse=True)]
-
         self.ta_families = simplified_families
+
+        hmmsearch_hits = [d for d in domains if d.source == "hmmsearch"]
+        family2bitscore = defaultdict(int)
+        for hit in hmmsearch_hits:
+            for family in hit.domain_info['family'].strip().split('|'):
+                family = family.strip()
+                if family2bitscore[family] < hit.score:
+                    family2bitscore[family] = hit.score
+
+        self.family2bitscore = dict(family2bitscore)
 
         # Type: is it a toxin or an antitoxin
         # families_str = ';'.join(
@@ -147,6 +157,7 @@ class TA_gene(Gene):
         self.domains = []
         self.best_domain = []
         self.ta_families = []
+        self.family2bitscore = {}
 
         # border of the last domain in C terminal! In order to use alternative
         # start that doesn't affect at least one domain.

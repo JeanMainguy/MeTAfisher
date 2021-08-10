@@ -16,6 +16,7 @@ import Function_MetaF as fct
 from operator import attrgetter
 import Score_MetaF as score
 import os
+import logging
 
 
 def output_manager(output_way, metaG_name, thresholds, dict_output, info_contig_stat, rescue=False, resize=False):
@@ -52,7 +53,8 @@ def result_ta_genes_config(fl):
         return False  # fl is False
     # Chnage the regular file writer into a csv file writer with header
     header = ["contig", "gene_id", "start", "end",
-              "length", "strand", "feature", "possible_partners", 'lonely_gene', 'TA_domains', 'TA_families', 'TADB_hits',
+              "length", "strand", "feature", "possible_partners",
+              'lonely_gene', 'TA_domains', 'TA_families', 'TADB_hits',
               "toxin_score", "antitoxin_score", "type"]
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
@@ -68,8 +70,10 @@ def result_ta_pairs_config(fl):
               "gene2_id", "gene2_start", "gene2_end", "gene2_length", "gene2_length_score",
               "distance", "distance_score", "TA_association_score", "system_score",
               'gene1_TA_domains', "gene1_TA_families", 'gene1_TADB_hits',
-              'gene2_TA_domains', "gene2_TA_families", 'gene2_TADB_hits', 'shared_family',
-              "gene1_toxin_score", "gene1_antitoxin_score", "gene2_toxin_score", "gene2_antitoxin_score", "gene1_type", "gene2_type"]
+              'gene2_TA_domains', "gene2_TA_families", 'gene2_TADB_hits',
+              'shared_family', 'top_family',
+              "gene1_toxin_score", "gene1_antitoxin_score", "gene2_toxin_score",
+              "gene2_antitoxin_score", "gene1_type", "gene2_type"]
 
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
@@ -194,8 +198,14 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
     gene_prev_score = gene_prev.dict_score[gene_post.gene_number]
     gene_post_score = gene_post.dict_score[gene_prev.gene_number]
 
-    line['shared_family'] = ';'.join(sorted(set(line[f"gene1_TA_families"].split(
-        ';')) & set(line[f"gene2_TA_families"].split(';'))))
+    line['shared_family'] = ';'.join(
+        sorted(set(gene_post.ta_families) & set(gene_prev.ta_families)))
+
+    best_shared_families = get_best_shared_families(gene_prev, gene_post)
+    line['top_family'] = ';'.join(sorted(best_shared_families))
+    if len(best_shared_families) > 1:
+        logging.info(f'More than one best family {line["top_family"]}')
+
     # print(line[f"gene1_TA_families"])
     # print(line[f"gene2_TA_families"])
     # print('SHARED', line['shared_family'])
@@ -213,6 +223,17 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
     line["system_score"] = system_score
 
     out_tsv_fl.writerow(line)
+
+
+def get_best_shared_families(gene1, gene2):
+    shared_families = sorted(set(gene1.ta_families) & set(gene2.ta_families))
+    shared_families2sum_score = {
+        family: gene1.family2bitscore[family]+gene2.family2bitscore[family] for family in shared_families}
+    best_sum_score = max(shared_families2sum_score.values())
+
+    best_families = [family for family, score in shared_families2sum_score.items()
+                     if score == best_sum_score]
+    return best_families
 
 
 def write_gff(gene, fl):
