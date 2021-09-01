@@ -130,6 +130,7 @@ class Gene:
                     family2bitscore[family] = hit.score
 
         self.family2bitscore = dict(family2bitscore)
+        self.family2bitscore = family2bitscore
 
         # Type: is it a toxin or an antitoxin
         # families_str = ';'.join(
@@ -155,7 +156,6 @@ class TA_gene(Gene):
 
         # info of hmm lines
         self.domains = []
-        self.best_domain = []
         self.ta_families = []
         self.family2bitscore = {}
 
@@ -175,9 +175,18 @@ class TA_gene(Gene):
     def __str__(self):
         presentation = 'nb: {}\tlength: {}\tfrom {} to {}\tstrand: {}\tfeature: {}\n'.format(
             self.gene_number, self.length(), self.start, self.end, self.strand, self.feature)
-        presentation += 'nb_domain: {}\tbest: {}\t Possible post_partner: {} pre partner {}'.format(
-            len(self.domains), len(self.best_domain), [p.genprotein_id_searche_number for p in self.post], [p.gene_number for p in self.prev])
+        # presentation += 'nb_domain: {}\tbest: {}\t Possible post_partner: {} pre partner {}'.format(
+        #     len(self.domains), len(self.best_domain), [p.genprotein_id_searche_number for p in self.post], [p.gene_number for p in self.prev])
         return presentation
+
+    def get_best_hit(self):
+        best_bitscore = 0
+        best_domain = None
+        for domain in self.domains:
+            if domain.score > best_bitscore:
+                best_bitscore = domain.score
+                best_domain = domain
+        return best_domain
 
     def give_start_po(self, dico, min_max_intervall=False):
         """
