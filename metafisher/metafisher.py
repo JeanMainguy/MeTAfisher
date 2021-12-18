@@ -148,7 +148,7 @@ def main():
     output_human = True
     output_gene_tsv = True
     output_pair_tsv = True
-    output_gff = True
+    output_gff = False
     dict_output = {'result_H': output_human, "result_S": output_human,
                    'result_TA_genes': output_gene_tsv, 'result_TA_pairs': output_pair_tsv, 'result_GFF': output_gff}
 

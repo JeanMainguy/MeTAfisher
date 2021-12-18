@@ -1,11 +1,7 @@
 
 ====NC_010645.1====
-1. Genes cds-WP_082011714.1 & cds-WP_082011715.1	strand -	score 0.003695647000465478
-2. Genes cds-WP_012416632.1 & cds-WP_039051605.1	strand -	score 0.9931445057630041
-3. Genes cds-WP_012416992.1 & cds-WP_012416991.1	strand -	score 0.9800666255866418
-4. Genes cds-WP_012417133.1 & cds-WP_012417132.1	strand -	score 0.9963787105312109
-5. Genes cds-WP_012417164.1 & cds-WP_012417163.1	strand -	score 0.9173138344012118
-6. Genes ORF3320 & cds-WP_012417468.1	strand +	score 0.0
-7. Genes ORF3320 & ORF3321	strand +	score 0.0
-8. Genes ORF3321 & cds-WP_012417468.1	strand +	score 0.0
-9. Genes cds-WP_012417720.1 & cds-WP_012417721.1	strand +	score 0.0
+1. Genes cds-WP_082011714.1 & cds-WP_082011715.1	strand -	score 0.004284341458025677
+2. Genes cds-WP_012416632.1 & cds-WP_039051605.1	strand -	score 1.0
+3. Genes cds-WP_012416992.1 & cds-WP_012416991.1	strand -	score 0.8634312181630986
+4. Genes cds-WP_012417133.1 & cds-WP_012417132.1	strand -	score 1.0
+5. Genes cds-WP_012417164.1 & cds-WP_012417163.1	strand -	score 0.9162199560446042

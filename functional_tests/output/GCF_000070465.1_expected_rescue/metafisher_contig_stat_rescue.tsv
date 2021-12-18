@@ -5,5 +5,5 @@
 ## Distance threshold from -100nt to 300nt
 ## Length threshold from 10aa to 500aa
 contig	gene with TA domain	lonely gene	linked gene	adjacent orf	orf with TA domain	lonely gene rescue
-NC_010645.1	104	89	15	1073	2	1
-NC_010645.1	104	89	15	1073	2	1
+NC_010645.1	58	48	10	610	0	0
+NC_010645.1	58	48	10	610	0	0

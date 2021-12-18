@@ -100,21 +100,22 @@ def output_file_creation(output_way, metaG_name, dict_output, headinfo, compleme
     # key : name of the output | value : fl or False if not wanted
     is_output = False  # by default it is False and then if one of the output is True, it will become True
 
-    for out_name in dict_output:
-        if out_name:  # if the flag is not False
-            extension = 'txt'
-            if out_name.startswith('result_TA_'):
-                extension = 'tsv'
-            elif out_name == 'result_GFF':
-                extension = 'gff'
-                # out_name = 'TA_Genes'
+    for out_name, output_flag in dict_output.items():
+        if not output_flag:
+            continue
+        extension = 'txt'
+        if out_name.startswith('result_TA_'):
+            extension = 'tsv'
+        elif out_name == 'result_GFF':
+            extension = 'gff'
+            # out_name = 'TA_Genes'
 
-            file_out = os.path.join(output_way, f"{metaG_name}_{out_name}{complement}.{extension}")
-            flout = open(file_out, "w")
-            # flout.write("## {}\n".format(out_name))
-            # flout.write(headinfo)
-            dict_output[out_name] = flout
-            is_output = True
+        file_out = os.path.join(output_way, f"{metaG_name}_{out_name}{complement}.{extension}")
+        flout = open(file_out, "w")
+        # flout.write("## {}\n".format(out_name))
+        # flout.write(headinfo)
+        dict_output[out_name] = flout
+        is_output = True
     dict_output['is_output'] = is_output
 
 
