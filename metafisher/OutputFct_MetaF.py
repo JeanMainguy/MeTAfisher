@@ -65,17 +65,30 @@ def result_ta_pairs_config(fl):
     if not fl:
         return False  # fl is False
     # Chnage the regular file writer into a csv file writer with header
-    header = ["contig",  "strand",
-              "gene1_id", "gene1_start", "gene1_end", "gene1_length", "gene1_length_score",
-              "gene2_id", "gene2_start", "gene2_end", "gene2_length", "gene2_length_score",
-              "distance", "distance_score", "TA_association_score", "system_score",
-              'gene1_TA_domains', "gene1_TA_families", 'gene1_TADB_hits',
-              'gene1_best_hit', 'gene1_best_hit_evalue', 'gene1_best_hit_bitscore',
-              'gene2_TA_domains', "gene2_TA_families", 'gene2_TADB_hits',
-              'gene2_best_hit', 'gene2_best_hit_evalue', 'gene2_best_hit_bitscore',
-              'shared_family', 'top_family',
-              "gene1_toxin_score", "gene1_antitoxin_score", "gene2_toxin_score",
-              "gene2_antitoxin_score", "gene1_type", "gene2_type", "valid_system"]
+    # header = ["contig",  "strand",
+    #           "gene1_id", "gene1_start", "gene1_end", "gene1_length", "gene1_length_score",
+    #           "gene2_id", "gene2_start", "gene2_end", "gene2_length", "gene2_length_score",
+    #           "distance", "distance_score", "TA_association_score", "system_score",
+    #           'gene1_TA_domains', "gene1_TA_families", 'gene1_TADB_hits',
+    #           'gene1_best_hit', 'gene1_best_hit_evalue', 'gene1_best_hit_bitscore',
+    #           'gene2_TA_domains', "gene2_TA_families", 'gene2_TADB_hits',
+    #           'gene2_best_hit', 'gene2_best_hit_evalue', 'gene2_best_hit_bitscore',
+    #           'shared_family', 'top_family',
+    #           "gene1_toxin_score", "gene1_antitoxin_score", "gene2_toxin_score",
+    #           "gene2_antitoxin_score", "gene1_type", "gene2_type", "valid_system"]
+
+    header = ["contig",
+              "gene1_id",
+              "gene2_id",
+              "system_score",
+              'gene1_TA_domains',
+              'gene1_TADB_hits',
+              'gene2_TA_domains',
+              'gene2_TADB_hits',
+              'top_family',
+              "gene1_type",
+              "gene2_type",
+              "valid_system"]
 
     writer_table = csv.DictWriter(fl, fieldnames=header, delimiter='\t')
     writer_table.writeheader()
@@ -179,34 +192,34 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
     line = {}
 
     line["contig"] = gene_prev.contig
-    line["strand"] = gene_prev.strand
+    # line["strand"] = gene_prev.strand
     assert gene_prev.strand == gene_post.strand and gene_prev.contig == gene_post.contig
 
     for i, gene in [(1, gene_prev), (2, gene_post)]:
         best_hit = gene.get_best_hit()
 
         line[f"gene{i}_id"] = give_id(gene)
-        line[f"gene{i}_start"] = gene.start
-        line[f"gene{i}_end"] = gene.end
-        line[f"gene{i}_length"] = len(gene)
+        # line[f"gene{i}_start"] = gene.start
+        # line[f"gene{i}_end"] = gene.end
+        # line[f"gene{i}_length"] = len(gene)
         line[f"gene{i}_TA_domains"] = ';'.join(
             [d.domain_info['acc'] for d in gene.domains if d.source == "hmmsearch"])
-        line[f"gene{i}_TA_families"] = ';'.join(gene.ta_families)
+        # line[f"gene{i}_TA_families"] = ';'.join(gene.ta_families)
         line[f"gene{i}_TADB_hits"] = ';'.join(
             [d.name for d in gene.domains if d.source == "diamond"])
-        line[f"gene{i}_best_hit"] = best_hit.domain_info['acc']
-        line[f"gene{i}_best_hit_evalue"] = best_hit.e_value
-        line[f"gene{i}_best_hit_bitscore"] = best_hit.score
+        # line[f"gene{i}_best_hit"] = best_hit.domain_info['acc']
+        # line[f"gene{i}_best_hit_evalue"] = best_hit.e_value
+        # line[f"gene{i}_best_hit_bitscore"] = best_hit.score
 
-        line[f"gene{i}_toxin_score"] = gene.toxin_score
-        line[f"gene{i}_antitoxin_score"] = gene.antitoxin_score
+        # line[f"gene{i}_toxin_score"] = gene.toxin_score
+        # line[f"gene{i}_antitoxin_score"] = gene.antitoxin_score
         line[f"gene{i}_type"] = gene.type
 
     gene_prev_score = gene_prev.dict_score[gene_post.gene_number]
     gene_post_score = gene_post.dict_score[gene_prev.gene_number]
 
-    line['shared_family'] = ';'.join(
-        sorted(set(gene_post.ta_families) & set(gene_prev.ta_families)))
+    # line['shared_family'] = ';'.join(
+    #     sorted(set(gene_post.ta_families) & set(gene_prev.ta_families)))
 
     best_shared_families = get_best_shared_families(gene_prev, gene_post)
     line['top_family'] = ';'.join(sorted(best_shared_families))
@@ -222,11 +235,11 @@ def write_table_pairs_result(gene_prev, gene_post, out_tsv_fl):
     system_score = score.confl(gene_prev_score[0]["len_score"], gene_post_score[0]
                                ["len_score"], gene_post_score[0]['dist_score'], gene_post_score[0]['domain_association_score'])
 
-    line[f"gene1_length_score"] = round(gene_prev_score[0]["len_score"], npc)
-    line[f"gene2_length_score"] = round(gene_post_score[0]["len_score"], npc)
-    line["distance"] = gene_post_score[0]['distance']
-    line["distance_score"] = dist_score
-    line["TA_association_score"] = domain_asso
+    # line[f"gene1_length_score"] = round(gene_prev_score[0]["len_score"], npc)
+    # line[f"gene2_length_score"] = round(gene_post_score[0]["len_score"], npc)
+    # line["distance"] = gene_post_score[0]['distance']
+    # line["distance_score"] = dist_score
+    # line["TA_association_score"] = domain_asso
     line["system_score"] = system_score
     line['valid_system'] = is_a_valid_system(gene_prev.type, gene_post.type, system_score)
     out_tsv_fl.writerow(line)
@@ -242,10 +255,10 @@ def is_a_valid_system(type1, type2, system_score):
 
 def get_best_shared_families(gene1, gene2):
     shared_families = sorted(set(gene1.ta_families) & set(gene2.ta_families))
-    print(set(shared_families))
-    print(gene1, gene2)
-    for do in gene1.domains:
-        print(do)
+    # print(set(shared_families))
+    # print(gene1, gene2)
+    # for do in gene1.domains:
+    #     print(do)
 
     shared_families2sum_score = {
         family: gene1.family2bitscore[family]+gene2.family2bitscore[family] for family in shared_families}
