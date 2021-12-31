@@ -8,10 +8,13 @@ function compare_result_dir {
     output_dir=$2
     expected_output_dir=$3
     expected_exit_status=$4
+    rm -r $output_dir
     mkdir $output_dir
-    rm $output_dir/metafisher_*
+
+    echo
+    echo '====== COMMAND TEST ======='
     echo $1
-    eval $1
+    eval $1 2> command.log
 
     # verbose_message "Testing stdout and exit status: $1"
     #echo "searching for file in $expected_output_dir"
@@ -21,7 +24,10 @@ function compare_result_dir {
         output=$output_dir/$filename
         if [ ! -f "$output" ]; then
             let num_errors+=1
+            echo
+            echo "===================="
             echo result file $output not found
+            echo
             continue
         fi
 
@@ -29,8 +35,10 @@ function compare_result_dir {
 
         if [ -n "$difference" ]; then
             let num_errors+=1
+            echo
             echo "Test output failed: $output vs $expected_output_file"
             echo "diff  $expected_output_file $output -u"
+            echo
             # echo "Actual output:"
             # head "$output"
             # expected_output=$(cat $expected_output_file)
@@ -68,7 +76,8 @@ expected_result="functional_tests/output/${genome_tested}_expected"
 
 generic_outdir="functional_tests/output/fresh_output_${genome_tested}"
 
-echo "regular execution test"
+echo
+echo "=====Regular execution test========"
 outdir=$generic_outdir
 expdir=$expected_result
 
@@ -81,17 +90,18 @@ cmd="./metafisher/metafisher.py \
 
 compare_result_dir "$cmd" $outdir $expdir 0
 
-echo "resize execution test"
-
-outdir=${generic_outdir}_resize
-expdir=${expected_result}_resize
-
-cmd="./metafisher/metafisher.py \
---gff $data_dir/GCF_000070465.1_ASM7046v1_genomic.gff.gz \
---faa $data_dir/GCF_000070465.1_ASM7046v1_protein.faa.gz \
--o $outdir --name metafisher \
---resize --fna $data_dir/GCF_000070465.1_ASM7046v1_rna_from_genomic.fna.gz \
- > ${outdir}/cmd.out"
+# echo
+# echo "=========Resize execution test==========="
+#
+# outdir=${generic_outdir}_resize
+# expdir=${expected_result}_resize
+#
+# cmd="./metafisher/metafisher.py \
+# --gff $data_dir/GCF_000070465.1_ASM7046v1_genomic.gff.gz \
+# --faa $data_dir/GCF_000070465.1_ASM7046v1_protein.faa.gz \
+# -o $outdir --name metafisher \
+# --resize --fna $data_dir/GCF_000070465.1_ASM7046v1_rna_from_genomic.fna.gz \
+#  > ${outdir}/cmd.out"
 
 # compare_result_dir "$cmd" $outdir $expdir 0
 
@@ -100,8 +110,8 @@ echo "exit status test"
 test_exit_status "./metafisher/metafisher.py 2>  /dev/null" 2
 test_exit_status "./metafisher/metafisher.py -h" 0
 
-
-echo "rescue execution test"
+echo
+echo "=========Rescue execution test============"
 outdir=${generic_outdir}_rescue
 expdir=${expected_result}_rescue
 
