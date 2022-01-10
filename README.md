@@ -88,70 +88,8 @@ python metafisher/compute_tadb_stat.py --toxin_faa TA_data/type_II_pro_T.fas --a
 
 ```
 
-## Scoring of TA systems
-
-
-
 ## Output files
 
-MeTAfisher provides different output file: 4 result files showing TA systems found and a csv file gathering statistics information of the analysis is also provided.
-All the output files start with 5 lines starting with `##`.
-
-```
-
-## result_S
-## Rescue lonely gene : False
-## Distance threshold from -100nt to 300nt
-## Length threshold from 30aa to 1500aa
-```
-
-The first line tell us the kind of output file it is. Then the next line indicates if the `rescue` mode have been used and finnally the last two lines tell which distance and length threshold have been used during the analysis.
-
-The name of the output file follow a regular pattern, they all start with the name of the metagenome or genome provided when launching the program follow by the name of the output file and the appropriate extension.
-
-For genome Desulfovibrio vulgaris DP4 we have:
-
-The result files:
-
-* Desulfovibrio_vulgaris_DP4_result_H.txt
-* Desulfovibrio_vulgaris_DP4_result_S.txt
-* Desulfovibrio_vulgaris_DP4_result_T.csv
-* Desulfovibrio_vulgaris_DP4_result_GFF.gff
-
-The stat file:
-
-* Desulfovibrio_vulgaris_DP4_contig_stat.csv
 
 
-### Result files
-Four result ﬁles currently exist, they provide the result of the analysis in a different way.
-
-* Short result
-* Human readable result
-* Tabular result
-* Gff file
-
-
-### Short result
-One line for each systems found.
-One line is composed of the two id of the genes, the strand and finally the score of the system.
-This output is just there to give an overview of the result and to get the gene id.  
-
-### Tabular result:
-This result file may be open on a spreadsheet.
-Each TA gene is displayed on a line. Information are displayed within 9 columns:
-
-1. Contig: contig or chromosome names.
-2. Gene number: number used by the program to identify gene. The same one found in the input gff and faa/fna files.
-3. Gene id: The genes id used by genbank when the input files are made from a genbank file
-4. start: postion of the start
-5. end: end position
-6. length
-7. length_score: not display yet
-8. strand: defined as + (forward) or - (reverse).
-9. feature: CDS or ORF. if ORF the gene is from a home-made prediction done during the Rescue step
-10. domain; info about the best domain of the gene
-11. Neighbor gene: info about the neighbor genes. Down if the it is a downstream neigbor and Up if it is a upstream neighbor
-
-
-The program also provides a file gathering quantitative information about the analysis of the contigs/chromosomes analyzed.
+## Scoring of TA systems
