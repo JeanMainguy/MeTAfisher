@@ -126,12 +126,13 @@ def domain_domain_pair_association(domain_type_dict, opposite_type_dict={'T': 'A
 
 
 def extract_db_and_gene_number(gene_id):
-    gene_number_pattern = re.compile(r'[^\d]+(\d+)$')
+    # gene_number_pattern = re.compile(r'[^\d]+(\d+)')
+    gene_number_pattern = re.compile(r'\|(AT|T)(.*+)')
 
     try:
         gene_number = gene_number_pattern.match(gene_id).group(1)
     except AttributeError:
-        raise AttributeError(f'regex pattern failed to extract gene number in id {id}.')
+        raise AttributeError(f'regex pattern failed to extract gene number in id {gene_id}.')
 
     db_name = gene_id.split('|')[0]
     return db_name, gene_number
@@ -144,11 +145,13 @@ def parse_tadb_ids(seq_file):
         gene_ids = (l.split()[0][1:] for l in fl if l.startswith('>'))
 
         for i, id in enumerate(gene_ids):
-
+            
+            
             db_and_nb = extract_db_and_gene_number(id)
+            # db_and_nb = tuple(id.split('|'))
             if db_and_nb in gene_number_to_id:
                 #raise ValueError(f'db and gene number {db_and_nb} are used twice to identify a sequence in {seq_file}')
-                logging.critical(f'Gene id {id} is used more than once  in {seq_file}')
+                logging.critical(f'Gene id {id} is used more than once in {seq_file}')
 
             gene_number_to_id[db_and_nb] = id
 
@@ -177,11 +180,13 @@ def get_genes_association(toxin_file, antitoxin_file):
         except KeyError:
 
             logging.critical(f'No antitoxin gene with id {db_name}|AT{gene_number}')
+            antitoxin_id = None
         try:
             toxin_id = toxin_id_to_number[(db_name, gene_number)]
             genes_type[toxin_id] = {'AT': 0, 'T': 1}
         except KeyError:
             logging.critical(f'No toxin with id {db_name}|T{gene_number}')
+            toxin_id = None
 
         if toxin_id and antitoxin_id:
             genes_association[antitoxin_id] = {toxin_id: 1}
