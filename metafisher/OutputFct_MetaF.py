@@ -256,6 +256,8 @@ def is_a_valid_system(type1, type2, system_score):
 
 def get_best_shared_families(gene1, gene2):
     shared_families = sorted(set(gene1.ta_families) & set(gene2.ta_families))
+    if not shared_families:
+        return []
     # print(set(shared_families))
     # print(gene1, gene2)
     # for do in gene1.domains:
@@ -263,6 +265,16 @@ def get_best_shared_families(gene1, gene2):
 
     shared_families2sum_score = {
         family: gene1.family2bitscore[family]+gene2.family2bitscore[family] for family in shared_families}
+    
+    print('gene1', gene1)
+
+    print('gene2', gene2)
+    print(shared_families2sum_score, shared_families2sum_score)
+    print("shared_families", shared_families)
+    print((set(gene1.ta_families), set(gene2.ta_families)))
+    print(gene1.gene_id)
+
+
     best_sum_score = max(shared_families2sum_score.values())
 
     best_families = [family for family, score in shared_families2sum_score.items()

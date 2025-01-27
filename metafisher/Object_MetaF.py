@@ -135,12 +135,16 @@ class Gene:
         # Type: is it a toxin or an antitoxin
         # families_str = ';'.join(
         #     [d.domain_info['family'].strip() for d in domains if d.source == "hmmsearch"])
+
+
         toxin_count = [d.domain_info['type_prct']['T'] for d in domains]
         antitoxin_count = [d.domain_info['type_prct']['AT'] for d in domains]
         antitoxin_prct = [at/(at+t) for t, at in zip(toxin_count, antitoxin_count)]
         toxin_prct = [t/(at+t) for t, at in zip(toxin_count, antitoxin_count)]
+
         toxin_mean = sum(toxin_prct)/len(toxin_prct)
         antitoxin_mean = sum(antitoxin_prct)/len(antitoxin_prct)
+        
         self.toxin_score = sum(toxin_prct)/len(toxin_prct)
         self.antitoxin_score = sum(antitoxin_prct)/len(antitoxin_prct)
         self.type = 'toxin' if self.toxin_score > 0.8 else 'antitoxin' if self.antitoxin_score > 0.8 else 'unknown'
@@ -342,15 +346,16 @@ class TaHit:
         if self.source == "diamond":
             self.domain_info['acc'] = self.name
             self.domain_info['family'] = ""
-            if self.name.split('|')[1].startswith('T'):
+            
+            if self.name.startswith('T'):
                 self.domain_info['type'] = "Toxin"
-            elif self.name.split('|')[1].startswith('AT'):
+            elif self.name.startswith('AT'):
                 self.domain_info['type'] = 'Antitoxin'
 
         try:
             self.domain_info['type_prct'] = gene_type_domains[self.name]
         except KeyError:
-            self.domain_info['type_prct'] = "NA"
+            self.domain_info['type_prct'] = {"T":1, 'AT':1}
 
     def __str__(self):
         # return self.name + '\nfrom %d to %d \n' % (self.ali_from * 3, self.ali_to * 3)

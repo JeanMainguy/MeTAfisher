@@ -234,6 +234,7 @@ def main():
     distance_proba = score.score_manager(distanceMin, distanceMax, file_dist, k)
     dict_domain_association = score.decoder(file_domain_association)
     dict_domain_gene_type = score.decoder(file_domain_gene_type)
+    
 
     score_dict = {"length_proba": length_proba,
                   "distance_proba": distance_proba,

@@ -24,7 +24,7 @@ import sys
 import gzip
 import re
 import json
-
+from collections import defaultdict
 
 def encoder(filename, dict):
     logging.info(f'writing json file {filename}')
@@ -86,7 +86,6 @@ def parse_arguments():
 
     parser.add_argument("-v", "--verbose", help="increase output verbosity",
                         action="store_true")
-
     args = parser.parse_args()
 
     return args
@@ -126,74 +125,96 @@ def domain_domain_pair_association(domain_type_dict, opposite_type_dict={'T': 'A
 
 
 def extract_db_and_gene_number(gene_id):
-    gene_number_pattern = re.compile(r'[^\d]+(\d+)$')
+    """
+    """
+    
+    gene_number_pattern = re.compile(r'([^\d]+)(\d+)[a-z]*$')
 
-    try:
-        gene_number = gene_number_pattern.match(gene_id).group(1)
-    except AttributeError:
-        raise AttributeError(f'regex pattern failed to extract gene number in id {id}.')
-
-    db_name = gene_id.split('|')[0]
-    return db_name, gene_number
+    re_match = gene_number_pattern.match(gene_id)
+    if re_match:
+        
+        gene_type = re_match.group(1)
+        gene_number = re_match.group(2)
+    else:
+        raise AttributeError(f'regex pattern failed to extract gene number in id {gene_id}.')
+    
+    return gene_type, gene_number
 
 
 def parse_tadb_ids(seq_file):
-    gene_number_to_id = {}
+    """
+    """
+    
+    system_id_to_gene_info = {}
+    
     with open(seq_file) as fl:
 
-        gene_ids = (l.split()[0][1:] for l in fl if l.startswith('>'))
+        gene_ids = (line.split()[0][1:] for line in fl if line.startswith('>'))
 
-        for i, id in enumerate(gene_ids):
+        for id in gene_ids:
 
-            db_and_nb = extract_db_and_gene_number(id)
-            if db_and_nb in gene_number_to_id:
-                #raise ValueError(f'db and gene number {db_and_nb} are used twice to identify a sequence in {seq_file}')
+            _, gene_number = extract_db_and_gene_number(id)
+
+            if gene_number in system_id_to_gene_info:
                 logging.critical(f'Gene id {id} is used more than once  in {seq_file}')
 
-            gene_number_to_id[db_and_nb] = id
+            system_id_to_gene_info[gene_number] = id
 
-    # assert i == len(gene_number_to_id), "Same gene number is used at least twice. Check consistency of sequence id of {seq_file}"
-    return gene_number_to_id
+
+    return system_id_to_gene_info
 
 
 def get_genes_association(toxin_file, antitoxin_file):
-    toxin_id_to_number = parse_tadb_ids(toxin_file)
-    antitoxin_id_to_number = parse_tadb_ids(antitoxin_file)
+    """
 
-    if len(toxin_id_to_number) != len(antitoxin_id_to_number):
+    """
+
+    system_id_to_toxin_id = parse_tadb_ids(toxin_file)
+    system_id_to_antitoxin_id = parse_tadb_ids(antitoxin_file)
+
+    if len(system_id_to_toxin_id) != len(system_id_to_antitoxin_id):
         logging.critical(
-            f"Not the same number of toxin genes ({len(toxin_id_to_number)}) and antitoxin genes ({len(antitoxin_id_to_number)}). check files: {toxin_file} and {antitoxin_file}")
-
-    gene_numbers = set(toxin_id_to_number) | set(antitoxin_id_to_number)
+            f"Not the same number of toxin genes ({len(system_id_to_toxin_id)}) and antitoxin genes ({len(system_id_to_antitoxin_id)}). check files: {toxin_file} and {antitoxin_file}")
+    
+    
+    systems_ids = set(system_id_to_toxin_id) | set(system_id_to_antitoxin_id)
+    
     genes_association = {}
-    genes_type = {}
+    
 
-    for db_name, gene_number in gene_numbers:
+    for system_id in systems_ids:
 
         try:
-            antitoxin_id = antitoxin_id_to_number[(db_name, gene_number)]
-            genes_type[antitoxin_id] = {'AT': 1, 'T': 0}
-
+            toxin_id = system_id_to_toxin_id[system_id]
         except KeyError:
+            toxin_id = None
+            logging.critical(f'No toxin gene with matching id {system_id}')
 
-            logging.critical(f'No antitoxin gene with id {db_name}|AT{gene_number}')
         try:
-            toxin_id = toxin_id_to_number[(db_name, gene_number)]
-            genes_type[toxin_id] = {'AT': 0, 'T': 1}
+            antitoxin_id = system_id_to_antitoxin_id[system_id]
         except KeyError:
-            logging.critical(f'No toxin with id {db_name}|T{gene_number}')
+            antitoxin_id = None
+            logging.critical(f'No antitoxin gene with matching id {system_id}')
 
         if toxin_id and antitoxin_id:
             genes_association[antitoxin_id] = {toxin_id: 1}
             genes_association[toxin_id] = {antitoxin_id: 1}
 
-    return genes_association, genes_type
+    genes_type = {}
+    for toxin_id in system_id_to_toxin_id.values():
+        genes_type[toxin_id] = {'AT': 0, 'T': 1}
 
+    for antitoxin_id in system_id_to_antitoxin_id.values():
+        genes_type[antitoxin_id] = {'AT': 1, 'T': 0}
+        
+
+    return genes_association, genes_type
+    
 
 def domains_genes_association(hmm_result, domain_type_dict):
 
-    gene_id_parser = re.compile(r"(?P<db_name>[^|]+)\|(?P<type>[A,T]{1,2})(?P<gene_number>\d+)")
-
+    gene_id_parser = re.compile(r"(?P<type>[A,T]{1,2})(?P<gene_number>\d+)")
+    
     type_name = set()
 
     for hmmhit in fct.hmm_result_parser(hmm_result):
@@ -213,11 +234,16 @@ def domains_genes_association(hmm_result, domain_type_dict):
 
 
 def run_hmmsearch(faa_file, hmm_db, outdir):
+    """
+    """
+    
+    
     element_to_rm = -2 if faa_file.endswith('.gz') else -1
     simple_name = '.'.join(os.path.basename(faa_file).split('.')[:-element_to_rm])
     hmm_result = os.path.join(outdir, f"{simple_name}.hmmsearch")
 
-    fct.hmmsearch(faa_file, hmm_db, hmm_result)
+
+    fct.hmmsearch(faa_file, hmm_db, hmm_result, force=False)
 
     return hmm_result
 
