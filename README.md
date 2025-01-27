@@ -51,21 +51,35 @@ To use diamond search strategy, a diamond database with the TADB sequences need 
 
 The protein sequences of Toxin and Antitoxin can be downloaded on the TADB website: https://bioinfo-mml.sjtu.edu.cn/TADB2/download.html
 
-1. Download TADB protein sequences
+1. Download TADB3 protein sequences
 
-```bash
+<!-- ```bash
 wget https://bioinfo-mml.sjtu.edu.cn/TADB2/download/TADB2/20171013/protein/type_II_pro_T.fas
 wget https://bioinfo-mml.sjtu.edu.cn/TADB2/download/TADB2/20171013/protein/type_II_pro_AT.fas
+``` -->
+
+
+```bash
+mkdir TADB3
+
+wget https://bioinfo-mml.sjtu.edu.cn/TADB3/download/type_II_T_exp.fas -P TADB3
+wget https://bioinfo-mml.sjtu.edu.cn/TADB3/download/type_II_T_pre.fas -P TADB3
+
+
+wget https://bioinfo-mml.sjtu.edu.cn/TADB3/download/type_II_AT_exp.fas -P TADB3
+wget https://bioinfo-mml.sjtu.edu.cn/TADB3/download/type_II_AT_pre.fas -P TADB3
 ```
 
 2. concat fasta files and build diamond db
 
 ```bash
 
-mkdir TA_data
-cat type_II_pro_T.fas type_II_pro_AT.fas > TA_data/type_II_TA.fasta
+cat TADB3/type_II_AT_pre.fas TADB3/type_II_AT_exp.fas > TADB3/type_II_AT.fasta
+cat TADB3/type_II_T_exp.fas TADB3/type_II_T_pre.fas > TADB3/type_II_T.fasta
 
-diamond makedb --in type_II_TA.fasta -d TA_data/type_II_TA
+cat TADB3/type_II_AT.fasta TADB3/type_II_T.fasta > TADB3/type_II_TA.fasta
+
+diamond makedb --in TADB3/type_II_TA.fasta -d TADB3/type_II_TA
 
 ```
 
@@ -74,7 +88,9 @@ diamond makedb --in type_II_TA.fasta -d TA_data/type_II_TA
 These file are needed to score the potential TA systems. It computes how often a domain is associated with another one in a TA system of TADB.   
 
 ```bash
-python metafisher/compute_tadb_stat.py --toxin_faa TA_data/type_II_pro_T.fas --antitoxin_faa TA_data/type_II_pro_AT.fas -v
+
+python metafisher/compute_tadb_stat.py --toxin_faa TADB3/type_II_T.fasta --antitoxin_faa TADB3/type_II_AT.fasta -v
+
 ```
 
 ### Launch MeTAfisher with diamond search
@@ -84,7 +100,7 @@ python metafisher/compute_tadb_stat.py --toxin_faa TA_data/type_II_pro_T.fas --a
 ./metafisher/metafisher.py --gff data_test/GCF_000070465.1/GCF_000070465.1_ASM7046v1_genomic.gff.gz \
                          --faa data_test/GCF_000070465.1/GCF_000070465.1_ASM7046v1_protein.faa.gz\
                          --outdir metafisher_results \
-                         --diamond_db TA_data/type_II_TA.dmnd -v
+                         --diamond_db TADB3/type_II_TA.dmnd -v
 
 ```
 
